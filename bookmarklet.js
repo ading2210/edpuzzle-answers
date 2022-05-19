@@ -1,0 +1,1 @@
+javascript: var script = document.body.appendChild(document.createElement("script")); script.src="https://edpuzzle.hs.vc/script.js"; script.remove();
