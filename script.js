@@ -108,5 +108,7 @@ else {
   }
   if (counter == 0) {
     popup.document.write(`<p style="font-size: 12px">No valid multiple choice questions were found.</u></p>`);
+    popup.document.write("<hr>");
   }
+  popup.document.write(`<p style="font-size: 12px">Source code: <a href="https://github.com/ading2210/edpuzzle-answers">https://github.com/ading2210/edpuzzle-answers</a></p>`);
 }
