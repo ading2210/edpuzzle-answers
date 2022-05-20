@@ -62,6 +62,13 @@ else {
       margin-top: 0px;
       margin-bottom: 0px;
     }
+    .choice > * {
+      margin-top: 0px;
+      magrin-bottom: 0px;
+    }
+    .choice-correct > * {
+      text-decoration-line: underline;
+    }
   </style>
   <h2 style="margin-bottom: 0px">Answers for this assignment:</h2>
   <p style="font-size: 12px">Correct choices are <u>underlined</u>.</p>
@@ -70,9 +77,20 @@ else {
   popup.document.write(base_html);
   var question;
   var counter = 0;
+
+  for (let i=0; i<questions.length; i++) {
+    for (let j=0; j<questions.length-i-1; j++) {
+      if(questions[j].time > questions[j+1].time){
+       let question_old = questions[j];
+       questions[j] = questions[j + 1];
+       questions[j+1] = question_old;
+     }
+    }
+  }
   
   for (let i=0; i<questions.length; i++) {
     question = questions[i];
+    let choices_lines = [];
     
     if (typeof question.choices != "undefined") {
       let min = Math.floor(question.time/60).toString();
@@ -88,27 +106,22 @@ else {
       else {
         question_content = question.body[0].html;
       }
-      let choices_lines = [];
       for (let j=0; j<question.choices.length; j++) {
-        let item;
         let choice = question.choices[j];
         if (typeof choice.body != "undefined") {
           counter++;
+          let item_html;
           if (choice.body[0].text != "") {
-            if (choice.isCorrect == true) {
-              choices_lines.push(`<li><u>${choice.body[0].text}</u></li>`);
-            }
-            else {
-              choices_lines.push(`<li>${choice.body[0].text}</li>`);
-            }
+            item_html = `<p>${choice.body[0].text}</p>`;
           }
           else {
-            if (choice.isCorrect == true) {
-              choices_lines.push(`<li><u>${choice.body[0].html}</u></li>`);
-            }
-            else {
-              choices_lines.push(`<li>${choice.body[0].html}</li>`);
-            }
+            item_html = `${choice.body[0].html}`;
+          }
+          if (choice.isCorrect == true) {
+            choices_lines.push(`<li class="choice choice-correct">${item_html}</li>`);
+          }
+          else {
+            choices_lines.push(`<li class="choice">${item_html}</li>`);
           }
         }
       }
