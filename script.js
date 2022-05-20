@@ -40,17 +40,27 @@ else {
     li {
       font-size: 12px;
     }
-    h3 {
-      font-size: 14px;
-    }
     .header > * {
-      display: inline-block; 
+      margin-top: 0px;
+      margin-bottom: 0px;
+    }
+    .question > * {
       margin-top: 0px;
       margin-bottom: 0px;
       font-weight: bold;
+      float: right;
     }
-    .header {
+    .question {
       font-size: 14px;
+      width: auto;
+    }
+    .timestamp_div {
+      width: 36px;
+      font-size: 14px;
+    }
+    .timestamp_div > * {
+      margin-top: 0px;
+      margin-bottom: 0px;
     }
   </style>
   <h2 style="margin-bottom: 0px">Answers for this assignment:</h2>
@@ -71,14 +81,28 @@ else {
         secs = "0"+secs;
       }
       let timestamp = min+":"+secs;
-      popup.document.write(`<h3 class="timestamp"></h3>`);
+      let question_content;
       if (question.body[0].text != "") {
-        popup.document.write(`<div class="header">[${timestamp}] <p>${question.body[0].text}</p></div>`);
+        question_content = `<p>${question.body[0].text}</p>`;
       }
       else {
-        popup.document.write(`<div class="header">[${timestamp}] ${question.body[0].html}</div>`);
+        question_content = question.body[0].html;
       }
+      let table = `
+      <table>
+        <tr class="header">
+          <td class="timestamp_div">
+            <p>[${timestamp}]</p>
+          </td>
+          <td class="question">
+            ${question_content}
+          </td>
+        </tr>
+      </table>
+      `;
+      popup.document.write(table);
       popup.document.write(`<ul style="margin-top: 0px;">`);
+      
       
       for (let j=0; j<question.choices.length; j++) {
         let choice = question.choices[j];
