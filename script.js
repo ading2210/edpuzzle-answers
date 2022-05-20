@@ -48,7 +48,6 @@ else {
       margin-top: 0px;
       margin-bottom: 0px;
       font-weight: bold;
-      float: right;
     }
     .question {
       font-size: 14px;
@@ -56,7 +55,8 @@ else {
     }
     .timestamp_div {
       width: 36px;
-      font-size: 14px;
+      font-size: 13px;
+      vertical-align: top;
     }
     .timestamp_div > * {
       margin-top: 0px;
@@ -88,6 +88,31 @@ else {
       else {
         question_content = question.body[0].html;
       }
+      let choices_lines = [];
+      for (let j=0; j<question.choices.length; j++) {
+        let item;
+        let choice = question.choices[j];
+        if (typeof choice.body != "undefined") {
+          counter++;
+          if (choice.body[0].text != "") {
+            if (choice.isCorrect == true) {
+              choices_lines.push(`<li><u>${choice.body[0].text}</u></li>`);
+            }
+            else {
+              choices_lines.push(`<li>${choice.body[0].text}</li>`);
+            }
+          }
+          else {
+            if (choice.isCorrect == true) {
+              choices_lines.push(`<li><u>${choice.body[0].html}</u></li>`);
+            }
+            else {
+              choices_lines.push(`<li>${choice.body[0].html}</li>`);
+            }
+          }
+        }
+      }
+      let choices_html = choices_lines.join("\n");
       let table = `
       <table>
         <tr class="header">
@@ -98,36 +123,18 @@ else {
             ${question_content}
           </td>
         </tr>
+        <tr>
+          <td></td>
+          <td>
+            <ul style="margin-top: 6px; padding-left: 14px;">
+              ${choices_html}
+            </ul>
+          </td>
+        </tr>
       </table>
+      <hr>
       `;
       popup.document.write(table);
-      popup.document.write(`<ul style="margin-top: 0px;">`);
-      
-      
-      for (let j=0; j<question.choices.length; j++) {
-        let choice = question.choices[j];
-        if (typeof choice.body != "undefined") {
-          counter++;
-          if (choice.body[0].text != "") {
-            if (choice.isCorrect == true) {
-              popup.document.write(`<li><u>${choice.body[0].text}</u></li>`);
-            }
-            else {
-              popup.document.write(`<li>${choice.body[0].text}</li>`);
-            }
-          }
-          else {
-            if (choice.isCorrect == true) {
-              popup.document.write(`<li><u>${choice.body[0].html}</u></li>`);
-            }
-            else {
-              popup.document.write(`<li>${choice.body[0].html}</li>`);
-            }
-          }
-        }
-      }
-      popup.document.write("</ul>");
-      popup.document.write("<hr>");
     }
   }
   if (counter == 0) {
