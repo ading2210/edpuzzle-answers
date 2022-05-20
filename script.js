@@ -139,7 +139,7 @@ else {
         <tr>
           <td></td>
           <td>
-            <ul style="margin-top: 6px; padding-left: 14px;">
+            <ul style="margin-top: 6px; margin-bottom: 0px; padding-left: 18px;">
               ${choices_html}
             </ul>
           </td>
