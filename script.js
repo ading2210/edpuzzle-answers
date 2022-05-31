@@ -31,7 +31,20 @@ if (media == null) {
 }
 else {
   var questions = media.questions;
+  var date = new Date(media.createdAt);
+  thumbnail = media.thumbnailURL;
+  if (thumbnail.startsWith("/")) {
+    thumbnail = "https://"+window.location.hostname+thumbnail;
+  }
   var base_html = `
+  <script>
+    function skip_video() {
+      var script = document.body.appendChild(document.createElement("script")); 
+      script.src="https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers/skipper.js"; 
+      script.remove();
+      alert("Video skipped (hopefully)")
+    }
+  </script>
   <style>
     * {
       font-family: Arial;
@@ -40,7 +53,7 @@ else {
     li {
       font-size: 12px;
     }
-    .header > * {
+    .no_vertical_margin > * {
       margin-top: 0px;
       margin-bottom: 0px;
     }
@@ -58,10 +71,6 @@ else {
       font-size: 13px;
       vertical-align: top;
     }
-    .timestamp_div > * {
-      margin-top: 0px;
-      margin-bottom: 0px;
-    }
     .choice > * {
       margin-top: 0px;
       magrin-bottom: 0px;
@@ -69,9 +78,24 @@ else {
     .choice-correct > * {
       text-decoration-line: underline;
     }
+    .title_div > * {
+      margin-top: 0px;
+      margin-bottom: 6px;
+    }
   </style>
-  <h2 style="margin-bottom: 0px">Answers for this assignment:</h2>
-  <p style="font-size: 12px">Correct choices are <u>underlined</u>.</p>
+  <table>
+    <tr>
+      <td>
+        <img src="${thumbnail}" width="192px">
+      </td>
+      <td style="vertical-align:top" class="title_div">
+        <p style="font-size: 16px"><b>${media.title}</b></h2>
+        <p style="font-size: 12px">Uploaded by ${media.user.name} on ${date.toDateString()}</p>
+        <p style="font-size: 12px">Correct choices are <u>underlined</u>.</p>
+        <input id="skipper" type="button" value="Skip Video" onclick="skip_video();" />
+      </td>
+    </tr>
+  </table>
   <hr>`;
   var popup = window.open("about:blank", "", "width=600, height=400");
   popup.document.write(base_html);
@@ -128,8 +152,8 @@ else {
       let choices_html = choices_lines.join("\n");
       let table = `
       <table>
-        <tr class="header">
-          <td class="timestamp_div">
+        <tr class="header no_vertical_margin">
+          <td class="timestamp_div no_vertical_margin">
             <p>[${timestamp}]</p>
           </td>
           <td class="question">
@@ -154,5 +178,5 @@ else {
     popup.document.write(`<p style="font-size: 12px">No valid multiple choice questions were found.</u></p>`);
     popup.document.write("<hr>");
   }
-  popup.document.write(`<p style="font-size: 12px">Source code: <a href="https://github.com/ading2210/edpuzzle-answers">https://github.com/ading2210/edpuzzle-answers</a></p>`);
+  popup.document.write(`<p style="font-size: 12px">Source code: <a href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a> | Skipper: <a href="https://github.com/ASmallYawn/EdpuzzleSkipper">ASmallYawn/EdpuzzleSkipper</a></p>`);
 }
