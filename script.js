@@ -40,7 +40,7 @@ else {
   <script>
     function skip_video() {
       var script = document.body.appendChild(document.createElement("script")); 
-      script.src="https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers/skipper.js"; 
+      script.src="https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/skipper.js"; 
       script.remove();
       alert("Video skipped (hopefully)")
     }
