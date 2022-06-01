@@ -7,4 +7,4 @@ To use it, copy-paste the following code into the url of a new bookmark, and cli
 javascript: if (window.location.hostname == "edpuzzle.com") {var script = document.body.appendChild(document.createElement("script")); script.src="https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js"; script.remove();} else {alert("Please run this on https://edpuzzle.com/assignments/[assignment_id]/watch")}
 ```
 
-![screenshot](https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/images/screenshot1.png)
+<img src="https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/images/screenshot1.png" alt="A screenshot of the generated webpage" width="400"/>
