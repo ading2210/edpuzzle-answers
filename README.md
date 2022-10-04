@@ -1,4 +1,5 @@
 ### Edpuzzle Answer Fetcher Script
+![jsdelivr badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge)
 
 This bookmarklet can fetch the answers for multiple choice questions on any edpuzzle assignment. It can also skip the entire video, but you will still have to manually answer the qustions.
 
