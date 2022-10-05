@@ -32,7 +32,7 @@ function openPopup(media) {
   <script>
     function skip_video() {
       var request = new XMLHttpRequest();
-      request.open("GET", "https://edpuzzle.hs.vc/skipperdev.js", false);
+      request.open("GET", "https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/skipper.js", false);
       request.send();
       eval(request.responseText);
     }
@@ -93,7 +93,7 @@ function openPopup(media) {
     <p style="font-size: 12px" id="loading_text"></p>
   </div>
   <hr>
-  <p style="font-size: 12px">Source code: <a href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a> | Skipper based on: <a href="https://github.com/ASmallYawn/EdpuzzleSkipper">ASmallYawn/EdpuzzleSkipper</a></p>`;
+  <p style="font-size: 12px">Source code: <a target="_blank" href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a> | Skipper based on: <a target="_blank" href="https://github.com/ASmallYawn/EdpuzzleSkipper">ASmallYawn/EdpuzzleSkipper</a></p>`;
   popup = window.open("about:blank", "", "width=600, height=400");
   popup.document.write(base_html);
 }
