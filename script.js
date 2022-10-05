@@ -29,52 +29,54 @@ function openPopup(media) {
     thumbnail = "https://"+window.location.hostname+thumbnail;
   }
   var base_html = `
-  <script>
-    function skip_video() {
-      var request = new XMLHttpRequest();
-      request.open("GET", "https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/skipper.js", false);
-      request.send();
-      eval(request.responseText);
-    }
-  </script>
-  <style>
-    * {
-      font-family: Arial;
-      line-height: 100%;
-    }
-    li {
-      font-size: 12px;
-    }
-    .no_vertical_margin > * {
-      margin-top: 0px;
-      margin-bottom: 0px;
-    }
-    .question > * {
-      margin-top: 0px;
-      margin-bottom: 0px;
-      font-weight: bold;
-    }
-    .question {
-      font-size: 14px;
-      width: auto;
-    }
-    .timestamp_div {
-      width: 36px;
-      font-size: 13px;
-      vertical-align: top;
-    }
-    .choice > * {
-      margin-top: 0px;
-      magrin-bottom: 0px;
-    }
-    .choice-correct > * {
-      text-decoration-line: underline;
-    }
-    .title_div > * {
-      margin-top: 0px;
-      margin-bottom: 6px;
-    }
-  </style>
+  <head>
+    <script>
+      function skip_video() {
+        var request = new XMLHttpRequest();
+        request.open("GET", "https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/skipper.js", false);
+        request.send();
+        eval(request.responseText);
+      }
+    </script>
+    <style>
+      * {
+        font-family: Arial;
+        line-height: 100%;
+      }
+      li {
+        font-size: 12px;
+      }
+      .no_vertical_margin > * {
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+      .question > * {
+        margin-top: 0px;
+        margin-bottom: 0px;
+        font-weight: bold;
+      }
+      .question {
+        font-size: 14px;
+        width: auto;
+      }
+      .timestamp_div {
+        width: 36px;
+        font-size: 13px;
+        vertical-align: top;
+      }
+      .choice > * {
+        margin-top: 0px;
+        magrin-bottom: 0px;
+      }
+      .choice-correct > * {
+        text-decoration-line: underline;
+      }
+      .title_div > * {
+        margin-top: 0px;
+        margin-bottom: 6px;
+      }
+    </style>
+    <title>Answers for: ${media.title}</title>
   <table>
     <tr>
       <td>
@@ -84,7 +86,7 @@ function openPopup(media) {
         <p style="font-size: 16px"><b>${media.title}</b></h2>
         <p style="font-size: 12px">Uploaded by ${media.user.name} on ${date.toDateString()}</p>
         <p style="font-size: 12px">Correct choices are <u>underlined</u>.</p>
-        <input id="skipper" type="button" value="Skip Video" onclick="skip_video();" />
+        <input id="skipper" type="button" value="Skip Video" onclick="skip_video();"/>
       </td>
     </tr>
   </table>
