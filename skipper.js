@@ -13,7 +13,6 @@ function httpGet(url, callback, headers=[], method="GET", content=null) {
 }
 
 function init() {
-  button.disabled = true;
   button.value = "Getting CSRF token..."
   getCSRF()
 }

@@ -17,25 +17,43 @@ function getAssignment(callback) {
 
   httpGet(url1, function(){
     var assignment = JSON.parse(this.responseText);
-    openPopup(assignment.medias[0]);
+    openPopup(assignment);
     getMedia(assignment);
   });
 }
 
-function openPopup(media) {
+function openPopup(assignment) {
+  var media = assignment.medias[0];
+  var teacher_assignment = assignment.teacherAssignments[0];
+  var assigned_date = new Date(teacher_assignment.preferences.startDate);
   var date = new Date(media.createdAt);
   thumbnail = media.thumbnailURL;
   if (thumbnail.startsWith("/")) {
     thumbnail = "https://"+window.location.hostname+thumbnail;
   }
+  
+  var deadline_text;
+  if (teacher_assignment.preferences.dueDate == "") {
+    deadline_text = "no due date"
+  }
+  else {
+    deadline_text = "due on "+(new Date(teacher_assignment.preferences.dueDate)).toDateString();
+  }
+  
   var base_html = `
   <head>
     <script>
       function skip_video() {
+        var button = document.getElementById("skipper");
+        button.disabled = true; 
+        button.value = "Downloading skipper script...";
+        
         var request = new XMLHttpRequest();
-        request.open("GET", "https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/skipper.js", false);
+        request.open("GET", "https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/skipper.js", true);
+        request.addEventListener("load", function(){
+          eval(this.responseText);
+        });
         request.send();
-        eval(request.responseText);
       }
     </script>
     <style>
@@ -75,6 +93,9 @@ function openPopup(media) {
         margin-top: 0px;
         margin-bottom: 6px;
       }
+      #skipper {
+        margin-left: auto;
+      }
     </style>
     <title>Answers for: ${media.title}</title>
   <table>
@@ -85,6 +106,7 @@ function openPopup(media) {
       <td style="vertical-align:top" class="title_div">
         <p style="font-size: 16px"><b>${media.title}</b></h2>
         <p style="font-size: 12px">Uploaded by ${media.user.name} on ${date.toDateString()}</p>
+        <p style="font-size: 12px">Assigned on ${assigned_date.toDateString()}, ${deadline_text}</p>
         <p style="font-size: 12px">Correct choices are <u>underlined</u>.</p>
         <input id="skipper" type="button" value="Skip Video" onclick="skip_video();"/>
       </td>
