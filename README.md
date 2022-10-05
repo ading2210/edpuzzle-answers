@@ -10,4 +10,4 @@ javascript: if (window.location.hostname == "edpuzzle.com") {var script = docume
 
 <img src="https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/images/screenshot1.png" alt="A screenshot of the generated webpage" width="400"/>
 
-The code for the video skipper is taken from [here](https://github.com/ASmallYawn/EdpuzzleSkipper), with permission from the original author and with some minor changes.
+The code for the video skipper based off of [here](https://github.com/ASmallYawn/EdpuzzleSkipper), with permission from the original author and some major refactoring.

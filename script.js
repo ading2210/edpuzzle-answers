@@ -1,36 +1,28 @@
-var assignment_id = window.location.href.split("/")[4];
-var url1 = "https://edpuzzle.com/api/v3/assignments/"+assignment_id;
+var popup = null;
 
-var request1 = new XMLHttpRequest();
-request1.open("GET", url1, false);
-request1.send();
-var assignment = JSON.parse(request1.responseText);
-
-var media_id = assignment.teacherAssignments[0].contentId;
-var classroom_id = assignment.teacherAssignments[0].classroom.id;
-var url2 = "https://edpuzzle.com/api/v3/assignments/classrooms/"+classroom_id+"/students/";
-
-var request2 = new XMLHttpRequest();
-request2.open("GET", url2, false);
-request2.send();
-var classroom = JSON.parse(request2.responseText);
-var media;
-
-for (let i=0; i<classroom.medias.length; i++) {
-  media = classroom.medias[i];
-  if (media._id == media_id) {
-    break;
-  }
-  if (i == classroom.medias.length-1) {
-    media = null;
-  }
+function httpGet(url, callback) {
+  var request = new XMLHttpRequest();
+  request.addEventListener("load", callback);
+  request.open("GET", url, true);
+  request.send();
 }
 
-if (media == null) {
-  alert("Could not get the media for this assignment.");
+function init() {
+  getAssignment();
 }
-else {
-  var questions = media.questions;
+
+function getAssignment(callback) {
+  var assignment_id = window.location.href.split("/")[4];
+  var url1 = "https://edpuzzle.com/api/v3/assignments/"+assignment_id;
+
+  httpGet(url1, function(){
+    var assignment = JSON.parse(this.responseText);
+    openPopup(assignment.medias[0]);
+    getMedia(assignment);
+  });
+}
+
+function openPopup(media) {
   var date = new Date(media.createdAt);
   thumbnail = media.thumbnailURL;
   if (thumbnail.startsWith("/")) {
@@ -39,10 +31,10 @@ else {
   var base_html = `
   <script>
     function skip_video() {
-      var script = document.body.appendChild(document.createElement("script")); 
-      script.src="https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/skipper.js"; 
-      script.remove();
-      alert("Video skipped (hopefully)")
+      var request = new XMLHttpRequest();
+      request.open("GET", "https://edpuzzle.hs.vc/skipperdev.js", false);
+      request.send();
+      eval(request.responseText);
     }
   </script>
   <style>
@@ -86,7 +78,7 @@ else {
   <table>
     <tr>
       <td>
-        <img src="${thumbnail}" width="192px">
+        <img src="${thumbnail}" height="108px">
       </td>
       <td style="vertical-align:top" class="title_div">
         <p style="font-size: 16px"><b>${media.title}</b></h2>
@@ -96,15 +88,57 @@ else {
       </td>
     </tr>
   </table>
-  <hr>`;
-  var popup = window.open("about:blank", "", "width=600, height=400");
+  <hr>
+  <div id="content"> 
+    <p style="font-size: 12px" id="loading_text"></p>
+  </div>
+  <hr>
+  <p style="font-size: 12px">Source code: <a href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a> | Skipper based on: <a href="https://github.com/ASmallYawn/EdpuzzleSkipper">ASmallYawn/EdpuzzleSkipper</a></p>`;
+  popup = window.open("about:blank", "", "width=600, height=400");
   popup.document.write(base_html);
+}
+
+function getMedia(assignment, needle="", request_count=1) {
+  var text = popup.document.getElementById("loading_text");
+  text.innerHTML = `Fetching assignments (page ${request_count})...`;
+  
+  var media_id = assignment.teacherAssignments[0].contentId;
+  var classroom_id = assignment.teacherAssignments[0].classroom.id;
+  var url2 = "https://edpuzzle.com/api/v3/assignments/classrooms/"+classroom_id+"/students/?needle="+needle;
+
+  httpGet(url2, function() {
+    var classroom = JSON.parse(this.responseText);
+    if (classroom.medias.length == 0) {
+      parseQuestions(null);
+      return;
+    }
+    var media;
+    for (let i=0; i<classroom.medias.length; i++) {
+      media = classroom.medias[i];
+      if (media._id == media_id) {
+        parseQuestions(media.questions);
+        return;
+      }
+    }
+    getMedia(assignment, classroom.teacherAssignments[classroom.teacherAssignments.length-1]._id, request_count+1);
+  });
+}
+
+function parseQuestions(questions) {
+  var text = popup.document.getElementById("loading_text");
+  var content = popup.document.getElementById("content");
+  text.remove();
+
+  if (questions == null) {
+    content.innerHTML += `<p style="font-size: 12px">Error: Could not get the media for this assignment. </p>`;
+  }
+  
   var question;
   var counter = 0;
-
+  var counter2 = 0;
   for (let i=0; i<questions.length; i++) {
     for (let j=0; j<questions.length-i-1; j++) {
-      if(questions[j].time > questions[j+1].time){
+      if (questions[j].time > questions[j+1].time){
        let question_old = questions[j];
        questions[j] = questions[j + 1];
        questions[j+1] = question_old;
@@ -149,8 +183,13 @@ else {
           }
         }
       }
+      
       let choices_html = choices_lines.join("\n");
-      let table = `
+      let table = ``
+      if (counter2 != 0) {
+        table += `<hr>`;
+      }
+      table += `
       <table>
         <tr class="header no_vertical_margin">
           <td class="timestamp_div no_vertical_margin">
@@ -169,14 +208,15 @@ else {
           </td>
         </tr>
       </table>
-      <hr>
       `;
-      popup.document.write(table);
+      
+      content.innerHTML += table;
+      counter2++;
     }
   }
   if (counter == 0) {
-    popup.document.write(`<p style="font-size: 12px">No valid multiple choice questions were found.</u></p>`);
-    popup.document.write("<hr>");
+    content.innerHTML += `<p style="font-size: 12px">No valid multiple choice questions were found.</p>`;
   }
-  popup.document.write(`<p style="font-size: 12px">Source code: <a href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a> | Skipper: <a href="https://github.com/ASmallYawn/EdpuzzleSkipper">ASmallYawn/EdpuzzleSkipper</a></p>`);
 }
+
+init()
