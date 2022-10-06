@@ -1,9 +1,9 @@
 # Edpuzzle Answers Fetcher Script
-<img src="https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/images/screenshot2.png" alt="A screenshot of the generated webpage" width="500"/>
-
 ![jsdelivr badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge)
 
-This bookmarklet can fetch the answers for multiple choice questions on any edpuzzle assignment. It can also skip the entire video, but you will still have to manually answer the qustions.
+<img src="https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/images/screenshot2.png" alt="A screenshot of the generated webpage" width="500"/>
+
+This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, but you will still have to manually answer the qustions.
 
 ## Features:
  - Can fetch and display the multiple-choice answers for any Edpuzzle assignment
