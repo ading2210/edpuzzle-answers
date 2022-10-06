@@ -1,5 +1,5 @@
 # Edpuzzle Answers Fetcher Script
-<img src="https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/images/screenshot2.png" alt="A screenshot of the generated webpage" width="400"/>
+<img src="https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/images/screenshot2.png" alt="A screenshot of the generated webpage" width="500"/>
 
 ![jsdelivr badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge)
 
