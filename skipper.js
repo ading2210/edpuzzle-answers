@@ -6,15 +6,15 @@ function httpGet(url, callback, headers=[], method="GET", content=null) {
   request.open(method, url, true);
   if (headers.length > 0) {
     for (const header of headers) {
-      request.setRequestHeader(header[0], header[1])
+      request.setRequestHeader(header[0], header[1]);
     }
   }
   request.send(content);
 }
 
 function init() {
-  button.value = "Getting CSRF token..."
-  getCSRF()
+  button.value = "Getting CSRF token...";
+  getCSRF();
 }
 
 function getCSRF() {
@@ -24,7 +24,7 @@ function getCSRF() {
     var csrf = data.CSRFToken;
     button.value = "Getting assignment data..."
     getAssignment(csrf);
-  })
+  });
 }
 
 function getAssignment(csrf) {
@@ -32,9 +32,9 @@ function getAssignment(csrf) {
   var url1 = "https://edpuzzle.com/api/v3/assignments/" + assignment_id + "/attempt";
   httpGet(url1, function(){
     var data = JSON.parse(this.responseText);
-    button.value = "Posting watchtime data..."
-    postAttempt(csrf, data)
-  })
+    button.value = "Posting watchtime data...";
+    postAttempt(csrf, data);
+  });
 }
 
 function postAttempt(csrf, data) {
@@ -54,9 +54,9 @@ function postAttempt(csrf, data) {
   ];
   
   httpGet(url2, function(){
-    button.value = "Video skipped successfully."
+    button.value = "Video skipped successfully.";
     opener.location.reload();
-  }, headers, "POST", JSON.stringify(content))
+  }, headers, "POST", JSON.stringify(content));
 }
 
 init();
