@@ -4,10 +4,8 @@ function httpGet(url, callback, headers=[], method="GET", content=null) {
   var request = new XMLHttpRequest();
   request.addEventListener("load", callback);
   request.open(method, url, true);
-  if (headers.length > 0) {
-    for (const header of headers) {
-      request.setRequestHeader(header[0], header[1]);
-    }
+  for (const header of headers) {
+    request.setRequestHeader(header[0], header[1]);
   }
   request.send(content);
 }
