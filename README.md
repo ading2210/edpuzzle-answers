@@ -1,5 +1,7 @@
 # Edpuzzle Answers Fetcher Script
-![jsdelivr badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge)
+![jsdelivr monthly badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/month)
+![jsdelivr weekly badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/week)
+![jsdelivr daily badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/day)
 
 <img src="https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/images/screenshot2.png" alt="A screenshot of the generated webpage" width="500"/>
 
