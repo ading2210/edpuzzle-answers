@@ -9,6 +9,7 @@ This bookmarklet can fetch the answers for the multiple choice questions on any 
  - Can fetch and display the multiple-choice answers for any Edpuzzle assignment
  - Includes a video skipper which allows for arbitrary navigation within an assignment
  - Shows various stats about the assignment
+ - Has a decent looking GUI
  - Licensed under the GNU GPL v3 license
 
 ## Creating the bookmarklet:
