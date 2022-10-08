@@ -5,7 +5,7 @@
 
 <img src="https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/images/screenshot2.png" alt="A screenshot of the generated webpage" width="500"/>
 
-This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, but you will still have to manually answer the qustions.
+This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, but you will still have to manually answer the questions.
 
 ## Features:
  - Can fetch and display the multiple-choice answers for any Edpuzzle assignment
@@ -13,7 +13,7 @@ This bookmarklet can fetch the answers for the multiple choice questions on any 
  - Shows various stats about the assignment
  - Has a decent looking GUI
  - No login or extension required
- - Works for private Edpuzzle videos
+ - Works on private Edpuzzle videos
  - Licensed under the GNU GPL v3 license
 
 ## Creating the bookmarklet:

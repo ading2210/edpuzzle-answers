@@ -4,8 +4,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Edpuzzle Answers Fetcher Script">
+  <meta property="og:url" content="https://edpuzzle.hs.vc/">
+  <meta property="og:image" content="https://edpuzzle.hs.vc/images/screenshot2.png">
+  <meta property="og:article:author" content="ading2210">
+  <meta property="og:description" content="This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, but you will still have to manually answer the questions. This project is also fully open source and licensed under the GNU GPLv3.">
+  <meta property="twitter:image" content="https://edpuzzle.hs.vc/images/screenshot2.png">
+  <meta property="twitter:card" content="summary_large_image">
+  
   <title>Edpuzzle Answers Fetcher Script</title>
   <link href="https://edpuzzle.imgix.net/favicons/favicon-32.png" rel="icon" type="image/png"/>
+  
   <style>
     * {
       font-family: Arial;
@@ -17,17 +28,31 @@
     p {
       margin-top: 0px;
     }
+    body {
+      background-color: #2E3440;
+      margin: 0px;
+    }
+    .wrapper_div {
+      max-width: 560px; 
+      margin-left: auto; 
+      margin-right: auto;
+      margin-top: 20px;
+      padding: 20px;
+      height: 100%;
+      background-color: #FEFFFE;
+      border-radius: 15px;
+    }
   </style>
 </head>
 
 <body>
-  <h1 style="margin-bottom: 8px; font-size: 32px">Edpuzzle Answers Fetcher Script</h1>
-  <div style="max-width: 500px; margin-left: auto; margin-right: auto;">
-    <img style="max-width: 100%; height: auto;" alt="screenshot" src="/images/screenshot2.png">
-  </div>
-  <p style="font-size: 12px">Source code: <a href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a></p>
-  <div style="max-width: 500px; margin-left: auto; margin-right: auto;">
+  <div class="wrapper_div">
+    <h1 style="margin-top: 0px; margin-bottom: 0px; font-size: 32px">Edpuzzle Answers Fetcher Script</h1>
     <hr>
+    <img style="max-width: 100%; height: auto;" alt="screenshot" src="/images/screenshot2.png">
+    <p style="font-size: 12px">Source code: <a href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a></p>
+    <hr>
+    
     <h3 style="margin: 0px;">Features:</h3>
     <ul style="margin-top: 8px;">
       <li>Can fetch and display the multiple-choice answers for any Edpuzzle assignment</li>
@@ -35,17 +60,24 @@
       <li>Shows various stats about the assignment</li>
       <li>Has a decent looking GUI</li>
       <li>No login or extension required</li>
-      <li>Works for private Edpuzzle videos</li>
+      <li>Works on private Edpuzzle videos</li>
       <li>Licensed under the GNU <a href="/LICENSE">GPL-3.0</a> license</li>
     </ul>
     <hr>
+    
+    <h3 style="margin-top: 0px; margin-bottom: 4px">Download Stats:</h3>
+    <img src="https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/month"> <img src="https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/week"> <img src="https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/day">
+    <hr>
+    
+    <h3 style="margin-top: 0px; margin-bottom: 4px">Installation/Usage:</h3>
+    <p style="font-size: 12px">Full instructions can be found here: <a href="https://github.com/ading2210/edpuzzle-answers#creating-the-bookmarklet">README.md</a></p>
     <p style="margin-top: 16px; margin-bottom: 8px">To use this, just drag this button into your bookmarks bar and click it when on an Edpuzzle assignment:</p>
+    <a href='javascript: if (window.location.hostname == "edpuzzle.com") {var script = document.body.appendChild(document.createElement("script")); script.src="https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js"; script.remove();} else {alert("Please run this on https://edpuzzle.com/assignments/[assignment_id]/watch")}'>
+      <button>
+        Get Answers
+      </button>
+    </a>
   </div>
-  <a href='javascript: if (window.location.hostname == "edpuzzle.com") {var script = document.body.appendChild(document.createElement("script")); script.src="https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js"; script.remove();} else {alert("Please run this on https://edpuzzle.com/assignments/[assignment_id]/watch")}'>
-    <button>
-      Get Answers
-    </button>
-  </a>
 </body>
 
 </html>
