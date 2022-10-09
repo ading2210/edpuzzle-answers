@@ -35,7 +35,7 @@ This bookmarklet can fetch the answers for the multiple choice questions on any 
  2. Make sure the url follows this format: `https://edpuzzle.com/assignments/{id}/watch`
  3. Click on the bookmarklet to run the script. 
 
-## Credits
+## Credits:
 The code for the video skipper is based off of [this](https://github.com/ASmallYawn/EdpuzzleSkipper), with permission from the original author and some major refactoring.
 
 All other code has been written solely by me.
