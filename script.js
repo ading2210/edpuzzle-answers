@@ -43,17 +43,29 @@ function openPopup(assignment) {
   var base_html = `
   <head>
     <script>
-      function skip_video() {
-        var button = document.getElementById("skipper");
-        button.disabled = true; 
-        button.value = "Downloading skipper script...";
-        
+      function http_exec(url) {
         var request = new XMLHttpRequest();
-        request.open("GET", "https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/skipper.js", true);
+        request.open("GET", url, true);
         request.addEventListener("load", function(){
           eval(this.responseText);
         });
         request.send();
+      }
+      function skip_video() {
+        var button = document.getElementById("skipper");
+        button.disabled = true; 
+        button.value = "Downloading script...";
+
+        http_exec("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/skipper.js");
+      }
+      function answer_questions() {
+        var skipper = document.getElementById("skipper");
+        var button = document.getElementById("answers_button");
+        skipper.disabled = true;
+        button.disabled = true; 
+        button.value = "Downloading script...";
+
+        http_exec("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/autoanswers.js");
       }
     </script>
     <style>
@@ -108,7 +120,8 @@ function openPopup(assignment) {
         <p style="font-size: 12px">Uploaded by ${media.user.name} on ${date.toDateString()}</p>
         <p style="font-size: 12px">Assigned on ${assigned_date.toDateString()}, ${deadline_text}</p>
         <p style="font-size: 12px">Correct choices are <u>underlined</u>.</p>
-        <input id="skipper" type="button" value="Skip Video" onclick="skip_video();"/>
+        <input id="skipper" type="button" value="Skip Video" onclick="skip_video();" disabled/>
+        <input id="answers_button" type="button" value="Answer Questions" onclick="answer_questions();" disabled/>
       </td>
     </tr>
   </table>
@@ -120,6 +133,8 @@ function openPopup(assignment) {
   <p style="font-size: 12px">Source code: <a target="_blank" href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a> | Skipper based on: <a target="_blank" href="https://github.com/ASmallYawn/EdpuzzleSkipper">ASmallYawn/EdpuzzleSkipper</a></p>`;
   popup = window.open("about:blank", "", "width=600, height=400");
   popup.document.write(base_html);
+
+  popup.document.assignment = assignment;
 }
 
 function getMedia(assignment, needle="", request_count=1) {
@@ -151,10 +166,15 @@ function getMedia(assignment, needle="", request_count=1) {
 function parseQuestions(questions) {
   var text = popup.document.getElementById("loading_text");
   var content = popup.document.getElementById("content");
+  popup.document.questions = questions;
   text.remove();
+
+  popup.document.getElementById("skipper").disabled = false;
+  popup.document.getElementById("answers_button").disabled = false;
 
   if (questions == null) {
     content.innerHTML += `<p style="font-size: 12px">Error: Could not get the media for this assignment. </p>`;
+    return;
   }
   
   var question;
@@ -241,6 +261,6 @@ function parseQuestions(questions) {
   if (counter == 0) {
     content.innerHTML += `<p style="font-size: 12px">No valid multiple choice questions were found.</p>`;
   }
+  popup.questions = questions;
 }
-
 init()
