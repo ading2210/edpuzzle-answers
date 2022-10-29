@@ -8,10 +8,10 @@
 This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, as well as automatically answer the questions.
 
 ## Contents:
-  - [Features](#features-)
-  - [Creating the bookmarklet](#creating-the-bookmarklet-)
-  - [Using the bookmarklet](#using-the-bookmarklet-)
-  - [Credits](#credits-)
+  - [Features](#features)
+  - [Creating the bookmarklet](#creating-the-bookmarklet)
+  - [Using the bookmarklet](#using-the-bookmarklet)
+  - [Credits](#credits)
 
 ## Features:
  - Can fetch and display the multiple-choice answers for any Edpuzzle assignment
