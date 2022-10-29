@@ -53,8 +53,6 @@ function skipVideo(csrf, attempt) {
   ];
   
   httpGet(url2, function(){
-    button.value = "Video skipped successfully.";
-
     var attemptId = attempt._id;
     for (let i=0; i<document.questions.length; i++) {
       let question = questions[i];
