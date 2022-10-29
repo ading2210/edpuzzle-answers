@@ -169,9 +169,6 @@ function parseQuestions(questions) {
   popup.document.questions = questions;
   text.remove();
 
-  popup.document.getElementById("skipper").disabled = false;
-  popup.document.getElementById("answers_button").disabled = false;
-
   if (questions == null) {
     content.innerHTML += `<p style="font-size: 12px">Error: Could not get the media for this assignment. </p>`;
     return;
@@ -258,8 +255,12 @@ function parseQuestions(questions) {
       counter2++;
     }
   }
+  popup.document.getElementById("skipper").disabled = false;
   if (counter == 0) {
     content.innerHTML += `<p style="font-size: 12px">No valid multiple choice questions were found.</p>`;
+  }
+  else {
+    popup.document.getElementById("answers_button").disabled = false;
   }
   popup.questions = questions;
 }
