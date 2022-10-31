@@ -1,4 +1,4 @@
-# Edpuzzle Answers Fetcher Script
+# Edpuzzle Answers Script
 ![jsdelivr monthly badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/month)
 ![jsdelivr weekly badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/week)
 ![jsdelivr daily badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/day)
@@ -24,6 +24,8 @@ This bookmarklet can fetch the answers for the multiple choice questions on any 
  - Licensed under the GNU GPL v3 license
 
 ## Creating the bookmarklet:
+A video tutorial can be found [here](https://www.youtube.com/watch?v=zxZzB2KXCkw).
+
 ### Method 1:
  1. Navigate to [https://edpuzzle.hs.vc](https://edpuzzle.hs.vc).
  2. If you're on any Chromium-based browser, drag the button at the bottom of the page into your bookmarks bar.
