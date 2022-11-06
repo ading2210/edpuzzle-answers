@@ -53,39 +53,39 @@ function skipVideo(csrf, attempt) {
   
   httpGet(url2, function(){
     var attemptId = attempt._id;
-    var remainingQuestions = [];
+    var questions = [];
+    
     for (let i=0; i<document.questions.length; i++) {
-      let question = questions[i];
+      let question = document.questions[i];
       if (question.type != "multiple-choice") {continue;}
       
-      if (remainingQuestions.length == 0) {
-        remainingQuestions.push([question]);
+      if (questions.length == 0) {
+        questions.push([question]);
       }
-      else if (remainingQuestions[remainingQuestions.length-1][0].time == question.time) {
-        remainingQuestions[remainingQuestions.length-1].push(question);
+      else if (questions[questions.length-1][0].time == question.time) {
+        questions[questions.length-1].push(question);
       }
       else {
-        remainingQuestions.push([question]);
+        questions.push([question]);
       }
     }
-    if (remainingQuestions.length > 0) {
-      var total = remainingQuestions.length;
-      var complete = [];
+    
+    if (questions.length > 0) {
+      var total = questions.length;
       button.value = "Posting answers...";
-      for (let i=0; i<remainingQuestions.length; i++) {
-        postAnswers(csrf, document.assignment, remainingQuestions[i], complete, attemptId, total);
-      }
+      postAnswers(csrf, document.assignment, questions, attemptId, total);
     }
   }, headers, "POST", JSON.stringify(content));
 }
 
-function postAnswers(csrf, assignment, questionsPart, complete, attemptId, total) {
+function postAnswers(csrf, assignment, questions, attemptId, total) {
   var id = assignment.teacherAssignments[0]._id;
   var referrer = "https://edpuzzle.com/assignments/"+id+"/watch";
   var answersURL = "https://edpuzzle.com/api/v3/attempts/"+attemptId+"/answers";
 
   var content = {answers: []};
   var now = new Date().toISOString();
+  var questionsPart = questions.shift();
   for (let i=0; i<questionsPart.length; i++) {
     let question = questionsPart[i];
     let correctChoices = [];
@@ -111,13 +111,13 @@ function postAnswers(csrf, assignment, questionsPart, complete, attemptId, total
     ['x-edpuzzle-web-version', opener.__EDPUZZLE_DATA__.version]
   ];
   httpGet(answersURL, function() {
-    complete.push(content);
-    if (complete.length == total) {
+    if (questions.length == 0) {
       button.value = "Answers submitted successfully.";
       opener.location.reload();
     }
     else {
-      console.log(button.value);
+      button.value = `Posting answers... (${total-questions.length+1}/${total})`;
+      postAnswers(csrf, assignment, questions, attemptId, total);
     }
   }, headers, "POST", JSON.stringify(content));
 }
