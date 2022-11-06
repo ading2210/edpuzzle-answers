@@ -80,7 +80,6 @@ function skipVideo(csrf, attempt) {
 }
 
 function postAnswers(csrf, assignment, questionsPart, complete, attemptId, total) {
-  aaaa
   var id = assignment.teacherAssignments[0]._id;
   var referrer = "https://edpuzzle.com/assignments/"+id+"/watch";
   var answersURL = "https://edpuzzle.com/api/v3/attempts/"+attemptId+"/answers";
