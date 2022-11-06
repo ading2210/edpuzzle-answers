@@ -177,7 +177,11 @@ function getMedia(assignment, needle="", request_count=1) {
       getMedia(assignment, classroom.teacherAssignments[classroom.teacherAssignments.length-1]._id, request_count+1);
     }
     else {
-      alert(`Error: Status code ${this.status} recieved when attempting to fetch the answers.`)
+      var text = popup.document.getElementById("loading_text");
+      var content = popup.document.getElementById("content");
+      popup.document.questions = questions;
+      text.remove();
+      content.innerHTML += `Error: Status code ${this.status} recieved when attempting to fetch the answers.`;
     }
   });
 }
