@@ -53,39 +53,39 @@ function skipVideo(csrf, attempt) {
   
   httpGet(url2, function(){
     var attemptId = attempt._id;
-    var questions = [];
+    var filteredQuestions = [];
     
     for (let i=0; i<document.questions.length; i++) {
       let question = document.questions[i];
       if (question.type != "multiple-choice") {continue;}
       
-      if (questions.length == 0) {
-        questions.push([question]);
+      if (filteredQuestions.length == 0) {
+        filteredQuestions.push([question]);
       }
-      else if (questions[questions.length-1][0].time == question.time) {
-        questions[questions.length-1].push(question);
+      else if (filteredQuestions[filteredQuestions.length-1][0].time == question.time) {
+        filteredQuestions[filteredQuestions.length-1].push(question);
       }
       else {
-        questions.push([question]);
+        filteredQuestions.push([question]);
       }
     }
     
-    if (questions.length > 0) {
-      var total = questions.length;
+    if (filteredQuestions.length > 0) {
+      var total = filteredQuestions.length;
       button.value = "Posting answers...";
-      postAnswers(csrf, document.assignment, questions, attemptId, total);
+      postAnswers(csrf, document.assignment, filteredQuestions, attemptId, total);
     }
   }, headers, "POST", JSON.stringify(content));
 }
 
-function postAnswers(csrf, assignment, questions, attemptId, total) {
+function postAnswers(csrf, assignment, remainingQuestions, attemptId, total) {
   var id = assignment.teacherAssignments[0]._id;
   var referrer = "https://edpuzzle.com/assignments/"+id+"/watch";
   var answersURL = "https://edpuzzle.com/api/v3/attempts/"+attemptId+"/answers";
 
   var content = {answers: []};
   var now = new Date().toISOString();
-  var questionsPart = questions.shift();
+  var questionsPart = remainingQuestions.shift();
   for (let i=0; i<questionsPart.length; i++) {
     let question = questionsPart[i];
     let correctChoices = [];
@@ -111,13 +111,13 @@ function postAnswers(csrf, assignment, questions, attemptId, total) {
     ['x-edpuzzle-web-version', opener.__EDPUZZLE_DATA__.version]
   ];
   httpGet(answersURL, function() {
-    if (questions.length == 0) {
+    if (remainingQuestions.length == 0) {
       button.value = "Answers submitted successfully.";
       opener.location.reload();
     }
     else {
-      button.value = `Posting answers... (${total-questions.length+1}/${total})`;
-      postAnswers(csrf, assignment, questions, attemptId, total);
+      button.value = `Posting answers... (${total-remainingQuestions.length+1}/${total})`;
+      postAnswers(csrf, assignment, remainingQuestions, attemptId, total);
     }
   }, headers, "POST", JSON.stringify(content));
 }
