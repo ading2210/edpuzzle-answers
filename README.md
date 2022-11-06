@@ -38,7 +38,7 @@ A video tutorial can be found [here](https://www.youtube.com/watch?v=zxZzB2KXCkw
 ### Method 2:
  1. Copy the following code into your clipboard:
  ```js
-javascript: if (window.location.hostname == "edpuzzle.com") {var r = new XMLHttpRequest(); r.open("GET", "https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js", true); r.addEventListener("load", function(){eval(this.responseText);}); r.send();} else {alert("Please run this on https://edpuzzle.com/assignments/[assignment_id]/watch")}
+javascript: var host = window.location.hostname; if (host == "edpuzzle.com") { var r = new XMLHttpRequest(); r.open("GET", "https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js", true); r.addEventListener("load", function(){eval(this.responseText);}); r.send();} else if (host == "edpuzzle.hs.vc") {alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.")} else {alert("Please run this on an Edpuzzle assignment.")}
  ```
  2. Right click on your bookmarks bar and click "add page."
  3. Set the name of the bookmark to whatever you want.

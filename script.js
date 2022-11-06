@@ -12,13 +12,27 @@ function init() {
 }
 
 function getAssignment(callback) {
+  if (!(/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.location.href)) {
+    alert("Please run this script on an Edpuzzle assignment. For reference, the URL should look like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch")
+    return;
+  }
+  
   var assignment_id = window.location.href.split("/")[4];
+  if (typeof assignment_id == "undefined") {
+    alert("Error: Could not infer the assignment ID. Are you on the correct URL?");
+    return;
+  }
   var url1 = "https://edpuzzle.com/api/v3/assignments/"+assignment_id;
 
   httpGet(url1, function(){
     var assignment = JSON.parse(this.responseText);
-    openPopup(assignment);
-    getMedia(assignment);
+    if ((""+this.status)[0] == "2") {
+      openPopup(assignment);
+      getMedia(assignment);
+    }
+    else {
+      alert(`Error: Status code ${this.status} recieved when attempting to fetch the assignment data.`)
+    }
   });
 }
 
@@ -43,7 +57,7 @@ function openPopup(assignment) {
   var base_html = `
   <head>
     <script>
-      function http_exec(url) {
+      function http_exec(url, button) {
         var request = new XMLHttpRequest();
         request.open("GET", url, true);
         request.addEventListener("load", function(){
@@ -56,7 +70,7 @@ function openPopup(assignment) {
         button.disabled = true; 
         button.value = "Downloading script...";
 
-        http_exec("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/skipper.js");
+        http_exec("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/skipper.js", button);
       }
       function answer_questions() {
         var skipper = document.getElementById("skipper");
@@ -65,7 +79,7 @@ function openPopup(assignment) {
         button.disabled = true; 
         button.value = "Downloading script...";
 
-        http_exec("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/autoanswers.js");
+        http_exec("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/autoanswers.js", button);
       }
     </script>
     <style>
@@ -130,7 +144,7 @@ function openPopup(assignment) {
     <p style="font-size: 12px" id="loading_text"></p>
   </div>
   <hr>
-  <p style="font-size: 12px">Source code: <a target="_blank" href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a> | Skipper based on: <a target="_blank" href="https://github.com/ASmallYawn/EdpuzzleSkipper">ASmallYawn/EdpuzzleSkipper</a></p>`;
+  <p style="font-size: 12px">Made by: <a target="_blank" href="https://github.com/ading2210">ading2210</a> on Github | Website: <a target="_blank" href="https://edpuzzle.hs.vc">edpuzzle.hs.vc</a> | Source code: <a target="_blank" href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a>`;
   popup = window.open("about:blank", "", "width=600, height=400");
   popup.document.write(base_html);
 
@@ -146,20 +160,25 @@ function getMedia(assignment, needle="", request_count=1) {
   var url2 = "https://edpuzzle.com/api/v3/assignments/classrooms/"+classroom_id+"/students/?needle="+needle;
 
   httpGet(url2, function() {
-    var classroom = JSON.parse(this.responseText);
-    if (classroom.medias.length == 0) {
-      parseQuestions(null);
-      return;
-    }
-    var media;
-    for (let i=0; i<classroom.medias.length; i++) {
-      media = classroom.medias[i];
-      if (media._id == media_id) {
-        parseQuestions(media.questions);
+    if ((""+this.status)[0] == "2") {
+      var classroom = JSON.parse(this.responseText);
+      if (classroom.medias.length == 0) {
+        parseQuestions(null);
         return;
       }
+      var media;
+      for (let i=0; i<classroom.medias.length; i++) {
+        media = classroom.medias[i];
+        if (media._id == media_id) {
+          parseQuestions(media.questions);
+          return;
+        }
+      }
+      getMedia(assignment, classroom.teacherAssignments[classroom.teacherAssignments.length-1]._id, request_count+1);
     }
-    getMedia(assignment, classroom.teacherAssignments[classroom.teacherAssignments.length-1]._id, request_count+1);
+    else {
+      alert(`Error: Status code ${this.status} recieved when attempting to fetch the answers.`)
+    }
   });
 }
 
