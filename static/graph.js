@@ -70,6 +70,10 @@ function drawGraph(stats) {
       scales: {
         y: {
           beginAtZero: true,
+          title: {
+            text: "Number of Downloads",
+            display: true
+          }
         }
       },
       plugins: {

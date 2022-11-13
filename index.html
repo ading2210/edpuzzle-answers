@@ -26,9 +26,20 @@
     }
     li {
       text-align: left;
+      font-size: 14px;
     }
     p {
       margin-top: 0px;
+      font-size: 14px;
+    }
+    h4 {
+      margin-top: 4px;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+    h3 {
+      margin-top: 0px;
+      margin-bottom: 8px;
     }
     body {
       background-color: #2E3440;
@@ -77,7 +88,7 @@
     <p style="font-size: 12px">Source code: <a href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a></p>
     <hr>
     
-    <h3 style="margin-bottom: 0px; margin-top: 8px;">Features:</h3>
+    <h3>Features:</h3>
     <ul style="margin-top: 8px;">
       <li>Can fetch and display the multiple-choice answers for any Edpuzzle assignment</li>
       <li>Can automatically answer all the multiple-choice questions in an assignment</li>
@@ -86,26 +97,29 @@
       <li>Has a decent looking GUI</li>
       <li>No login or extension required</li>
       <li>Works on private Edpuzzle videos</li>
+      <li>Completely free and open source</li>
       <li>Licensed under the GNU <a href="https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE">GPL-3.0</a> license</li>
     </ul>
     <hr>
 
-    <h3 style="margin-bottom: 8px; margin-top: 8px;">Video Demo:</h3>
+    <h3>Video Demo:</h3>
     <video width="100%" controls>
       <source src="/videos/demo.mp4" type="video/mp4">
     </video>
     <hr>
     
-    <h3 style="margin-top: 0px; margin-bottom: 0px">Download Stats:</h3>
+    <h3>Download Stats:</h3>
+    <h4>Monthly Downloads Graph:</h4>
     <p id="js_warning" style="font-size: 12px;">Please enable JS to view download statistics</p>
     <script>document.getElementById("js_warning").innerHTML = "Fetching statistics...";</script>
     <div id="graph_wrapper">
     </div>
+    <h4>jsDelivr Stats:</h4>
     <div style="display: flex;">
-    <table id="stats_table">
+      <table id="stats_table">
       <thead>
         <tr>
-          <td style="border: none;"></th>
+          <th scope="col" style="border: none; background-color: #ffffff;"></th>
           <th scope="col">Yearly</th>
           <th scope="col">Monthly</th>
           <th scope="col">Weekly</th>
@@ -139,7 +153,7 @@
     </div>
     <hr>
     
-    <h3 style="margin-top: 0px; margin-bottom: 4px">Installation/Usage:</h3>
+    <h3>Installation/Usage:</h3>
     <p style="font-size: 12px; margin-bottom: 4px;">Full instructions can be found here: <a href="https://github.com/ading2210/edpuzzle-answers#creating-the-bookmarklet">README.md</a></p>
     <p style="font-size: 12px;">A video tutorial can be found here: <a href="https://youtu.be/zxZzB2KXCkw">https://youtu.be/zxZzB2KXCkw</a></p>
     <p style="margin-top: 16px; margin-bottom: 8px">To use this, just drag this button into your bookmarks bar and click it when on an Edpuzzle assignment. If you're on Firefox, right click on the button, then select "bookmark link."</p>
