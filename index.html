@@ -16,9 +16,11 @@
   
   <title>Edpuzzle Answers Script</title>
   <link href="/images/icon.png" rel="icon" type="image/png"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  <script src="/static/graph.js"></script>
   
   <style>
-    * {
+    * {  
       font-family: Arial;
       text-align: center;
     }
@@ -32,6 +34,19 @@
       background-color: #2E3440;
       margin: 0px;
     }
+    table {
+      border-collapse: collapse;
+    }
+    th, td {
+      border: solid;
+      border-width: 1px;
+      padding: 5px;
+      font-size: 12px;
+      word-wrap: break-word;
+    }
+    th {
+      background-color: #ECEFF4;
+    }
     .wrapper_div {
       max-width: min(560px, 80%); 
       margin-left: auto; 
@@ -42,6 +57,14 @@
       height: 100%;
       background-color: #FEFFFE;
       border-radius: 15px;
+    }
+    #stats_table {
+      margin-left: auto;
+      margin-right: auto;
+      white-space: nowrap;
+      table-layout: fixed;
+      display: none;
+      overflow-x: auto;
     }
   </style>
 </head>
@@ -73,8 +96,47 @@
     </video>
     <hr>
     
-    <h3 style="margin-top: 0px; margin-bottom: 4px">Download Stats:</h3>
-    <img src="https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/month"> <img src="https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/week"> <img src="https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/day">
+    <h3 style="margin-top: 0px; margin-bottom: 0px">Download Stats:</h3>
+    <p id="js_warning" style="font-size: 12px;">Please enable JS to view download statistics</p>
+    <script>document.getElementById("js_warning").innerHTML = "Fetching statistics...";</script>
+    <div id="graph_wrapper">
+    </div>
+    <div style="display: flex;">
+    <table id="stats_table">
+      <thead>
+        <tr>
+          <td style="border: none;"></th>
+          <th scope="col">Yearly</th>
+          <th scope="col">Monthly</th>
+          <th scope="col">Weekly</th>
+          <th scope="col">Daily</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Total Downloads</th>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th scope="row">jsDelivr Overall Rank</th>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th scope="row">jsDelivr Github Rank</th>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
     <hr>
     
     <h3 style="margin-top: 0px; margin-bottom: 4px">Installation/Usage:</h3>
