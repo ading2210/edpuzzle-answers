@@ -3,9 +3,9 @@
 ![jsdelivr weekly badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/week)
 ![jsdelivr daily badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/day)
 
-<img src="https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/images/screenshot3.png" alt="A screenshot of the generated webpage" width="500"/>
+<img src="https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/images/screenshot4.png" alt="A screenshot of the generated webpage" width="500"/>
 
-This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, as well as automatically answer the questions.
+This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, as well as automatically answer the questions and change the video speed.
 
 ## Contents:
   - [Demo](#demo)
@@ -21,6 +21,7 @@ https://user-images.githubusercontent.com/71154407/199671842-c3016f8c-8c7f-4526-
  - Can fetch and display the multiple-choice answers for any Edpuzzle assignment
  - Can automatically answer all the multiple-choice questions in an assignment
  - Includes a video skipper which allows for arbitrary navigation within an assignment
+ - Has a tool to change the video speed
  - Shows various stats about the assignment
  - Has a decent looking GUI
  - No login or extension required

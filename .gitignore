@@ -1,7 +1,4 @@
 /.replit
 /.config/
 /replit.nix
-/dev.js
-/skipperdev.js
-/autoanswersdev.js
-/bookmarkletdev.js
+/*dev.js

@@ -1,6 +1,13 @@
 var popup = null;
+var base_url;
+if (typeof document.dev_env != "undefined") {
+  base_url = document.dev_env;
+}
+else {
+  base_url = "https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest";
+}
 
-function httpGet(url, callback) {
+function http_get(url, callback) {
   var request = new XMLHttpRequest();
   request.addEventListener("load", callback);
   request.open("GET", url, true);
@@ -12,7 +19,8 @@ function init() {
 }
 
 function getAssignment(callback) {
-  if (!(/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.location.href)) {
+  if (!(/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.location.href
+  )) {
     alert("Please run this script on an Edpuzzle assignment. For reference, the URL should look like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch")
     return;
   }
@@ -24,11 +32,10 @@ function getAssignment(callback) {
   }
   var url1 = "https://edpuzzle.com/api/v3/assignments/"+assignment_id;
 
-  httpGet(url1, function(){
+  http_get(url1, function(){
     var assignment = JSON.parse(this.responseText);
     if ((""+this.status)[0] == "2") {
       openPopup(assignment);
-      getMedia(assignment);
     }
     else {
       alert(`Error: Status code ${this.status} recieved when attempting to fetch the assignment data.`)
@@ -56,86 +63,67 @@ function openPopup(assignment) {
   
   var base_html = `
   <head>
+    <style>
+      * {font-family: Arial}
+    </style>
     <script>
-      function http_exec(url, button) {
+      function http_get(url, callback) {
         var request = new XMLHttpRequest();
+        request.addEventListener("load", callback);
         request.open("GET", url, true);
-        request.addEventListener("load", function(){
-          eval(this.responseText);
-        });
         request.send();
       }
-      function skip_video() {
-        var button = document.getElementById("skipper");
-        button.disabled = true; 
-        button.value = "Downloading script...";
-
-        http_exec("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/skipper.js", button);
-      }
-      function answer_questions() {
-        var skipper = document.getElementById("skipper");
-        var button = document.getElementById("answers_button");
-        skipper.disabled = true;
-        button.disabled = true; 
-        button.value = "Downloading script...";
-
-        http_exec("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/autoanswers.js", button);
-      }
+      http_get("${base_url}/popup.css", function(){
+        if ((""+this.status)[0] == "2") {
+          var style = document.createElement("style");
+          style.innerHTML = this.responseText;
+          document.getElementsByTagName("head")[0].appendChild(style);
+        }
+        else {
+          console.error("Could not fetch the CSS for the popup.");
+        }
+      });
+      http_get("${base_url}/popup.js", function(){
+        if ((""+this.status)[0] == "2") {
+          var script = document.createElement("script");
+          script.innerHTML = this.responseText;
+          document.getElementsByTagName("head")[0].appendChild(script);
+        }
+        else {
+          console.error("Could not fetch the JS for the popup.");
+        }
+      });
     </script>
-    <style>
-      * {
-        font-family: Arial;
-        line-height: 100%;
-      }
-      li {
-        font-size: 12px;
-      }
-      .no_vertical_margin > * {
-        margin-top: 0px;
-        margin-bottom: 0px;
-      }
-      .question > * {
-        margin-top: 0px;
-        margin-bottom: 0px;
-        font-weight: bold;
-      }
-      .question {
-        font-size: 14px;
-        width: auto;
-      }
-      .timestamp_div {
-        width: 36px;
-        font-size: 13px;
-        vertical-align: top;
-      }
-      .choice > * {
-        margin-top: 0px;
-        magrin-bottom: 0px;
-      }
-      .choice-correct > * {
-        text-decoration-line: underline;
-      }
-      .title_div > * {
-        margin-top: 0px;
-        margin-bottom: 6px;
-      }
-      #skipper {
-        margin-left: auto;
-      }
-    </style>
     <title>Answers for: ${media.title}</title>
-  <table>
+  <table id="header_table">
     <tr>
       <td>
         <img src="${thumbnail}" height="108px">
       </td>
-      <td style="vertical-align:top" class="title_div">
+      <td id="title_div">
         <p style="font-size: 16px"><b>${media.title}</b></h2>
         <p style="font-size: 12px">Uploaded by ${media.user.name} on ${date.toDateString()}</p>
         <p style="font-size: 12px">Assigned on ${assigned_date.toDateString()}, ${deadline_text}</p>
         <p style="font-size: 12px">Correct choices are <u>underlined</u>.</p>
         <input id="skipper" type="button" value="Skip Video" onclick="skip_video();" disabled/>
         <input id="answers_button" type="button" value="Answer Questions" onclick="answer_questions();" disabled/>
+        <br>
+        <div id="speed_container">
+          <label style="font-size: 12px" for="speed_dropdown">Video speed:</label>
+          <select name="speed_dropdown" id="speed_dropdown" onchange="video_speed()">
+            <option value="0.25">0.25</option>
+            <option value="0.5">0.5</option>
+            <option value="0.75">0.75</option>
+            <option value="1" selected>Normal</option>
+            <option value="1.25">1.25</option>
+            <option value="1.5">1.5</option>
+            <option value="1.75">1.75</option>
+            <option value="2">2</option>
+            <option value="-1">Custom</option>
+          </select>
+          <label id="custom_speed_label" style="font-size: 12px" for="custom_speed" hidden></label>
+          <input type="range" id="custom_speed" name="custom_speed" value="1" min="0.1" max="16" step="0.1" oninput="video_speed()" hidden>
+        </div>
       </td>
     </tr>
   </table>
@@ -149,6 +137,9 @@ function openPopup(assignment) {
   popup.document.write(base_html);
 
   popup.document.assignment = assignment;
+  popup.document.dev_env = document.dev_env;
+
+  getMedia(assignment);
 }
 
 function getMedia(assignment, needle="", request_count=1) {
@@ -159,7 +150,7 @@ function getMedia(assignment, needle="", request_count=1) {
   var classroom_id = assignment.teacherAssignments[0].classroom.id;
   var url2 = "https://edpuzzle.com/api/v3/assignments/classrooms/"+classroom_id+"/students/?needle="+needle;
 
-  httpGet(url2, function() {
+  http_get(url2, function() {
     if ((""+this.status)[0] == "2") {
       var classroom = JSON.parse(this.responseText);
       if (classroom.medias.length == 0) {
