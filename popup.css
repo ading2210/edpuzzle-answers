@@ -39,8 +39,11 @@ li {
   vertical-align: top;
   padding-left: 7px;
 }
-#header_table {
+#header_div {
   width: 100%;
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: nowrap;
 }
 #custom_speed {
   padding: 0px;
