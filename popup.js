@@ -1,10 +1,7 @@
 var video_script = null;
-var base_url;
-if (typeof document.dev_env != "undefined") {
-  base_url = "https://edpuzzle.hs.vc";
-}
-else {
-  base_url = "https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest";
+
+if (typeof base_url == "undefined") {
+  var base_url = "https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main";
 }
 
 function http_exec(url) {

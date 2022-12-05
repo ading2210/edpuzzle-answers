@@ -1,10 +1,12 @@
 var popup = null;
-var base_url;
+var base_url, html_url;
 if (typeof document.dev_env != "undefined") {
   base_url = document.dev_env;
+  html_url = document.dev_env;
 }
 else {
-  base_url = "https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest";
+  //get resources off of github to not inflate the jsdelivr stats
+  base_url = "https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main";
 }
 
 function http_get(url, callback) {
@@ -67,13 +69,14 @@ function openPopup(assignment) {
       * {font-family: Arial}
     </style>
     <script>
+      var base_url = "${base_url}";
       function http_get(url, callback) {
         var request = new XMLHttpRequest();
         request.addEventListener("load", callback);
         request.open("GET", url, true);
         request.send();
       }
-      http_get("${base_url}/popup.css", function(){
+      http_get(base_url+"/popup.css", function(){
         if ((""+this.status)[0] == "2") {
           var style = document.createElement("style");
           style.innerHTML = this.responseText;
@@ -83,7 +86,7 @@ function openPopup(assignment) {
           console.error("Could not fetch the CSS for the popup.");
         }
       });
-      http_get("${base_url}/popup.js", function(){
+      http_get(base_url+"/popup.js", function(){
         if ((""+this.status)[0] == "2") {
           var script = document.createElement("script");
           script.innerHTML = this.responseText;
