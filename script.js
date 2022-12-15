@@ -1,8 +1,7 @@
 var popup = null;
-var base_url, html_url;
+var base_url;
 if (typeof document.dev_env != "undefined") {
   base_url = document.dev_env;
-  html_url = document.dev_env;
 }
 else {
   //get resources off of github to not inflate the jsdelivr stats
@@ -17,16 +16,16 @@ function http_get(url, callback) {
 }
 
 function init() {
-  getAssignment();
-}
-
-function getAssignment(callback) {
   if (!(/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.location.href
   )) {
     alert("Please run this script on an Edpuzzle assignment. For reference, the URL should look like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch")
     return;
   }
   
+  getAssignment();
+}
+
+function getAssignment(callback) {
   var assignment_id = window.location.href.split("/")[4];
   if (typeof assignment_id == "undefined") {
     alert("Error: Could not infer the assignment ID. Are you on the correct URL?");
@@ -76,26 +75,22 @@ function openPopup(assignment) {
         request.open("GET", url, true);
         request.send();
       }
-      http_get(base_url+"/popup.css", function(){
-        if ((""+this.status)[0] == "2") {
-          var style = document.createElement("style");
-          style.innerHTML = this.responseText;
-          document.getElementsByTagName("head")[0].appendChild(style);
-        }
-        else {
-          console.error("Could not fetch the CSS for the popup.");
-        }
-      });
-      http_get(base_url+"/popup.js", function(){
-        if ((""+this.status)[0] == "2") {
-          var script = document.createElement("script");
-          script.innerHTML = this.responseText;
-          document.getElementsByTagName("head")[0].appendChild(script);
-        }
-        else {
-          console.error("Could not fetch the JS for the popup.");
-        }
-      });
+      function get_tag(tag, url) {
+        console.log("Loading "+url);
+        http_get(url, function(){
+          if ((""+this.status)[0] == "2") {
+            var element = document.createElement(tag);
+            element.innerHTML = this.responseText;
+            document.getElementsByTagName("head")[0].appendChild(element);
+          }
+          else {
+            console.error("Could not fetch "+url);
+          }
+        });
+      }
+      get_tag("style", base_url+"/popup.css");
+      get_tag("script", base_url+"/popup.js");
+      get_tag("script", base_url+"/videooptions.js");
     </script>
     <title>Answers for: ${media.title}</title>
   <div id="header_div">
@@ -109,8 +104,7 @@ function openPopup(assignment) {
       <p style="font-size: 12px">Correct choices are <u>underlined</u>.</p>
       <input id="skipper" type="button" value="Skip Video" onclick="skip_video();" disabled/>
       <input id="answers_button" type="button" value="Answer Questions" onclick="answer_questions();" disabled/>
-      <br>
-      <div id="speed_container">
+      <div id="speed_container" hidden>
         <label style="font-size: 12px" for="speed_dropdown">Video speed:</label>
         <select name="speed_dropdown" id="speed_dropdown" onchange="video_speed()">
           <option value="0.25">0.25</option>
@@ -123,8 +117,12 @@ function openPopup(assignment) {
           <option value="2">2</option>
           <option value="-1">Custom</option>
         </select>
-        <label id="custom_speed_label" style="font-size: 12px" for="custom_speed" hidden></label>
+        <label id="custom_speed_label" style="font-size: 12px" for="custom_speed"></label>
         <input type="range" id="custom_speed" name="custom_speed" value="1" min="0.1" max="16" step="0.1" oninput="video_speed()" hidden>
+      </div>
+      <div id="options_container">
+        <label for="pause_on_focus" style="font-size: 12px">Don't pause on unfocus: </label>
+        <input type="checkbox" id="pause_on_focus" name="pause_on_focus" onchange="toggle_unfocus();">
       </div>
     </div>
   </div>
@@ -279,4 +277,5 @@ function parseQuestions(questions) {
   }
   popup.questions = questions;
 }
+
 init()

@@ -49,7 +49,7 @@ li {
   padding: 0px;
   width: 100%
 }
-#speed_container {
+#speed_container, #options_container {
   display: flex;
   flex-grow: 4;
   align-items: center;
