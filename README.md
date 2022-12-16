@@ -22,6 +22,7 @@ https://user-images.githubusercontent.com/71154407/199671842-c3016f8c-8c7f-4526-
  - Can automatically answer all the multiple-choice questions in an assignment
  - Includes a video skipper which allows for arbitrary navigation within an assignment
  - Has a tool to change the video speed
+ - Has an option to prevent pausing the video when the tab is hidden
  - Shows various stats about the assignment
  - Has a decent looking GUI
  - No login or extension required
