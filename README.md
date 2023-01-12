@@ -10,6 +10,8 @@ This bookmarklet can fetch the answers for the multiple choice questions on any 
 ## Contents:
   - [Demo](#demo)
   - [Features](#features)
+  - [Limitations](#limitations)
+  - [Copyright Notice](#copyright-notice)
   - [Creating the bookmarklet](#creating-the-bookmarklet)
   - [Using the bookmarklet](#using-the-bookmarklet)
   - [Credits](#credits)
@@ -17,17 +19,30 @@ This bookmarklet can fetch the answers for the multiple choice questions on any 
 ## Demo: 
 https://user-images.githubusercontent.com/71154407/199671842-c3016f8c-8c7f-4526-b274-5bdd48f3a131.mp4
 
+Note: This video was recorded with an older version of the script, so the GUI shown is missing some features.
+
 ## Features:
  - Can fetch and display the multiple-choice answers for any Edpuzzle assignment
  - Can automatically answer all the multiple-choice questions in an assignment
  - Includes a video skipper which allows for arbitrary navigation within an assignment
  - Has a tool to change the video speed
- - Has an option to prevent pausing the video when the tab is hidden
+ - Has an option to prevent auto-pausing the video when the tab is hidden
  - Shows various stats about the assignment
  - Has a decent looking GUI
  - No login or extension required
  - Works on private Edpuzzle videos
  - Licensed under the GNU GPL v3 license
+
+## Limitations:
+ - This doesn't currently work for Edpuzzles that are embedded in a third party site, such as Canvas. See [issue #2](https://github.com/ading2210/edpuzzle-answers/issues/2)
+ - Changing the video speed for videos that are not from Youtube or a generic video file is untested and probably does not work.
+
+## Copyright Notice
+This project is licenced under the [GNU GPL v3](https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE). Thus, you are not allowed to:
+ - Reupload any part of the source code without crediting this repository.
+ - Fork this repository, then change or remove the license.
+
+Forking this repository is fine, as long as you abide by the terms of the GPL. However, if you don't, then I have every right to submit a DMCA takedown.
 
 ## Creating the bookmarklet:
 A video tutorial can be found [here](https://www.youtube.com/watch?v=zxZzB2KXCkw).
