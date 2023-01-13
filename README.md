@@ -37,7 +37,7 @@ Note: This video was recorded with an older version of the script, so the GUI sh
  - This doesn't currently work for Edpuzzles that are embedded in a third party site, such as Canvas. See [issue #2](https://github.com/ading2210/edpuzzle-answers/issues/2)
  - Changing the video speed for videos that are not from Youtube or a generic video file is untested and probably does not work.
 
-## Copyright Notice
+## Copyright Notice:
 This project is licenced under the [GNU GPL v3](https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE). Thus, you are not allowed to:
  - Reupload any part of the source code without crediting this repository.
  - Fork this repository, then change or remove the license.

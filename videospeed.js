@@ -34,7 +34,14 @@ else if (media_source == "youtube") {
   
   else {
     let player = opener.YT.get(iframe.id);
-    let events = player.l.h;
+    let events;
+    //search for attribute that stores yt event listeners
+    for (let key of Object.keys(player)) {
+      let item = player[key];
+      if (item && Array.isArray(item.h)) {
+        events = item.h;
+      }
+    }
     for (let i=1; i<events.length; i+=3) {
       let event = events[i];
       if (event == "onPlaybackRateChange") {
