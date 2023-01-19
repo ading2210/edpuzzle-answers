@@ -8,21 +8,49 @@ else {
   base_url = "https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main";
 }
 
-function http_get(url, callback) {
+function http_get(url, callback, headers=[], method="GET", content=null) {
   var request = new XMLHttpRequest();
   request.addEventListener("load", callback);
-  request.open("GET", url, true);
-  request.send();
+  request.open(method, url, true);
+
+  if (window.__EDPUZZLE_DATA__ && window.__EDPUZZLE_DATA__.token) {
+    headers.push(["authorization", window.__EDPUZZLE_DATA__.token]);
+  }
+  for (const header of headers) {
+    request.setRequestHeader(header[0], header[1]);
+  }
+  
+  request.send(content);
 }
 
 function init() {
-  if (!(/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.location.href
-  )) {
+  if ((/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.location.href)) {
+    getAssignment();
+  }
+  else if (window.location.hostname == "k12.instructure.com") {
+    handleCanvasURL();
+  }
+  else {
     alert("Please run this script on an Edpuzzle assignment. For reference, the URL should look like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch")
     return;
   }
-  
-  getAssignment();
+}
+
+function handleCanvasURL() {
+  let location_split = window.location.href.split("/");
+  let url = `/api/v1/courses/${location_split[4]}/assignments/${location_split[6]}`;
+  http_get(url, function(){
+    let data = JSON.parse(this.responseText);
+    let url2 = data.url;
+
+    http_get(url2, function() {
+      let data = JSON.parse(this.responseText);
+      let url3 = data.url;
+
+      alert("Please re-run this script in the newly opened tab.");
+      open(url3);
+    });
+  });
 }
 
 function getAssignment(callback) {
@@ -137,6 +165,7 @@ function openPopup(assignment) {
 
   popup.document.assignment = assignment;
   popup.document.dev_env = document.dev_env;
+  popup.document.edpuzzle_data = window.__EDPUZZLE_DATA__;
 
   getMedia(assignment);
 }
@@ -278,4 +307,4 @@ function parseQuestions(questions) {
   popup.questions = questions;
 }
 
-init()
+init();

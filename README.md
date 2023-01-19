@@ -31,10 +31,11 @@ Note: This video was recorded with an older version of the script, so the GUI sh
  - Has a decent looking GUI
  - No login or extension required
  - Works on private Edpuzzle videos
+ - Supports Edpuzzles embedded in Canvas
  - Licensed under the GNU GPL v3 license
 
 ## Limitations:
- - This doesn't currently work for Edpuzzles that are embedded in a third party site, such as Canvas. See [issue #2](https://github.com/ading2210/edpuzzle-answers/issues/2)
+ - This doesn't currently work for most Edpuzzles that are embedded in a third party site. However, the script does work for Edpuzzles embeded in Canvas.
  - Changing the video speed for videos that are not from Youtube or a generic video file is untested and probably does not work.
 
 ## Copyright Notice:
@@ -42,7 +43,7 @@ This project is licenced under the [GNU GPL v3](https://github.com/ading2210/edp
  - Reupload any part of the source code without crediting this repository.
  - Fork this repository, then change or remove the license.
 
-Forking this repository is fine, as long as you abide by the terms of the GPL. However, if you don't, then I have every right to submit a DMCA takedown.
+Forking or redistributing code from this repository is fine, as long as you abide by the terms of the GPL. However, if you don't, then I have every right to submit a DMCA takedown.
 
 ## Creating the bookmarklet:
 A video tutorial can be found [here](https://www.youtube.com/watch?v=zxZzB2KXCkw).
