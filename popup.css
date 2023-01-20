@@ -1,0 +1,63 @@
+* {
+  font-family: Arial;
+  line-height: 100%;
+}
+li {
+  font-size: 12px;
+}
+.no_vertical_margin > * {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+.question > * {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  font-weight: bold;
+}
+.question {
+  font-size: 14px;
+  width: auto;
+}
+.timestamp_div {
+  width: 36px;
+  font-size: 13px;
+  vertical-align: top;
+}
+.choice > * {
+  margin-top: 0px;
+  magrin-bottom: 0px;
+}
+.choice-correct > * {
+  text-decoration-line: underline;
+}
+#title_div > * {
+  margin-top: 0px;
+  margin-bottom: 6px;
+}
+#title_div {
+  width: 100%;
+  vertical-align: top;
+  padding-left: 7px;
+}
+#header_div {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+}
+#custom_speed {
+  padding: 0px;
+  width: 100%
+}
+#speed_container, #options_container {
+  display: flex;
+  flex-grow: 4;
+  align-items: center;
+  margin-bottom: 0px;
+}
+#speed_container > * {
+  white-space: nowrap;
+  margin-right: 6px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
