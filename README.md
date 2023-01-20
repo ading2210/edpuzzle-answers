@@ -3,7 +3,7 @@
 ![jsdelivr weekly badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/week)
 ![jsdelivr daily badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/day)
 
-<img src="https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/images/screenshot4.png" alt="A screenshot of the generated webpage" width="500"/>
+<img src="https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/static/images/screenshot4.png" alt="A screenshot of the generated webpage" width="500"/>
 
 This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, as well as automatically answer the questions and change the video speed.
 
