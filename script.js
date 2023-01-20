@@ -93,6 +93,7 @@ function openPopup(assignment) {
   }
   
   var base_html = `
+   <!DOCTYPE html>
   <head>
     <style>
       * {font-family: Arial}
@@ -118,11 +119,12 @@ function openPopup(assignment) {
           }
         });
       }
-      get_tag("style", base_url+"/popup.css");
-      get_tag("script", base_url+"/popup.js");
-      get_tag("script", base_url+"/videooptions.js");
+      get_tag("style", base_url+"/app/popup.css");
+      get_tag("script", base_url+"/app/popup.js");
+      get_tag("script", base_url+"/app/videooptions.js");
     </script>
     <title>Answers for: ${media.title}</title>
+  </head>
   <div id="header_div">
     <div>
       <img src="${thumbnail}" height="108px">

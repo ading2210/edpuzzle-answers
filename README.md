@@ -32,11 +32,13 @@ Note: This video was recorded with an older version of the script, so the GUI sh
  - Shows various stats about the assignment
  - Has a decent looking GUI
  - No login or extension required
+ - Uses about:blank so it doesn't go into your browser history
  - Works on private Edpuzzle videos
  - Supports Edpuzzles embedded in Canvas
  - Licensed under the GNU GPL v3 license
 
 ## Limitations:
+ - This isn't able to answer open-ended questions or audio responses. Though in the future, I might use something like ChatGPT to complete those automatically. 
  - This doesn't currently work for most Edpuzzles that are embedded in a third party site. However, the script does work for Edpuzzles embeded in Canvas.
  - Changing the video speed for videos that are not from Youtube or a generic video file is untested and probably does not work.
 

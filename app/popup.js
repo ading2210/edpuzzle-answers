@@ -14,7 +14,7 @@ function skip_video() {
   button.disabled = true; 
   button.value = "Downloading script...";
 
-  http_exec(base_url+"/skipper.js");
+  http_exec(base_url+"/app/skipper.js");
 }
 function answer_questions() {
   var skipper = document.getElementById("skipper");
@@ -23,11 +23,11 @@ function answer_questions() {
   button.disabled = true; 
   button.value = "Downloading script...";
 
-  http_exec(base_url+"/autoanswers.js");
+  http_exec(base_url+"/app/autoanswers.js");
 }
 function video_speed() {
   if (video_script == null) {
-    http_get(base_url+"/videospeed.js", function(){
+    http_get(base_url+"/app/videospeed.js", function(){
       video_script = this.responseText;
       eval(video_script);
     });
