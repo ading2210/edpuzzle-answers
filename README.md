@@ -7,6 +7,8 @@
 
 This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, as well as automatically answer the questions and change the video speed.
 
+Discord server: [edpuzzle.hs.vc/discord.html](https://edpuzzle.hs.vc/discord.html)
+
 ## Contents:
   - [Demo](#demo)
   - [Features](#features)
@@ -56,7 +58,7 @@ A video tutorial can be found [here](https://www.youtube.com/watch?v=zxZzB2KXCkw
 ### Method 2:
  1. Copy the following code into your clipboard:
  ```js
-javascript: var host = window.location.hostname; if (host == "edpuzzle.com") { var r = new XMLHttpRequest(); r.open("GET", "https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js", true); r.addEventListener("load", function(){eval(this.responseText);}); r.send();} else if (host == "edpuzzle.hs.vc") {alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.")} else {alert("Please run this on an Edpuzzle assignment.")}
+javascript: fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js").then(r => r.text()).then(r => eval(r))
  ```
  2. Right click on your bookmarks bar and click "add page."
  3. Set the name of the bookmark to whatever you want.

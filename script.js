@@ -24,15 +24,17 @@ function http_get(url, callback, headers=[], method="GET", content=null) {
 }
 
 function init() {
-  if ((/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.location.href)) {
+  if (window.location.hostname == "edpuzzle.hs.vc") {
+    alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
+  }
+  else if ((/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.location.href)) {
     getAssignment();
   }
-  else if (window.location.hostname == "k12.instructure.com") {
+  else if (window.canvasReadyState) {
     handleCanvasURL();
   }
   else {
     alert("Please run this script on an Edpuzzle assignment. For reference, the URL should look like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch")
-    return;
   }
 }
 
