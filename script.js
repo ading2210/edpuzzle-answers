@@ -122,6 +122,7 @@ function openPopup(assignment) {
       get_tag("style", base_url+"/app/popup.css");
       get_tag("script", base_url+"/app/popup.js");
       get_tag("script", base_url+"/app/videooptions.js");
+      get_tag("script", base_url+"/app/videospeed.js");
     </script>
     <title>Answers for: ${media.title}</title>
   </head>

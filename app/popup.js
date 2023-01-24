@@ -25,14 +25,3 @@ function answer_questions() {
 
   http_exec(base_url+"/app/autoanswers.js");
 }
-function video_speed() {
-  if (video_script == null) {
-    http_get(base_url+"/app/videospeed.js", function(){
-      video_script = this.responseText;
-      eval(video_script);
-    });
-  }
-  else {
-    eval(video_script);
-  }
-}
