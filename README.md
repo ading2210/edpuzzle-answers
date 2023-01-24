@@ -46,8 +46,9 @@ Note: This video was recorded with an older version of the script, so the GUI sh
 This project is licenced under the [GNU GPL v3](https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE). Thus, you are not allowed to:
  - Reupload any part of the source code without crediting this repository.
  - Fork this repository, then change or remove the license.
+ - Fork this project without linking to your modified source code. 
 
-Forking or redistributing code from this repository is fine, as long as you abide by the terms of the GPL. However, if you don't, then I have every right to submit a DMCA takedown.
+Forking or redistributing code from this repository is fine, as long as you abide by the terms of the GPL. However, if you don't, then I have every right to submit a DMCA takedown. Also, please don't try to take credit for work that is not yours by changing or removing the credits. Editing a couple of lines to remove my name and reuploading it doesn't make you look cool.
 
 ## Creating the bookmarklet:
 A video tutorial can be found [here](https://www.youtube.com/watch?v=zxZzB2KXCkw).
@@ -75,6 +76,6 @@ javascript: fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest
 ## Credits:
 The code for the video skipper is based off of [this](https://github.com/ASmallYawn/EdpuzzleSkipper), with permission from the original author and some major refactoring.
 
-All other code has been written solely by me.
+All other code has been written solely by me, [ading2210](https://github.com/ading2210).
 
 This project is licensed under the GNU General Public License v3.0.
