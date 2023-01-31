@@ -67,11 +67,17 @@ javascript: fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest
  3. Set the name of the bookmark to whatever you want.
  4. Paste in the code into the box for the url and save the bookmark.
 
-## Using the bookmarklet: 
+## Using the Bookmarklet: 
  1. Navigate to any Edpuzzle assignment.
  2. Make sure the url follows this format: `https://edpuzzle.com/assignments/{id}/watch`
  3. Click on the bookmarklet to run the script.
- 4. If it doesn't work, make sure you allow popups from edpuzzle.com, then try again. 
+ 4. If it doesn't work, make sure you allow popups from edpuzzle.com, then try again.
+
+### Usage on Canvas:
+ 1. Navigate to the assignment on Canvas. The link should look similar to this: ```https://k12.instructure.com/courses/{id}/assignments/{id}```
+ 2. Click on the bookmarklet. The script should open the Edpuzzle assignment in a new tab.
+ 3. Re-run the bookmarklet to launch the full script.
+ 4. If this doesn't work, make sure you allow popups on both Edpuzzle and Canvas.
 
 ## Credits:
 The code for the video skipper is based off of [this](https://github.com/ASmallYawn/EdpuzzleSkipper), with permission from the original author and some major refactoring.
