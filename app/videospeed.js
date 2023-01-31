@@ -19,7 +19,7 @@ function video_speed() {
       custom_speed.step = 0.1;
       custom_speed_label.innerHTML = "Speed: "+speed.toFixed(1);
     }
-    else if (media_source == "youtube") {
+    else if (media_source == "youtube" || media_source == "vimeo") {
       custom_speed.min = 0.25;
       custom_speed.max = 2;
       custom_speed.step = 0.05;
@@ -66,6 +66,13 @@ function video_speed() {
       }
       player.setPlaybackRate(speed);
     }
+  }
+
+  else if (media_source == "vimeo") {
+    let iframe = opener.document.querySelector("iframe");
+    let player = new opener.Vimeo.Player(iframe); 
+    player.off("playbackratechange");
+    player.setPlaybackRate(speed);
   }
   
   else {

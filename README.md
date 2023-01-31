@@ -40,7 +40,6 @@ Note: This video was recorded with an older version of the script, so the GUI sh
 ## Limitations:
  - This isn't able to answer open-ended questions or audio responses. Though in the future, I might use something like ChatGPT to complete those automatically. 
  - This doesn't currently work for most Edpuzzles that are embedded in a third party site. However, the script does work for Edpuzzles embeded in Canvas.
- - Changing the video speed for videos that are not from Youtube or a generic video file is untested and probably does not work.
 
 ## Copyright Notice:
 This project is licenced under the [GNU GPL v3](https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE). Thus, you are not allowed to:
@@ -68,6 +67,7 @@ javascript: fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest
  4. Paste in the code into the box for the url and save the bookmark.
 
 ## Using the Bookmarklet: 
+### On Regular Edpuzzles:
  1. Navigate to any Edpuzzle assignment.
  2. Make sure the url follows this format: `https://edpuzzle.com/assignments/{id}/watch`
  3. Click on the bookmarklet to run the script.
