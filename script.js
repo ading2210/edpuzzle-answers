@@ -33,8 +33,11 @@ function init() {
   else if (window.canvasReadyState) {
     handleCanvasURL();
   }
+  else if (window.schoologyMoreLess) {
+    handleSchoologyURL();
+  }
   else {
-    alert("Please run this script on an Edpuzzle assignment. For reference, the URL should look like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch")
+    alert("Please run this script on an Edpuzzle assignment. For reference, the URL should look like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch");
   }
 }
 
@@ -49,9 +52,35 @@ function handleCanvasURL() {
       let data = JSON.parse(this.responseText);
       let url3 = data.url;
 
-      alert("Please re-run this script in the newly opened tab.");
+      alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Canvas and try again.`);
       open(url3);
     });
+  });
+}
+
+function handleSchoologyURL() {
+  let assignment_id = window.location.href.split("/")[4];
+  let url = `/external_tool/${assignment_id}/launch/iframe`;
+  http_get(url, function() {
+    alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Schoology and try again.`);
+
+    //strip js tags from response and add to dom
+    let html = this.responseText.replace(/<script[\s\S]+?<\/script>/, ""); 
+    let div = document.createElement("div");
+    div.innerHTML = html;
+    let form = div.querySelector("form");
+    
+    let input = document.createElement("input")
+    input.setAttribute("type", "hidden");
+    input.setAttribute("name", "ext_submit");
+    input.setAttribute("value", "Submit");
+    form.append(input);
+    document.body.append(div);
+
+    //submit form in new tab
+    form.setAttribute("target", "_blank");
+    form.submit();
+    div.remove();
   });
 }
 
@@ -93,7 +122,7 @@ function openPopup(assignment) {
   }
   
   var base_html = `
-   <!DOCTYPE html>
+  <!DOCTYPE html>
   <head>
     <style>
       * {font-family: Arial}

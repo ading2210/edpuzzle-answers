@@ -34,12 +34,12 @@ Note: This video was recorded with an older version of the script, so the GUI sh
  - No login or extension required
  - Uses about:blank so it doesn't go into your browser history
  - Works on private Edpuzzle videos
- - Supports Edpuzzles embedded in Canvas
+ - Supports Edpuzzles embedded in Canvas and Schoology
  - Licensed under the GNU GPL v3 license
 
 ## Limitations:
  - This isn't able to answer open-ended questions or audio responses. Though in the future, I might use something like ChatGPT to complete those automatically. 
- - This doesn't currently work for most Edpuzzles that are embedded in a third party site. However, the script does work for Edpuzzles embeded in Canvas.
+ - This doesn't currently work for most Edpuzzles that are embedded in a third party site. However, the script does work for Edpuzzles embeded in Canvas and Schoology.
 
 ## Copyright Notice:
 This project is licenced under the [GNU GPL v3](https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE). Thus, you are not allowed to:
