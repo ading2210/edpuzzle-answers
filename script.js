@@ -52,7 +52,7 @@ function handleCanvasURL() {
       let data = JSON.parse(this.responseText);
       let url3 = data.url;
 
-      alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Canvas and try again.`);
+      alert(`Please re-run this script in the newly opened tab. If nothing happens, then allow popups on Canvas and try again.`);
       open(url3);
     });
   });
@@ -62,7 +62,7 @@ function handleSchoologyURL() {
   let assignment_id = window.location.href.split("/")[4];
   let url = `/external_tool/${assignment_id}/launch/iframe`;
   http_get(url, function() {
-    alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Schoology and try again.`);
+    alert(`Please re-run this script in the newly opened tab. If nothing happens, then allow popups on Schoology and try again.`);
 
     //strip js tags from response and add to dom
     let html = this.responseText.replace(/<script[\s\S]+?<\/script>/, ""); 
@@ -194,7 +194,8 @@ function openPopup(assignment) {
   </div>
   <hr>
   <p style="font-size: 12px">Made by: <a target="_blank" href="https://github.com/ading2210">ading2210</a> on Github | Website: <a target="_blank" href="https://edpuzzle.hs.vc">edpuzzle.hs.vc</a> | Source code: <a target="_blank" href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a></p>
-  <p style="font-size: 12px">Licenced under the <a target="_blank" href="https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE">GNU GPL v3</a>. Do not reupload or redistribute without abiding by those terms.</p>`;
+  <p style="font-size: 12px">Licenced under the <a target="_blank" href="https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE">GNU GPL v3</a>. Do not reupload or redistribute without abiding by those terms.</p>
+  <p style="font-size: 12px">Available now from our <a target="_blank" href="https://edpuzzle.hs.vc/discord.html">Discord server</a>: <i> An open beta of a completely overhauled GUI, with proper mobile support, ChatGPT integration for open-ended questions, and more. </i></p>`;
   popup = window.open("about:blank", "", "width=600, height=400");
   popup.document.write(base_html);
 

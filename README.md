@@ -37,6 +37,8 @@ Note: This video was recorded with an older version of the script, so the GUI sh
  - Supports Edpuzzles embedded in Canvas and Schoology
  - Licensed under the GNU GPL v3 license
 
+Available now from our [Discord server](https://edpuzzle.hs.vc/discord.html): *An open beta of a completely overhauled GUI, with proper mobile support, ChatGPT integration for open-ended questions, and more.*
+
 ## Limitations:
  - This isn't able to answer open-ended questions or audio responses. Though in the future, I might use something like ChatGPT to complete those automatically. 
  - This doesn't currently work for most Edpuzzles that are embedded in a third party site. However, the script does work for Edpuzzles embeded in Canvas and Schoology.
