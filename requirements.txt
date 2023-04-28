@@ -1,0 +1,9 @@
+Flask
+Flask-Compress
+Flask-Limiter
+Flask-Cors
+lxml
+revChatGPT
+pymongo
+pytailwindcss
+alt-profanity-check

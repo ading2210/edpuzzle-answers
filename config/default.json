@@ -1,0 +1,20 @@
+{
+  "discord": "DISCORD_INVITE_ID_HERE",
+  "dev_mode": false,
+  "behind_proxy": true,
+  "gzip_responses": true,
+  "profanity_filter": true,
+  "server_port": 5000,
+  "chatgpt": {
+    "enabled": true,
+    "token": "ACCESS_TOKEN_HERE",
+    "conversation_name": "RESERVED_CONVO_NAME"
+  },
+  "rate_limits": {
+    "ChatGPT": "20/hour",
+    "InferKit": "20/hour",
+    "TextSynth": "100/hour",
+    "DeepAI": "100/hour",
+    "Hubble": "20/hour"
+  }
+}

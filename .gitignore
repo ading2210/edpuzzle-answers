@@ -1,4 +1,3 @@
-/.replit
-/.config/
-/replit.nix
+/**/__pycache__
 /*dev.js
+/config/config.json

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<!--  
+Copyright (C) 2023 ading2210
+See README.md for more information
+-->
+
+<html>
+  <head>
+    <title id="title">Loading resources...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body class="flex sm:w-screen sm:h-screen max-sm:flex-col text-slate-200 bg-slate-900">
+    <div id="header_div" class="flex flex-col sm:w-72 gap-2 p-3 bg-slate-800 sm:overflow-auto">
+      <div class="w-full">
+        <img id="thumbnail_img" src="https://via.placeholder.com/320x180?text=Loading..." class="rounded-lg mt-0.5">
+      </div>
+      <div id="title_div" class="space-y-1">
+        <p class="text-lg font-bold"><span id="assignment_title">Loading assignment data...</span></h2>
+        <p class="text-xs">Assigned by <span id="assignment_author" class="">[unknown]</span></p>
+        <p class="text-xs"><span id="assignment_end">Due [unknown]</span></p>
+        <p class="text-xs">Correct choices are <u>underlined</u>.</p>
+        <input id="skipper_button" class="ui_button" type="button" value="Skip Video" onclick="video_skipper.skip_video();" disabled/>
+        <input id="answers_button" class="ui_button" type="button" value="Answer Questions" onclick="auto_answers.answer_questions();" disabled/>
+        <div id="speed_container" class="flex gap-1 items-center">
+          <label class="text-xs" for="speed_dropdown">Video speed:</label>
+          <select id="speed_dropdown" class="ui_button" name="speed_dropdown" onchange="video_options.video_speed()" disabled>
+            <option value="0.25">0.25</option>
+            <option value="0.5">0.5</option>
+            <option value="0.75">0.75</option>
+            <option value="1" selected>Normal</option>
+            <option value="1.25">1.25</option>
+            <option value="1.5">1.5</option>
+            <option value="1.75">1.75</option>
+            <option value="2">2</option>
+            <option value="-1">Custom</option>
+          </select>
+        </div>
+        <div id="custom_speed_container" class="gap-1 items-center hidden">
+          <label id="custom_speed_label" class="text-xs" for="custom_speed">Custom speed: <span id="custom_speed_value" class="font-mono"></span></label>
+          <input id="custom_speed" class="accent-slate-500" type="range" name="custom_speed" value="1" min="0.1" max="16" step="0.1" oninput="video_options.video_speed()">
+        </div>
+        <div id="options_container" class="flex gap-1 items-center">
+          <label for="unfocus_checkbox" class="text-xs">Don't pause on unfocus: </label>
+          <input id="unfocus_checkbox" class="accent-slate-500" type="checkbox" name="unfocus_checkbox" onchange="video_options.toggle_unfocus();" disabled>
+        </div>
+      </div>
+    </div>
+
+    <div id="content_div" class="flex flex-col flex-1 pt-3 gap-3 sm:overflow-auto"> 
+      <p class="p-2 text-xs" id="status_text">
+        Loading assignment data...
+      </p>
+      
+      <!-- templates for questions -->
+      <table id="question_template" class="hidden mx-3">
+        <tr class="rounded-lg border-separate">
+          <td class="w-16 text-[13px] p-2.5 pr-0 align-top rounded-l-lg bg-slate-800">
+            <span key="timestamp"></span>
+          </td>
+          <td class="font-bold text-[13px] p-2 rounded-r-lg bg-slate-800">
+            <span key="title"></span>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td key="question_content" class="text-xs p-2"></td>
+        </tr>
+      </table>
+      <ul id="multiple_choice_template" class="hidden list-disc">
+        <li key="question_choice" class="ml-6"></li>
+      </ul>
+      <div id="open_ended_template" class="hidden flex-col items-end gap-1">
+        <textarea key="question_textarea" class="textarea" rows=3 placeholder='Use the "Generate Response" button to generate an answer for this open-ended question.'></textarea>
+        <button key="generator_button" class="p-1.5 rounded-md bg-slate-900 border border-slate-700">Generate Response</button>
+      </div>
+      <div id="open_ended_menu_template" class="hidden flex-col w-full px-3 gap-2 text-xs">
+        <div class="w-full text-[13px] p-2.5 rounded-lg bg-slate-800 font-bold">
+          <p key="title"></p>
+        </div>
+        <div class="flex flex-col px-2 gap-1">
+          <p>Prompt:</p>
+          <textarea key="prompt_textarea" class="textarea" rows=4 placeholder="Loading prompt..." disabled></textarea>
+          <p class="mt-1">Generated:</p>
+          <textarea key="generated_textarea" class="textarea" rows=4 placeholder="Generated text will appear here."></textarea>
+          
+          <div class="flex items-center gap-2">
+            <p>Service:</p>
+            <select key="service_dropdown" class="ui_button" disabled>
+            </select>
+            <p key="model_label">Model:</p>
+            <select key="model_dropdown" class="ui_button hidden">
+              <option value="default">Default</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button key="cancel_button" class="ui_button px-2 py-1">Cancel</button>
+            <div class="flex-1"></div>
+            <button key="generate_button" class="ui_button px-2 py-1">Generate</button>
+            <button key="save_button" class="ui_button px-2 py-1">Save</button>
+          </div>
+        </div>
+      </div>
+      <!-- end templates -->
+
+      <div id="questions_div" class="flex flex-col gap-1">
+      </div>
+      <div id="open_ended_div" class="hidden w-full">
+      </div>
+      
+      <!-- spacer -->
+      <div class="flex flex-1"></div>
+      
+      <!-- footer -->
+      <div id="footer" class="bg-slate-800 rounded-lg m-3 mt-0 p-3 text-[11px] flex">
+        <table id="footer_container">
+          <tr>
+            <td class="align-top">
+              <table class="footer_table">
+                <tr>
+                  <td>
+                    <svg class="footer_icon" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 22.027v-2.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7a5.44 5.44 0 00-1.5-3.75 5.07 5.07 0 00-.09-3.77s-1.18-.35-3.91 1.48a13.38 13.38 0 00-7 0c-2.73-1.83-3.91-1.48-3.91-1.48A5.07 5.07 0 005 5.797a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7a3.37 3.37 0 00-.94 2.58v2.87M9 20.027c-3 .973-5.5 0-7-3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                  </td>
+                  <td class="text-xs">Source Code:</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td><a class="link" target="_blank" href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a></td>
+                </tr>
+              </table>
+            </td>
+            <td class="align-top">
+              <table class="footer_table">
+                <tr>
+                  <td>
+                    <svg class="footer_icon" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 12c0 5.523 4.477 10 10 10s10-4.477 10-10S17.523 2 12 2 2 6.477 2 12z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M13 2.05S16 6 16 12c0 6-3 9.95-3 9.95M11 21.95S8 18 8 12c0-6 3-9.95 3-9.95M2.63 15.5h18.74M2.63 8.5h18.74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                  </td>
+                  <td class="text-xs">Website:</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td><a class="link" target="_blank" href="https://edpuzzle.hs.vc">edpuzzle.hs.vc</a></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td class="align-top">
+              <table class="footer_table">
+                <tr>
+                  <td>
+                    <svg class="footer_icon" viewBox="0 0 24 24" stroke-width="1.5" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 16c5 2.5 8 2.5 13 0M15.5 17.5l1 2s4.171-1.328 5.5-3.5c0-1 .53-8.147-3-10.5-1.5-1-4-1.5-4-1.5l-1 2h-2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8.528 17.5l-1 2s-4.171-1.328-5.5-3.5c0-1-.53-8.147 3-10.5 1.5-1 4-1.5 4-1.5l1 2h2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8.5 14c-.828 0-1.5-.895-1.5-2s.672-2 1.5-2 1.5.895 1.5 2-.672 2-1.5 2zM15.5 14c-.828 0-1.5-.895-1.5-2s.672-2 1.5-2 1.5.895 1.5 2-.672 2-1.5 2z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                  </td>
+                  <td class="text-xs">Discord:</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td><a class="link" target="_blank" href="https://edpuzzle.hs.vc/discord">edpuzzle.hs.vc/discord</a></td>
+                </tr>
+              </table>
+            </td>
+            <td class="align-top">
+              <table class="footer_table">
+                <tr>
+                  <td>
+                    <svg class="footer_icon" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 7v6M12 17.01l.01-.011M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                  </td>
+                  <td class="text-xs">Report Bugs:</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td><a class="link" target="_blank" href="https://github.com/ading2210/edpuzzle-answers/issues">Github Issues</a></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td class="align-top">
+              <table class="footer_table">
+                <tr>
+                  <td>
+                    <svg class="footer_icon" stroke-width="1.5" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 18h7M7 14h1M7 10h3M7 2h9.5L21 6.5V19" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3 20.5v-14A1.5 1.5 0 014.5 5h9.752a.6.6 0 01.424.176l3.148 3.148A.6.6 0 0118 8.75V20.5a1.5 1.5 0 01-1.5 1.5h-12A1.5 1.5 0 013 20.5z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M14 5v3.4a.6.6 0 00.6.6H18" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                  </td>
+                  <td class="text-xs">License:</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td><a class="link" target="_blank" href="https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE">GNU AGPL v3</a></td>
+                </tr>
+              </table>
+            </td>
+            <td class="align-top">
+              <table class="footer_table">
+                <tr>
+                  <td>
+                    <svg class="footer_icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM13.5 9.17a3 3 0 100 5.659" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                  </td>
+                  <td class="text-xs">Copyright:</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td><a class="link" href="javascript: open_copyright_notice()">View Notice</a></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td class="align-top">
+              <table class="footer_table">
+                <tr>
+                  <td>
+                    <svg class="footer_icon" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 16h5M6 8l4 4-4 4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2 18V6a2 2 0 012-2h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                  </td>
+                  <td class="text-xs">Javascript Console:</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td><a class="link" href="javascript:open_console()">Open Console</a></td>
+                </tr>
+              </table>
+            </td>
+            <td class="align-top">
+              <table class="footer_table">
+                <tr>
+                  <td>
+                    <svg class="footer_icon" viewBox="0 0 24 24" stroke-width="1.5" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 12V5.749a.6.6 0 00-.176-.425l-3.148-3.148A.6.6 0 0016.252 2H4.6a.6.6 0 00-.6.6v18.8a.6.6 0 00.6.6H13M8 10h8M8 6h4m-4 8h3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M16 2v3.4a.6.6 0 00.6.6H20M19.992 15.125l2.556.649c.266.068.453.31.445.584C22.821 22.116 19.5 23 19.5 23s-3.321-.884-3.493-6.642a.588.588 0 01.445-.584l2.556-.649c.323-.082.661-.082.984 0z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                  </td>
+                  <td class="text-xs">Legal Documents:</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td><a class="link" href="javascript:alert('Not written yet.')">Privacy + Terms</a></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

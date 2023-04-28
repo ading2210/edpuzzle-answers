@@ -1,0 +1,55 @@
+/*
+//Copyright (C) 2023 ading2210
+//see README.md for more information
+*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .ui_button {
+    @apply text-[13px] py-0.5 px-1 bg-slate-600 rounded-md my-1 disabled:bg-slate-700;
+  }
+  .link {
+    @apply text-indigo-400;
+  }
+  .textarea {
+    @apply w-full rounded-lg p-2 bg-slate-900 border border-slate-700 overflow-y-hidden resize-none;
+  }
+  .footer_table {
+    @apply border-separate border-spacing-x-1;
+  }
+  .footer_icon {
+    @apply stroke-slate-200 w-6 h-6;
+  }
+}
+
+@media (max-width: 650px) {
+  #footer_container {
+    display: block;
+  }
+  
+  #footer_container > tbody > tr > td {
+    display: inline-block;
+    width: 210px;
+  }
+}
+
+
+::-webkit-scrollbar {
+  background: #334155;
+  width: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #414f63;
+}
+
+input[type="checkbox"]:not(:checked) {
+  /* #64748b, generated with https://angel-rs.github.io/css-color-filter-generator */
+  filter: brightness(0) saturate(100%) invert(64%) sepia(11%) saturate(608%) hue-rotate(174deg) brightness(89%) contrast(87%);
+}

@@ -1,0 +1,6 @@
+todo:
+ - add more informative error messages
+ - add privacy policy and terms of service
+ - host multiple mirrors and automatically detect if they're blocked
+ - web version using tokens for login
+ - improve the homepage

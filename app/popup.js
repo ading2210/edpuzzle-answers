@@ -1,29 +1,6 @@
-var video_script = null;
+//Copyright (C) 2023 ading2210
+//see README.md for more information
 
-if (typeof base_url == "undefined") {
-  var base_url = "https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main";
-}
+alert(`Error: You are running an older version of the script.
 
-function http_exec(url) {
-  http_get(url, function(){
-    eval(this.responseText);
-  });
-}
-
-function skip_video() {
-  var button = document.getElementById("skipper");
-  button.disabled = true; 
-  button.value = "Downloading script...";
-
-  http_exec(base_url+"/app/skipper.js");
-}
-
-function answer_questions() {
-  var skipper = document.getElementById("skipper");
-  var button = document.getElementById("answers_button");
-  skipper.disabled = true;
-  button.disabled = true; 
-  button.value = "Downloading script...";
-
-  http_exec(base_url+"/app/autoanswers.js");
-}
+Try clearing your cache. If that does not work, go to https://edpuzzle.hs.vc and re-create the bookmarklet.`);

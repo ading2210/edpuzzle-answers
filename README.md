@@ -14,8 +14,9 @@ Discord server: [edpuzzle.hs.vc/discord.html](https://edpuzzle.hs.vc/discord.htm
   - [Features](#features)
   - [Limitations](#limitations)
   - [Copyright Notice](#copyright-notice)
-  - [Creating the bookmarklet](#creating-the-bookmarklet)
-  - [Using the bookmarklet](#using-the-bookmarklet)
+  - [Creating the Bookmarklet](#creating-the-bookmarklet)
+  - [Using the Bookmarklet](#using-the-bookmarklet)
+  - [Running the Server](#running-the-server)
   - [Credits](#credits)
 
 ## Demo: 
@@ -35,28 +36,46 @@ Note: This video was recorded with an older version of the script, so the GUI sh
  - Uses about:blank so it doesn't go into your browser history
  - Works on private Edpuzzle videos
  - Supports Edpuzzles embedded in Canvas and Schoology
- - Licensed under the GNU GPL v3 license
-
-Available now from our [Discord server](https://edpuzzle.hs.vc/discord.html): *An open beta of a completely overhauled GUI, with proper mobile support, ChatGPT integration for open-ended questions, and more.*
+ - Licensed under the GNU AGPL v3 license
 
 ## Limitations:
  - This isn't able to answer open-ended questions or audio responses. Though in the future, I might use something like ChatGPT to complete those automatically. 
  - This doesn't currently work for most Edpuzzles that are embedded in a third party site. However, the script does work for Edpuzzles embeded in Canvas and Schoology.
 
 ## Copyright Notice:
-This project is licenced under the [GNU GPL v3](https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE). Thus, you are not allowed to:
+```
+ading2210/edpuzzle-answers: a Javascript bookmarklet that provides many useful utilities for Edpuzzle
+Copyright (C) 2023 ading2210
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+```
+
+This project is licenced under the [GNU AGPL v3](https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE). Thus, you are not allowed to:
  - Reupload any part of the source code without crediting this repository.
  - Fork this repository, then change or remove the license.
  - Fork this project without linking to your modified source code. 
 
-Forking or redistributing code from this repository is fine, as long as you abide by the terms of the GPL. However, if you don't, then I have every right to submit a DMCA takedown. Also, please don't try to take credit for work that is not yours by changing or removing the credits. Editing a couple of lines to remove my name and reuploading it doesn't make you look cool.
+Forking or redistributing code from this repository is fine, as long as you abide by the terms of the GPL. However, if you don't, then I have every right to submit a DMCA takedown. Also, please don't try to take credit for work that is not yours by changing or removing the credits. Editing a couple of lines to remove my name and reuploading it doesn't make you look cool. Finally, if you decide to host a fork of this, you must also make the source code publicly available.
 
 ## Creating the bookmarklet:
-A video tutorial can be found [here](https://www.youtube.com/watch?v=zxZzB2KXCkw).
+A video tutorial for Chromium/Firefox can be found [here](https://www.youtube.com/watch?v=zxZzB2KXCkw). Safari is untested but it should still work. 
+
+Mobile browsers should work but the process is a bit different. A tutorial can be found [here](https://cdn.discordapp.com/attachments/1075436295461027861/1076637252182081587/Edpuzzle.mp4) (video made by [Tuocan](https://github.com/tuocan)).
 
 ### Method 1:
  1. Navigate to [https://edpuzzle.hs.vc](https://edpuzzle.hs.vc).
- 2. If you're on any Chromium-based browser, drag the button at the bottom of the page into your bookmarks bar.
+ 2. If you're on any Chromium-based browser (Chrome, Edge, Opera, Brave, etc), drag the button at the bottom of the page into your bookmarks bar.
  3. If you're on Firefox, right click on the button and then click "bookmark link."
 
 ### Method 2:
@@ -75,15 +94,54 @@ javascript: fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest
  3. Click on the bookmarklet to run the script.
  4. If it doesn't work, make sure you allow popups from edpuzzle.com, then try again.
 
-### Usage on Canvas:
- 1. Navigate to the assignment on Canvas. The link should look similar to this: ```https://k12.instructure.com/courses/{id}/assignments/{id}```
+### Usage on Canvas/Schoology:
+ 1. Navigate to the assignment on Canvas/Schoology. For Canvas, the link should look similar to this: ```https://k12.instructure.com/courses/{id}/assignments/{id}```
  2. Click on the bookmarklet. The script should open the Edpuzzle assignment in a new tab.
  3. Re-run the bookmarklet to launch the full script.
  4. If this doesn't work, make sure you allow popups on both Edpuzzle and Canvas.
+
+## Running the Server:
+It is possible to simply host a static copy of this repository, however open-ended question answering will not be available. 
+
+If you want to run the backend for yourself, follow these setps:
+1. Clone this repository and cd into it.
+2. Install Python and MongoDB for your chosen Linux distro. Hosting on Windows should work but it is not supported.
+3. Install the needed dependencies by doing `pip3 install --upgrade -r requirements.txt`. If the `revChatGPT` package does not install, try upgrading your pip version by running `pip3 install --upgrade pip`. 
+4. Copy `config/default.json` to `config/config.json`, and fill out the relavent options.
+5. Run the server using `python3 main.py`.
+
+Make sure your web server has a domain and HTTPS support. The easiest way to do this is to use Nginx as a reverse proxy and Certbot for HTTPS.
+
+### Server Configuration:
+ - `discord` - The Discord invite ID vistors will be redirected to when navigating to `/discord`. 
+ - `dev_mode` - Enables stack traces in error respones. This will expose the path of wherever the server's files are located.
+ - `behind_proxy` - Tell Flask it is behind a reverse proxy such as Nginx. This allows IP rate limits to be enforced. 
+ - `gzip_responses` - Compress respones with gzip compression. 
+ - `chatgpt.enabled` - Enables/disables the ChatGPT endpoint.
+ - `chatgpt.key` - Your ChatGPT access token. You can find it from the `accessToken` field [on this URL](https://chat.openai.com/api/auth/session).
+ - `chatgpt.conversation_name` - The name of the ChatGPT conversation that the program creates. These conversations will be automatically deleted after their creation.
+ - `rate_limits` - Sets the rate limit for each generator service. The format for each value is listed on the [Flask-Limiter documentation](https://flask-limiter.readthedocs.io/en/stable/configuration.html#rate-limit-string-notation).
 
 ## Credits:
 The code for the video skipper is based off of [this](https://github.com/ASmallYawn/EdpuzzleSkipper), with permission from the original author and some major refactoring.
 
 All other code has been written solely by me, [ading2210](https://github.com/ading2210).
 
-This project is licensed under the GNU General Public License v3.0.
+This project contains icons from the the [Iconoir](https://iconoir.com/) icon library. 
+
+This project is licensed under the GNU Affero General Public License v3.0.
+
+![gnu agpl v3 logo](https://github.com/ading2210/edpuzzle-answers/raw/main/static/images/agpl_logo.png)
+
+### Server-side Libraries:
+| **Library**                                                                      | **License**                                                                          |
+|----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| [Flask](https://flask.palletsprojects.com/en/2.2.x/)                             | [BSD-3-Clause](https://flask.palletsprojects.com/en/2.2.x/license/)                  |
+| [Flask-Compress](https://github.com/colour-science/flask-compress)               | [MIT](https://github.com/colour-science/flask-compress/blob/master/LICENSE.txt)      |
+| [Flask-Limiter](https://github.com/alisaifee/flask-limiter)                      | [MIT](https://github.com/alisaifee/flask-limiter/blob/master/LICENSE.txt)            |
+| [Flask-CORS](https://github.com/corydolphin/flask-cors/)                         | [MIT](https://github.com/corydolphin/flask-cors/blob/master/LICENSE)                 |
+| [lxml](https://lxml.de/)                                                         | [Multiple Licenses](https://github.com/lxml/lxml/blob/master/LICENSES.txt)           |
+| [revChatGPT](https://github.com/acheong08/ChatGPT)                               | [GNU GPL v2](https://github.com/acheong08/ChatGPT/blob/main/LICENSE)                 |
+| [PyMongo](https://github.com/mongodb/mongo-python-driver)                        | [Apache-2.0](https://github.com/mongodb/mongo-python-driver/blob/master/LICENSE)     |
+| [pytailwindcss](https://github.com/timonweb/pytailwindcss)                       | [MIT](https://github.com/timonweb/pytailwindcss/blob/main/LICENSE)                   |
+| [alt-profanity-check](https://github.com/dimitrismistriotis/alt-profanity-check) | [MIT](https://github.com/dimitrismistriotis/alt-profanity-check/blob/master/LICENSE) |

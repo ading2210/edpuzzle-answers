@@ -1,0 +1,156 @@
+//Copyright (C) 2023 ading2210
+//see README.md for more information
+
+//this script launches the popup and contains handlers for canvas/schoology
+
+const gpl_text = `ading2210/edpuzzle-answers: a Javascript bookmarklet that provides many useful utilities for Edpuzzle
+Copyright (C) 2023 ading2210
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program.If not, see <https://www.gnu.org/licenses/>.`;
+
+function http_get(url, callback, headers=[], method="GET", content=null) {
+  var request = new XMLHttpRequest();
+  request.addEventListener("load", callback);
+  request.open(method, url, true);
+
+  if (window.__EDPUZZLE_DATA__ && window.__EDPUZZLE_DATA__.token && (new URL(url).hostname) == "edpuzzle.com") {
+    headers.push(["authorization", window.__EDPUZZLE_DATA__.token]);
+  }
+  for (const header of headers) {
+    request.setRequestHeader(header[0], header[1]);
+  }
+  
+  request.send(content);
+}
+
+function format_text(text, replacements) {
+  let formatted = text;
+  for (let key of Object.keys(replacements)) {
+    while (formatted.includes("{{"+key+"}}")) {
+      formatted = formatted.replace("{{"+key+"}}", replacements[key]);
+    }
+  }
+  return formatted;
+}
+
+function init() {
+  console.info(gpl_text);
+  if (window.location.hostname == "edpuzzle.hs.vc") {
+    alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
+  }
+  else if ((/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.location.href)) {
+    http_get(base_url+"/app/html/popup.html", openPopup);
+  }
+  else if (window.canvasReadyState) {
+    handleCanvasURL();
+  }
+  else if (window.schoologyMoreLess) {
+    handleSchoologyURL();
+  }
+  else {
+    alert("Please run this script on an Edpuzzle assignment. For reference, the URL should look like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch");
+  }
+}
+
+function openPopup() {
+  const popup = window.open("about:blank", "", "width=700, height=420");
+  //const popup = window.open("about:blank");
+  if (popup == null) {
+    alert("Error: Could not open the popup. Please enable popups for edpuzzle.com and try again.");
+    return;
+  }
+  writePopup(popup, this.responseText);
+  
+  function popup_unload() {    
+    http_get(base_url+"/app/html/popup.html", function(){
+      writePopup(popup, this.responseText);
+      popup.addEventListener("beforeunload", popup_unload);
+    });
+  }
+
+  popup.addEventListener("beforeunload", popup_unload);
+}
+
+function writePopup(popup, html) {
+  popup.document.base_url = base_url;
+  popup.document.edpuzzle_data = window.__EDPUZZLE_DATA__;
+  popup.document.gpl_text = gpl_text;
+  popup.document.write(html);
+
+  let create_element = function(tag, innerHTML) {
+    let element = popup.document.createElement(tag);
+    element.innerHTML = innerHTML;
+    popup.document.head.append(element);
+    return element;
+  }
+  
+  create_element("script", `const from_id = (id) => document.getElementById(id)`);
+
+  http_get("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap", function(){
+    create_element("style", this.responseText);
+    setTimeout(function(){
+      if (popup.textarea_update_height) {
+        for (let textarea of popup.document.getElementsByTagName("textarea")) {
+          popup.textarea_update_height(textarea);
+        }
+      }  
+    }, 200)
+  });
+
+  http_get(base_url+"/app/css/dist.css", function(){
+    create_element("style", this.responseText);
+  })
+
+  http_get(base_url+"/app/js/popup.js", function() {
+    create_element("script", this.responseText);
+  })
+}
+
+function handleCanvasURL() {
+  let location_split = window.location.href.split("/");
+  let url = `/api/v1/courses/${location_split[4]}/assignments/${location_split[6]}`;
+  http_get(url, function(){
+    let data = JSON.parse(this.responseText);
+    let url2 = data.url;
+
+    http_get(url2, function() {
+      let data = JSON.parse(this.responseText);
+      let url3 = data.url;
+
+      alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Canvas and try again.`);
+      open(url3);
+    });
+  });
+}
+
+function handleSchoologyURL() {
+  let assignment_id = window.location.href.split("/")[4];
+  let url = `/external_tool/${assignment_id}/launch/iframe`;
+  http_get(url, function() {
+    alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Schoology and try again.`);
+
+    //strip js tags from response and add to dom
+    let html = this.responseText.replace(/<script[\s\S]+?<\/script>/, ""); 
+    let div = document.createElement("div");
+    div.innerHTML = html;
+    let form = div.querySelector("form");
+    
+    let input = document.createElement("input")
+    input.setAttribute("type", "hidden");
+    input.setAttribute("name", "ext_submit");
+    input.setAttribute("value", "Submit");
+    form.append(input);
+    document.body.append(div);
+
+    //submit form in new tab
+    form.setAttribute("target", "_blank");
+    form.submit();
+    div.remove();
+  });
+}
+
+init();
