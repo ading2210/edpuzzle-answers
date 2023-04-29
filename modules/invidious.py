@@ -15,22 +15,11 @@ from modules import exceptions
 cache = {"updated": 0, "instances_sorted": []}
 
 def test_instance_thread(instance, finished, counter):
-  ignored_exceptions = (
-    OSError,
-    requests.exceptions.SSLError,
-    requests.exceptions.ConnectTimeout,
-    requests.exceptions.ProxyError,
-    urllib3.exceptions.NewConnectionError,
-    exceptions.BadGatewayError
-  )
   try:
     captions = get_captions_attempt(instance["uri"], "dQw4w9WgXcQ", language="en", timeout=4)
     if len(captions) == 0:
       raise exceptions.BadGatewayError()
-    
-  except requests.exceptions.ReadTimeout:
-    pass
-  except ignored_exceptions as e:
+  except:
     return
   finished.append(instance)
 

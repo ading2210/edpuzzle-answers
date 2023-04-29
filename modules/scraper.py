@@ -1,7 +1,7 @@
 #Copyright (C) 2023 ading2210
 #see README.md for more information
 
-import requests, re, random, time, string, hashlib, json, queue, threading, inspect, types
+import requests, re, random, time, string, hashlib, json, queue, threading, inspect, types, poe
 from revChatGPT import V1 as chatgpt_api
 from modules import exceptions, utils
 
@@ -11,7 +11,7 @@ proxy_cache = {
 }
 
 #note that the default service is always the first one
-services = ["ChatGPT", "Hubble", "InferKit", "TextSynth", "DeepAI"]
+services = ["ChatGPT", "DeepAI", "Hubble", "InferKit", "TextSynth"]
 disabled_services = []
 
 def inspect_func(func):
@@ -312,9 +312,8 @@ class TextSynth:
       yield text
 
 class DeepAI:
-  api_url = "https://api.deepai.org/api/text-generator"
-  key_url = "https://deepai.org/machine-learning-model/text-generator"
-  streaming_supported = False
+  api_url = "https://api.deepai.org/chat_response"
+  streaming_supported = True
   proxy_requests = True
   max_length = 3000
   
@@ -331,20 +330,41 @@ class DeepAI:
     part2 = self.md5(self.user_agent+self.md5(self.user_agent+self.md5(self.user_agent+part1)))
     return f"tryit-{part1}-{part2}"
 
-  def generate_text(self, prompt:str):
+  def generate_text(self, prompt:str, stream:bool=True):
     headers = {
       "api-key": self.api_key,
       "user-agent": self.user_agent
     }
-    payload = {
-      "text": prompt,
+    chat_history = [
+      {
+        "role": "user", 
+        "content": prompt
+      }
+    ]
+    files = {
+      "chat_style": (None, "chat"),
+      "chatHistory": (None, json.dumps(chat_history))
     }
+    payload = {
+      "chat_style": "chat",
+      "chatHistory": [
+        {
+          "role": "user", 
+          "content": prompt
+        }
+      ]
+    }
+
     proxies = construct_proxy(self.proxy)
-    r = requests.post(self.api_url, headers=headers, data=payload, proxies=proxies)
+    r = requests.post(self.api_url, headers=headers, files=files, proxies=proxies, stream=stream)
     r.raise_for_status()
-      
-    result = r.json()["output"].replace(prompt, "", 1).strip()
-    yield result
+    
+    if stream:
+      for chunk in r.iter_content(chunk_size=None):
+        r.raise_for_status()
+        yield chunk.decode()
+    else:
+      yield r.text
 
 services_full = resolve_services();
 
