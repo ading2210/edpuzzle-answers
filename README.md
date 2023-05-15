@@ -117,9 +117,11 @@ Make sure your web server has a domain and HTTPS support. The easiest way to do 
  - `dev_mode` - Enables stack traces in error respones. This will expose the path of wherever the server's files are located.
  - `behind_proxy` - Tell Flask it is behind a reverse proxy such as Nginx. This allows IP rate limits to be enforced. 
  - `gzip_responses` - Compress respones with gzip compression. 
- - `chatgpt.enabled` - Enables/disables the ChatGPT endpoint.
- - `chatgpt.key` - Your ChatGPT access token. You can find it from the `accessToken` field [on this URL](https://chat.openai.com/api/auth/session).
+ - `chatgpt.enabled` - Enables/disables the ChatGPT endpoint. It is recommended to keep this disabled since the [revChatGPT](https://github.com/acheong08/ChatGPT) library is now unmaintained.
+ - `chatgpt.login` - Your ChatGPT login. Refer to the [revChatGPT documentation](https://github.com/acheong08/ChatGPT#configuration) for how to format this.
  - `chatgpt.conversation_name` - The name of the ChatGPT conversation that the program creates. These conversations will be automatically deleted after their creation.
+ - `poe.enabled` - Enables/disables the Poe endpoint. 
+ - `poe.token` - Your Poe token. Refer to the [poe-api documentation](https://github.com/ading2210/poe-api) for how to find this.
  - `rate_limits` - Sets the rate limit for each generator service. The format for each value is listed on the [Flask-Limiter documentation](https://flask-limiter.readthedocs.io/en/stable/configuration.html#rate-limit-string-notation).
 
 ## Credits:
@@ -145,3 +147,4 @@ This project is licensed under the GNU Affero General Public License v3.0.
 | [PyMongo](https://github.com/mongodb/mongo-python-driver)                        | [Apache-2.0](https://github.com/mongodb/mongo-python-driver/blob/master/LICENSE)     |
 | [pytailwindcss](https://github.com/timonweb/pytailwindcss)                       | [MIT](https://github.com/timonweb/pytailwindcss/blob/main/LICENSE)                   |
 | [alt-profanity-check](https://github.com/dimitrismistriotis/alt-profanity-check) | [MIT](https://github.com/dimitrismistriotis/alt-profanity-check/blob/master/LICENSE) |
+| [poe-api](https://github.com/ading2210/poe-api)                                  | [GNU GPL v3](https://github.com/ading2210/poe-api/blob/main/README.md)               |

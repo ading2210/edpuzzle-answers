@@ -9,9 +9,10 @@ proxy_cache = {
   "updated": 0,
   "proxies": []
 }
+config = {}
 
 #note that the default service is always the first one
-services = ["ChatGPT", "DeepAI", "Hubble", "InferKit", "TextSynth"]
+services = ["ChatGPT", "Poe", "DeepAI", "Hubble", "InferKit", "TextSynth"]
 disabled_services = []
 
 def inspect_func(func):
@@ -126,10 +127,7 @@ def get_generator(service_name, *args, **kwargs):
       cls_args.append(select_proxy())
     
     yield {"status": "init"}
-    if hasattr(service_cls, "create_from_config"):
-      service = getattr(service_cls, "create_from_config")()
-    else:
-      service = service_cls(*cls_args)
+    service = service_cls(*cls_args)
 
     yield {"status": "waiting"}
     result = service.generate_text(*args, **kwargs)
@@ -148,15 +146,39 @@ def get_generator(service_name, *args, **kwargs):
       print("Connection closed!")
       service.clean_up()
 
+class Poe:
+  streaming_supported = True
+  proxy_requests = False
+  max_length = 3000
+  client = None
+
+  def __init__(self):
+    self.api_key = config["poe"]["token"]
+
+    if not self.client: 
+      self.client = poe.Client(self.api_key)
+      self.__class__.client = self.client
+
+  def generate_text(self, prompt:str, stream:bool=False, model="capybara"):
+    for chunk in self.client.send_message(model, prompt, send_chat_break=True):
+      if stream:
+        yield chunk["text_new"]
+    
+    if not stream:
+      yield chunk["text"]
+    
+    self.client.purge_conversation(model)
+
+
 class ChatGPT:
   streaming_supported = True
   proxy_requests = False
   max_length = 3000
 
-  def __init__(self, api_key, conversation_name):
-    self.api_key = api_key
-    self.chatbot = chatgpt_api.Chatbot({"access_token": api_key})
-    self.conversation_name = conversation_name
+  def __init__(self):
+    self.api_key = config["chatgpt"]["token"]
+    self.chatbot = chatgpt_api.Chatbot({"access_token": self.api_key})
+    self.conversation_name = config["chatgpt"]["conversation_name"]
 
   def generate_text(self, prompt:str, stream:bool=False):
     if stream:
@@ -176,16 +198,9 @@ class ChatGPT:
     
     self.chatbot.change_title(response["conversation_id"], self.conversation_name)
 
-  def clean_up(self):
     for conversation in self.chatbot.get_conversations():
       if conversation["title"] == self.conversation_name:
         self.chatbot.delete_conversation(conversation["id"])
-
-  @staticmethod
-  def create_from_config(filename="config/config.json"):
-    with open(filename) as f:
-      config = json.loads(f.read())
-    return ChatGPT(config["chatgpt"]["token"], config["chatgpt"]["conversation_name"])
 
 class Hubble:
   api_url = "https://www.hubble.ai/api/creator/executeSchema"

@@ -30,6 +30,15 @@ var answerer_loaded = false;
 var console_html = null;
 var console_popup = null;
 
+function fetch_wrapper(url, options={}) {
+  if (edpuzzle_data && edpuzzle_data.token && (new URL(url).hostname) == "edpuzzle.com") {
+    if (!options.headers) {options.headers = {}}
+    options.headers["authorization"] = edpuzzle_data.token;
+  }
+
+  return fetch_(url, options);
+}
+
 function http_get(url, callback, headers=[], method="GET", content=null) {
   let real_callback = function(){
     callback(this);
@@ -126,31 +135,39 @@ function load_module(url) {
   });
 }
 
-function get_csrf(callback) {
-  let csrfURL = "https://edpuzzle.com/api/v3/csrf";
-  http_get(csrfURL, function(r){
-    let data = JSON.parse(r.responseText);
-    callback(data.CSRFToken);
-  });
+function get_assignment_id() {
+  if (assignment) {
+    return assignment.teacherAssignments[0]._id;
+  }
+  else {
+    return window.location.href.split("/")[4];
+  }
 }
 
-function get_assignment() {
-  var assignment_id = window.location.href.split("/")[4];
+async function get_csrf() {
+  let csrf_url = "https://edpuzzle.com/api/v3/csrf";
+  let request = await fetch(csrf_url);
+  let data = await request.json();
+  return data.CSRFToken;
+}
+
+async function get_attempt() {
+  let assignment_id = get_assignment_id();
+  let attempt_url = `https://edpuzzle.com/api/v3/assignments/${assignment_id}/attempt`;
+  let request = await fetch(attempt_url);
+  let data = await request.json();
+  return data;
+}
+
+async function get_assignment() {
+  let assignment_id = window.location.href.split("/")[4];
   if (typeof assignment_id == "undefined") {
     alert("Error: Could not infer the assignment ID. Are you on the correct URL?");
     return;
   }
-  var url1 = "https://edpuzzle.com/api/v3/assignments/"+assignment_id;
-
-  http_get(url1, function(r){
-    assignment = JSON.parse(r.responseText);
-    if ((""+r.status)[0] == "2") {
-      format_popup();
-    }
-    else {
-      alert(`Error: Status code ${r.status} recieved when attempting to fetch the assignment data.`)
-    }
-  });
+  let assignment_url = `https://edpuzzle.com/api/v3/assignments/${assignment_id}`;
+  let request = await fetch(assignment_url);
+  return await request.json();
 }
 
 function format_popup() {
@@ -174,8 +191,6 @@ function format_popup() {
   from_id("assignment_author").innerHTML = media.user.name;
   from_id("assignment_end").innerHTML = deadline_text;
   from_id("thumbnail_img").src = thumbnail;
-
-  get_media();
 }
 
 function get_media(needle="", request_count=1) {
@@ -461,7 +476,9 @@ function on_error(error_old, url, line, col, error) {
   add_console_message(message)
 }
 
-function init() {
+async function init() {
+  fetch_ = fetch;
+  fetch = fetch_wrapper;
   intercept_console();
   window.onerror = on_error;
   window.onbeforeunload = on_before_unload;
@@ -481,7 +498,9 @@ function init() {
   let observer = new MutationObserver(mutation_observer_callback);
   observer.observe(document.getRootNode(), {childList: true, subtree: true});
 
-  get_assignment();
+  assignment = await get_assignment();
+  format_popup();
+  get_media();
   load_console_html();
 }
 

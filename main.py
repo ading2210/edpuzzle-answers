@@ -19,9 +19,12 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 with open(base_dir+"/config/config.json") as f:
   config = json.loads(f.read())
 utils.include_traceback = config["dev_mode"]
+scraper.config = config
 
 if not config["chatgpt"]["enabled"]:
   scraper.disabled_services.append("ChatGPT")
+if not config["poe"]["enabled"]:
+  scraper.disabled_services.append("Poe")
 scraper.services_full = scraper.resolve_services();
 
 print("Generating CSS...")
@@ -156,7 +159,11 @@ def homepage():
 @app.route("/discord.html")
 def discord():
   invite_url = f"https://discord.com/invite/{config['discord']}"
-  return redirect(invite_url, code=302)
+  return redirect(invite_url)
+
+@app.route("/github")
+def github():
+  return redirect("https://github.com/ading2210/edpuzzle-answers")
 
 @app.route("/script.js")
 def loader_script():

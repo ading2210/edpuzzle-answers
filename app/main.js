@@ -43,31 +43,32 @@ function init() {
     alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
   }
   else if ((/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.location.href)) {
-    http_get(base_url+"/app/html/popup.html", openPopup);
+    http_get(base_url+"/app/html/popup.html", open_popup);
   }
   else if (window.canvasReadyState) {
-    handleCanvasURL();
+    handle_canvas_url();
   }
   else if (window.schoologyMoreLess) {
-    handleSchoologyURL();
+    handle_schoology_url();
   }
   else {
     alert("Please run this script on an Edpuzzle assignment. For reference, the URL should look like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch");
   }
 }
 
-function openPopup() {
+function open_popup() {
   const popup = window.open("about:blank", "", "width=700, height=420");
   //const popup = window.open("about:blank");
   if (popup == null) {
     alert("Error: Could not open the popup. Please enable popups for edpuzzle.com and try again.");
     return;
   }
-  writePopup(popup, this.responseText);
+  write_popup(popup, this.responseText);
   
-  function popup_unload() {    
+  function popup_unload() { 
     http_get(base_url+"/app/html/popup.html", function(){
-      writePopup(popup, this.responseText);
+      if (popup.closed) return;
+      write_popup(popup, this.responseText);
       popup.addEventListener("beforeunload", popup_unload);
     });
   }
@@ -75,7 +76,7 @@ function openPopup() {
   popup.addEventListener("beforeunload", popup_unload);
 }
 
-function writePopup(popup, html) {
+function write_popup(popup, html) {
   popup.document.base_url = base_url;
   popup.document.edpuzzle_data = window.__EDPUZZLE_DATA__;
   popup.document.gpl_text = gpl_text;
@@ -110,7 +111,7 @@ function writePopup(popup, html) {
   })
 }
 
-function handleCanvasURL() {
+function handle_canvas_url() {
   let location_split = window.location.href.split("/");
   let url = `/api/v1/courses/${location_split[4]}/assignments/${location_split[6]}`;
   http_get(url, function(){
@@ -127,7 +128,7 @@ function handleCanvasURL() {
   });
 }
 
-function handleSchoologyURL() {
+function handle_schoology_url() {
   let assignment_id = window.location.href.split("/")[4];
   let url = `/external_tool/${assignment_id}/launch/iframe`;
   http_get(url, function() {
