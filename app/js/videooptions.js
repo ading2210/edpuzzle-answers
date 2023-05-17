@@ -89,11 +89,18 @@ static video_speed() {
       let player = opener.YT.get(iframe.id);
       let events;
       //search for attribute that stores yt event listeners
-      for (let key of Object.keys(player)) {
+      for (let key in player) {
         let item = player[key];
-        if (item && Array.isArray(item.h)) {
-          events = item.h;
+        if (item +"" != "[object Object]") continue;
+        for (let key_2 in item) {
+          let item_2 = item[key_2];
+          
+          if (Array.isArray(item_2) && typeof item_2[1] == "string" && item_2[1].startsWith("on")) {
+            events = item[key_2];
+            break;
+          }
         }
+        if (events) break;
       }
       for (let i=1; i<events.length; i+=3) {
         let event = events[i];
