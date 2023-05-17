@@ -162,12 +162,14 @@ async function get_attempt() {
 async function get_assignment() {
   let assignment_id = window.location.href.split("/")[4];
   if (typeof assignment_id == "undefined") {
-    alert("Error: Could not infer the assignment ID. Are you on the correct URL?");
-    return;
+    throw new Error("Could not infer the assignment ID. Are you on the correct URL?");
   }
   let assignment_url = `https://edpuzzle.com/api/v3/assignments/${assignment_id}`;
-  let request = await fetch(assignment_url);
-  return await request.json();
+  let response = await fetch(assignment_url);
+  if (!response.ok) {
+    throw new Error(`Status code ${response.status} received when attempting to fetch the assignment.`);
+  }
+  return await response.json();
 }
 
 function format_popup() {
@@ -193,43 +195,48 @@ function format_popup() {
   from_id("thumbnail_img").src = thumbnail;
 }
 
-function get_media(needle="", request_count=1) {
-  status_text.innerHTML = `Fetching assignments (page ${request_count})...`;
-  
-  let media_id = assignment.teacherAssignments[0].contentId;
-  let classroom_id = assignment.teacherAssignments[0].classroom.id;
-  let url2 = "https://edpuzzle.com/api/v3/assignments/classrooms/"+classroom_id+"/students/?needle="+needle;
+async function get_media(needle="", request_count=1) {
+  let data = await get_media_attempt();
+  while (data !== false) {
+    //received new needle
+    if (typeof data == "string") {
+      data = await get_media_attempt(data);
+      continue;
+    }
+    return data;
+  }
+  throw new Error("Media not found.");
+}
 
-  http_get(url2, function(r) {
-    if ((""+r.status)[0] == "2") {
-      let classroom = JSON.parse(r.responseText);
-      if (classroom.medias.length == 0) {
-        parse_questions();
-        return;
-      }
-      let media;
-      for (let i=0; i<classroom.medias.length; i++) {
-        media = classroom.medias[i];
-        if (media._id == media_id) {
-          questions = media.questions;
-          parse_questions();
-          return;
-        }
-      }
-      get_media(classroom.teacherAssignments[classroom.teacherAssignments.length-1]._id, request_count+1);
+async function get_media_attempt(needle="") {
+  let classroom_id = assignment.teacherAssignments[0].classroom.id;
+  let media_id = assignment.teacherAssignments[0].contentId;
+  let media_url = `https://edpuzzle.com/api/v3/assignments/classrooms/${classroom_id}/students/?needle=${needle}`;
+
+  let response = await fetch(media_url);
+
+  if (!response.ok) {
+    throw new Error(`Status code ${response.status} received when attempting to fetch the answers.`)
+  }
+
+  let classroom = await response.json();
+  if (classroom.medias.length == 0) {
+    return false;
+  }
+
+  for (let media of classroom.medias) {
+    if (media._id == media_id) {
+      questions = media.questions;
+      return questions;
     }
-    else {
-      let content = from_id("content");
-      status_text.remove();
-      content.innerHTML += `Error: Status code ${r.status} recieved when attempting to fetch the answers.`;
-    }
-  });
+  }
+
+  return classroom.teacherAssignments.slice(-1)[0]._id;
 }
 
 function parse_questions() {
   if (questions == null) {
-    status_text.innerHTML += `<p style="font-size: 12px">Error: Could not get the media for this assignment. </p>`;
-    return;
+    throw new Error("Failed to fetch the questions for this assignment.")
   }
   
   //bubble sort the questions by time
@@ -242,6 +249,7 @@ function parse_questions() {
      }
     }
   }
+
   for (let question of questions) {
     let min = fixed_length_int(Math.floor(question.time/60), 2);
     let secs = fixed_length_int(Math.floor(question.time%60), 2);
@@ -445,7 +453,7 @@ function display_console_message(log_entry) {
   if (typeof message == "object") {
     message = JSON.stringify(message);
   }
-  else if (typeof messaage != "string") {
+  else if (typeof message != "string") {
     message = message+"";
   }
 
@@ -489,6 +497,7 @@ async function init() {
   load_module(base_url+"/app/js/autoanswers.js");
   load_module(base_url+"/app/js/videooptions.js");
   load_module(base_url+"/app/js/openended.js");
+  load_console_html();
 
   let textarea_list = document.getElementsByTagName("textarea");
   for (let textarea of textarea_list) {
@@ -498,10 +507,16 @@ async function init() {
   let observer = new MutationObserver(mutation_observer_callback);
   observer.observe(document.getRootNode(), {childList: true, subtree: true});
 
-  assignment = await get_assignment();
-  format_popup();
-  get_media();
-  load_console_html();
+  try {
+    assignment = await get_assignment();
+    format_popup();
+    await get_media();
+    parse_questions();
+  }
+  catch (error) {
+    console.error(error.stack);
+    status_text.innerHTML = `An error has occurred. Please check the JS console for more details.<br><br>${error+""}`;
+  }
 }
 
 init();
