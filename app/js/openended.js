@@ -168,11 +168,6 @@ static update_model_dropdown() {
     model_dropdown.firstChild.remove();
   }
 
-  let default_option = document.createElement("option");
-  default_option.text = "Default";
-  default_option.value = "default";
-  model_dropdown.append(default_option);
-
   let service_name = this.menu.placeholder("service_dropdown").value;
   let service;
   for (let item of this.services) {

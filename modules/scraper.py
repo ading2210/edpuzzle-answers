@@ -169,7 +169,6 @@ class Poe:
     
     self.client.purge_conversation(model)
 
-
 class ChatGPT:
   streaming_supported = True
   proxy_requests = False
@@ -331,6 +330,7 @@ class DeepAI:
   streaming_supported = True
   proxy_requests = True
   max_length = 3000
+  models = ["gpt-4", "gpt-3.5-turbo"]
   
   def __init__(self, proxy=None):
     self.proxy = proxy
@@ -342,10 +342,10 @@ class DeepAI:
 
   def get_api_key(self):
     part1 = str(random.randint(0, 10**11))
-    part2 = self.md5(self.user_agent+self.md5(self.user_agent+self.md5(self.user_agent+part1)))
+    part2 = self.md5(self.user_agent+self.md5(self.user_agent+self.md5(self.user_agent+part1+"x")))
     return f"tryit-{part1}-{part2}"
 
-  def generate_text(self, prompt:str, stream:bool=True):
+  def generate_text(self, prompt:str, stream:bool=True, model="gpt-4"):
     headers = {
       "api-key": self.api_key,
       "user-agent": self.user_agent
@@ -367,8 +367,10 @@ class DeepAI:
           "role": "user", 
           "content": prompt
         }
-      ]
+      ],
     }
+    if model == "gpt-4":
+      payload["model"] = "genius"
 
     proxies = construct_proxy(self.proxy)
     r = requests.post(self.api_url, headers=headers, files=files, proxies=proxies, stream=stream)
