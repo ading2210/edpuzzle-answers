@@ -14,12 +14,11 @@ static async answer_questions() {
   skipper_button.disabled = true;
   answers_button.disabled = true; 
 
-  let csrf = await get_csrf();
-  let attempt = await get_attempt(csrf);
-  await video_skipper.skip_video(csrf, attempt, false);
+  let attempt = await get_attempt();
+  await video_skipper.skip_video(attempt, false);
 
   let filtered_questions = this.filter_questions(questions);
-  await this.post_answers(csrf, attempt, filtered_questions, progress => {
+  await this.post_answers(attempt, filtered_questions, progress => {
     answers_button.value = `Submitting answers (${progress+1}/${filtered_questions.length})...`;
   });
 
@@ -48,21 +47,18 @@ static filter_questions(questions) {
   return filtered_questions;
 }
 
-static async post_answers(csrf, attempt, filtered_questions, progress_callback=null) {
+static async post_answers(attempt, filtered_questions, progress_callback=null) {
   let attempt_id = attempt._id;
-  console.log(filtered_questions);
   for (let i=0; i<filtered_questions.length; i++) {
     let question_part = filtered_questions[i];
-    await this.post_answer(csrf, attempt_id, question_part);
+    await this.post_answer(attempt_id, question_part);
     if (progress_callback) {
       progress_callback(i);
     }
   }
 }
 
-static async post_answer(csrf, attempt_id, questions_part) {
-  let id = assignment.teacherAssignments[0]._id;
-  let referrer = "https://edpuzzle.com/assignments/"+id+"/watch";
+static async post_answer(attempt_id, questions_part) {
   let answers_url = "https://edpuzzle.com/api/v3/attempts/"+attempt_id+"/answers";
 
   let content = {answers: []};
@@ -82,17 +78,9 @@ static async post_answer(csrf, attempt_id, questions_part) {
     });
   }
   
-  let headers = {
-    "accept": "application/json, text/plain, */*",
-    "accept_language": "en-US,en;q=0.9",
-    "content-type": "application/json",
-    "x-csrf-token": csrf,
-    "x-edpuzzle-referrer": referrer,
-    "x-edpuzzle-web-version": edpuzzle_data.version
-  };
   await fetch(answers_url, {
     method: "POST",
-    headers: headers,
+    headers: await construct_headers(),
     body: JSON.stringify(content)
   });
 }

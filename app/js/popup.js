@@ -5,6 +5,10 @@ const gpl_text = document.gpl_text;
 const base_url = document.base_url;
 const edpuzzle_data = document.edpuzzle_data;
 const lti_edpuzzle = !!edpuzzle_data.token;
+const csrf_cache = {
+  latest: null,
+  updated: 0
+}
 
 const skipper_button = from_id("skipper_button");
 const answers_button = from_id("answers_button");
@@ -145,10 +149,30 @@ function get_assignment_id() {
 }
 
 async function get_csrf() {
-  let csrf_url = "https://edpuzzle.com/api/v3/csrf";
-  let request = await fetch(csrf_url);
-  let data = await request.json();
-  return data.CSRFToken;
+  let now = Date.now()/1000;
+  if (!csrf_cache.latest ||  now - csrf_cache.updated > 60) {
+    let csrf_url = "https://edpuzzle.com/api/v3/csrf";
+    let request = await fetch(csrf_url);
+    let data = await request.json();
+    let csrf = data.CSRFToken;
+    csrf_cache.updated = now;
+    csrf_cache.latest = csrf;
+    return csrf;
+  }
+  else {
+    return csrf_cache.latest
+  }
+}
+
+async function construct_headers() {
+  return {
+    "accept": "application/json, text/plain, */*",
+    "accept_language": "en-US,en;q=0.9",
+    "content-type": "application/json",
+    "x-csrf-token": await get_csrf(),
+    "x-edpuzzle-referrer": opener.window.location.href,
+    "x-edpuzzle-web-version": edpuzzle_data.version
+  }
 }
 
 async function get_attempt() {

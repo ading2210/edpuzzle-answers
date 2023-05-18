@@ -101,7 +101,7 @@ static get_prompt_template() {
   if (assignment.medias[0].source == "youtube" && this.captions) {
     return deindent(
       `{captions}
-      Based on the captions above, answer the following question:
+      Based on the captions above, answer the following question in two sentences or less, at the writing level of a high school student:
       ${title_clean}`
     );
   }
@@ -298,8 +298,26 @@ static async generate(service, prompt, model=null) {
   this.active_request = request;
 }
 
-static async submit_open_ended() {
-  
+static async submit_open_ended(content, question_id=null) {
+  if (!question_id) question_id = this.question._id;
+  let attempt = await get_attempt();
+  let answer_url = `https://edpuzzle.com/api/v3/attempts/${attempt._id}/answers`;
+
+  let body = {
+    "answers": [{
+        "type": "open-ended",
+        "questionId": question_id,
+        "body": [{
+          "text": content,
+          "html": ""
+        }]
+      }]
+  }
+  await fetch(answer_url, {
+    method: "POST",
+    headers: await construct_headers(),
+    body: JSON.stringify(body)
+  })
 }
 
 static generate_button_callback() {
@@ -333,6 +351,10 @@ static save_button_callback() {
   question_textarea.value = generated_textarea.value;
 
   this.close_menu();
+}
+
+static async submit_button_callback(content, question) {
+  
 }
 
 static open_menu(question, element) {
