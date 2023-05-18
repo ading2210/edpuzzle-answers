@@ -231,7 +231,7 @@ static handle_generate_event(last_status, event) {
   }
 }
 
-static async generate(service, prompt) {
+static async generate(service, prompt, model=null) {
   if (this.active_request instanceof XMLHttpRequest) {
     this.active_request.abort();
   }
@@ -240,6 +240,8 @@ static async generate(service, prompt) {
     prompt: prompt,
     stream: true
   };
+  if (model) body.model = model;
+
   let generate_button = this.menu.placeholder("generate_button");
   let save_button = this.menu.placeholder("save_button");
   
@@ -312,8 +314,12 @@ static generate_button_callback() {
 
   this.menu.placeholder("generate_button").disabled = true;
   this.menu.placeholder("save_button").disabled = true;
+  let model = null;
+  if (service.models) {
+    model = this.menu.placeholder("model_dropdown").value;
+  }
   this.format_prompt(service.max_length).then(prompt => {
-    this.generate(service, prompt);
+    this.generate(service, prompt, model);
   }) 
 }
 

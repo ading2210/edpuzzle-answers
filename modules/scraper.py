@@ -274,7 +274,7 @@ class TextSynth:
   key_url = "https://textsynth.com/playground.html"
   streaming_supported = True
   proxy_requests = True
-  models = ["gptj_6B", "fairseq_gpt_13B", "gptneox_20B"]
+  models = ["gptj_6B", "fairseq_gpt_13B", "gptneox_20B", "flan_t5_xxl"]
   max_length = 3000
   
   def __init__(self, proxy=None):
@@ -301,7 +301,7 @@ class TextSynth:
         if not data["reached_end"]:
           yield data["text"]
   
-  def generate_text(self, prompt, max_tokens:int=100, stream:bool=False, model:str="gptneox_20B"):
+  def generate_text(self, prompt, max_tokens:int=200, stream:bool=False, model:str="gptneox_20B"):
     if not model in self.models:
       raise KeyError("Model not valid.")
     url = self.api_url.format(model=model)
@@ -330,7 +330,6 @@ class DeepAI:
   streaming_supported = True
   proxy_requests = True
   max_length = 3000
-  models = ["gpt-4", "gpt-3.5-turbo"]
   
   def __init__(self, proxy=None):
     self.proxy = proxy
@@ -345,7 +344,7 @@ class DeepAI:
     part2 = self.md5(self.user_agent+self.md5(self.user_agent+self.md5(self.user_agent+part1+"x")))
     return f"tryit-{part1}-{part2}"
 
-  def generate_text(self, prompt:str, stream:bool=True, model="gpt-4"):
+  def generate_text(self, prompt:str, stream:bool=True):
     headers = {
       "api-key": self.api_key,
       "user-agent": self.user_agent
@@ -360,17 +359,6 @@ class DeepAI:
       "chat_style": (None, "chat"),
       "chatHistory": (None, json.dumps(chat_history))
     }
-    payload = {
-      "chat_style": "chat",
-      "chatHistory": [
-        {
-          "role": "user", 
-          "content": prompt
-        }
-      ],
-    }
-    if model == "gpt-4":
-      payload["model"] = "genius"
 
     proxies = construct_proxy(self.proxy)
     r = requests.post(self.api_url, headers=headers, files=files, proxies=proxies, stream=stream)
