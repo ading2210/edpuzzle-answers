@@ -201,6 +201,7 @@ class ChatGPT:
       if conversation["title"] == self.conversation_name:
         self.chatbot.delete_conversation(conversation["id"])
 
+#this is currently broken!
 class Hubble:
   api_url = "https://www.hubble.ai/api/creator/executeSchema"
   streaming_supported = False
@@ -215,13 +216,20 @@ class Hubble:
       "optional_variables": {},
       "required_variables": {
         "Essay-Details": details,
-        "Essay-Prompt": prompt
+        "Essay-Prompt": prompt,
+        "Tone": ""
       },
-      "schema_id": 109
+      "schema_id": 1016
+    }
+    headers = {
+      "user-agent": "Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
+      "origin": "https://hubble.ai",
+      "referer": "https://www.hubble.ai/"
     }
     
-    r = requests.post(self.api_url, json=payload)
+    r = requests.post(self.api_url, headers=headers, json=payload)
     if r.status_code != 200:
+      print(r.text, r.status_code)
       raise exceptions.BadGatewayError("Sevice returned an error: "+r.json()["error"])
     result = r.json()["node_outputs"][0]["output_data"].strip()
 

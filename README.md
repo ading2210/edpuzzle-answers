@@ -103,20 +103,20 @@ javascript: fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest
 ## Running the Server:
 It is possible to simply host a static copy of this repository, however open-ended question answering will not be available. 
 
-If you want to run the backend for yourself, follow these setps:
+If you want to run the backend for yourself, follow these steps:
 1. Clone this repository and cd into it.
 2. Install Python and MongoDB for your chosen Linux distro. Hosting on Windows should work but it is not supported.
 3. Install the needed dependencies by doing `pip3 install --upgrade -r requirements.txt`. If the `revChatGPT` package does not install, try upgrading your pip version by running `pip3 install --upgrade pip`. 
-4. Copy `config/default.json` to `config/config.json`, and fill out the relavent options.
+4. Copy `config/default.json` to `config/config.json`, and fill out the relevant options.
 5. Run the server using `python3 main.py`.
 
 Make sure your web server has a domain and HTTPS support. The easiest way to do this is to use Nginx as a reverse proxy and Certbot for HTTPS.
 
 ### Server Configuration:
- - `discord` - The Discord invite ID vistors will be redirected to when navigating to `/discord`. 
- - `dev_mode` - Enables stack traces in error respones. This will expose the path of wherever the server's files are located.
+ - `discord` - The Discord invite ID visitors will be redirected to when navigating to `/discord`. 
+ - `dev_mode` - Enables stack traces in error response. This will expose the path of wherever the server's files are located.
  - `behind_proxy` - Tell Flask it is behind a reverse proxy such as Nginx. This allows IP rate limits to be enforced. 
- - `gzip_responses` - Compress respones with gzip compression. 
+ - `gzip_responses` - Compress response with gzip compression. 
  - `chatgpt.enabled` - Enables/disables the ChatGPT endpoint. It is recommended to keep this disabled since the [revChatGPT](https://github.com/acheong08/ChatGPT) library is now unmaintained.
  - `chatgpt.login` - Your ChatGPT login. Refer to the [revChatGPT documentation](https://github.com/acheong08/ChatGPT#configuration) for how to format this.
  - `chatgpt.conversation_name` - The name of the ChatGPT conversation that the program creates. These conversations will be automatically deleted after their creation.

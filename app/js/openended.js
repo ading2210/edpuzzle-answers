@@ -210,6 +210,7 @@ static handle_generate_event(last_status, event) {
     }
     else if (event.status == "done") {
       generated_textarea.disabled = false;
+      generated_textarea.innerHTML = generated_textarea.innerHTML.trim();
     }
     else if (event.status == "error") {
       generated_textarea.disabled = true;
@@ -227,7 +228,6 @@ static handle_generate_event(last_status, event) {
   
   if (last_status.status == "generating") {
     generated_textarea.innerHTML += event.text;
-    generated_textarea.innerHTML = generated_textarea.innerHTML.trim();
   }
 }
 
@@ -296,6 +296,10 @@ static async generate(service, prompt, model=null) {
   request.send(JSON.stringify(body));
 
   this.active_request = request;
+}
+
+static async submit_open_ended() {
+  
 }
 
 static generate_button_callback() {

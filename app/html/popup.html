@@ -71,7 +71,10 @@ See README.md for more information
       </ul>
       <div id="open_ended_template" class="hidden flex-col items-end gap-1">
         <textarea key="question_textarea" class="textarea" rows=3 placeholder='Use the "Generate Response" button to generate an answer for this open-ended question.'></textarea>
-        <button key="generator_button" class="p-1.5 rounded-md bg-slate-900 border border-slate-700">Generate Response</button>
+        <div key="buttons_div" class="flex gap-1">
+          <button key="generator_button" class="p-1.5 rounded-md bg-slate-900 border border-slate-700">Generate Response</button>
+          <button key="submit_button" class="p-1.5 rounded-md bg-slate-900 border border-slate-700">Submit</button>
+        </div>
       </div>
       <div id="open_ended_menu_template" class="hidden flex-col w-full px-3 gap-2 text-xs">
         <div class="w-full text-[13px] p-2.5 rounded-lg bg-slate-800 font-bold">

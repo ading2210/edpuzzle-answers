@@ -195,7 +195,7 @@ function format_popup() {
   from_id("thumbnail_img").src = thumbnail;
 }
 
-async function get_media(needle="", request_count=1) {
+async function get_media() {
   let data = await get_media_attempt();
   while (data !== false) {
     //received new needle
@@ -226,14 +226,31 @@ async function get_media_attempt(needle="") {
 
   for (let media of classroom.medias) {
     if (media._id == media_id) {
-      questions = media.questions;
-      return questions;
+      return media.questions;
     }
   }
 
   return classroom.teacherAssignments.slice(-1)[0]._id;
 }
 
+//associates user responses with their corresponding questions.
+async function get_responses(questions) {
+  let attempt = await get_attempt();
+  for (let question of questions) {
+    for (let answer of attempt.answers) {
+      if (answer.questionId == question._id) {
+        question.response = answer;
+        break;
+      }
+    }
+    if (!question.response) {
+      question.response = null;
+    }
+  }
+  return questions;
+}
+
+//display the questions onto the popup
 function parse_questions() {
   if (questions == null) {
     throw new Error("Failed to fetch the questions for this assignment.")
@@ -289,7 +306,17 @@ function parse_questions() {
     else if (question.type == "open-ended") {
       let question_div = get_template("open_ended_template", true);
       let generate_button = question_div.placeholder("generator_button");
-      generate_button.onclick = function(){open_ended.open_menu(question, question_div)};
+      let question_textarea = question_div.placeholder("question_textarea");
+      let buttons_div = question_div.placeholder("buttons_div");
+      
+      if (question.response) {
+        question_textarea.innerHTML = question.response.body[0].text;
+        question_textarea.disabled = true;
+        buttons_div.classList.add("hidden");
+      }
+      else {
+        generate_button.onclick = function(){open_ended.open_menu(question, question_div)};
+      }
 
       table.placeholder("question_content").append(question_div);
     }
@@ -510,7 +537,10 @@ async function init() {
   try {
     assignment = await get_assignment();
     format_popup();
-    await get_media();
+
+    questions = await get_media();
+    questions = await get_responses(questions);
+
     parse_questions();
   }
   catch (error) {
