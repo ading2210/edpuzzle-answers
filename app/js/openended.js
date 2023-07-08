@@ -354,7 +354,15 @@ static save_button_callback() {
 }
 
 static async submit_button_callback(content, question) {
+  if (!content) {
+    alert("You cannot submit an empty response.");
+    return false;
+  }
+  let confirm_message = `Are you sure you want to submit the following response to Edpuzzle?\n\n${content}`;
+  if (!confirm(confirm_message)) return false;
   
+  await this.submit_open_ended(content, question._id);
+  return true;
 }
 
 static open_menu(question, element) {

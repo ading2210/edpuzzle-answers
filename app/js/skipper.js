@@ -8,7 +8,7 @@ static {
   skipper_button.disabled = !content_loaded; 
 }
 
-static async skip_video(csrf=null, attempt=null, update_button=true) {
+static async skip_video(attempt=null, update_button=true) {
   if (update_button) {
     skipper_button.value = "Skipping video...";
     skipper_button.disabled = true;

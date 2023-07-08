@@ -122,8 +122,8 @@ def get_captions_attempt(base_url, id, language=None, timeout=None):
   elif "<title>Sorry...</title>" in r.text:
     raise exceptions.BadGatewayError(f"{url} was rate limited")
   
-  if r.headers["content-type"].startswith("application/json"):
-    return r.json()
+  #if r.headers["content-type"].startswith("application/json"):
+  #  return r.json()
   
   #parse webvtt
   if r.text.startswith("WEBVTT"):

@@ -330,6 +330,7 @@ function parse_questions() {
     else if (question.type == "open-ended") {
       let question_div = get_template("open_ended_template", true);
       let generate_button = question_div.placeholder("generator_button");
+      let submit_button = question_div.placeholder("submit_button");
       let question_textarea = question_div.placeholder("question_textarea");
       let buttons_div = question_div.placeholder("buttons_div");
       
@@ -339,7 +340,15 @@ function parse_questions() {
         buttons_div.classList.add("hidden");
       }
       else {
-        generate_button.onclick = function(){open_ended.open_menu(question, question_div)};
+        generate_button.onclick = function(){
+          open_ended.open_menu(question, question_div)
+        };
+        submit_button.onclick = async function(){
+          let success = await open_ended.submit_button_callback(question_textarea.value.trim(), question)
+          if (success) {
+            buttons_div.remove();
+          }
+        }
       }
 
       table.placeholder("question_content").append(question_div);

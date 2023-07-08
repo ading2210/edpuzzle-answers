@@ -185,4 +185,4 @@ if __name__ == "__main__":
   t.start()
   
   print("Starting flask...")
-  app.run(host="0.0.0.0", port=config["server_port"], threaded=True)
+  app.run(host="0.0.0.0", port=config["server_port"], threaded=True, debug=config["dev_mode"])
