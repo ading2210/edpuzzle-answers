@@ -12,7 +12,7 @@ proxy_cache = {
 config = {}
 
 #note that the default service is always the first one
-services = ["ChatGPT", "Poe", "DeepAI", "Hubble", "InferKit", "TextSynth"]
+services = ["ChatGPT", "Poe", "DeepAI", "InferKit", "TextSynth"]
 disabled_services = []
 
 def inspect_func(func):
@@ -160,7 +160,7 @@ class Poe:
       self.__class__.client = self.client
 
   def generate_text(self, prompt:str, stream:bool=False, model="capybara"):
-    for chunk in self.client.send_message(model, prompt, send_chat_break=True):
+    for chunk in self.client.send_message(model, prompt, with_chat_break=True):
       if stream:
         yield chunk["text_new"]
     
@@ -200,40 +200,6 @@ class ChatGPT:
     for conversation in self.chatbot.get_conversations():
       if conversation["title"] == self.conversation_name:
         self.chatbot.delete_conversation(conversation["id"])
-
-#this is currently broken!
-class Hubble:
-  api_url = "https://www.hubble.ai/api/creator/executeSchema"
-  streaming_supported = False
-  proxy_requests = True
-  max_length = 3000
-
-  def __init__(self, proxy=None):
-    self.proxy = proxy
-  
-  def generate_text(self, prompt:str, details:str=""):
-    payload = {
-      "optional_variables": {},
-      "required_variables": {
-        "Essay-Details": details,
-        "Essay-Prompt": prompt,
-        "Tone": ""
-      },
-      "schema_id": 1016
-    }
-    headers = {
-      "user-agent": "Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
-      "origin": "https://hubble.ai",
-      "referer": "https://www.hubble.ai/"
-    }
-    
-    r = requests.post(self.api_url, headers=headers, json=payload)
-    if r.status_code != 200:
-      print(r.text, r.status_code)
-      raise exceptions.BadGatewayError("Sevice returned an error: "+r.json()["error"])
-    result = r.json()["node_outputs"][0]["output_data"].strip()
-
-    yield result
 
 class InferKit:
   api_url = "https://api.inferkit.com/v1/models/standard/generate?useDemoCredits=true"
