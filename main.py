@@ -64,7 +64,7 @@ def get_path_limit():
   if service and service in scraper.services: 
     if service in config["rate_limits"]:
       return config["rate_limits"][service]
-  return "1/sec" #fallback value, probably too high
+  return "1/second" #fallback value, probably too high
 
 #handle 429
 @app.errorhandler(429)

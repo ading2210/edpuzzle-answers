@@ -4,6 +4,7 @@
 import requests, re, random, time, string, hashlib, json, queue, threading, inspect, types, poe
 from revChatGPT import V1 as chatgpt_api
 from modules import exceptions, utils
+import vercel_ai
 
 proxy_cache = {
   "updated": 0,
@@ -12,7 +13,7 @@ proxy_cache = {
 config = {}
 
 #note that the default service is always the first one
-services = ["ChatGPT", "Poe", "DeepAI", "InferKit", "TextSynth"]
+services = ["Vercel", "ChatGPT", "Poe", "DeepAI", "InferKit"]
 disabled_services = []
 
 def inspect_func(func):
@@ -243,64 +244,26 @@ class InferKit:
       r.raise_for_status()
       yield r.json()["data"]["text"]
 
-class TextSynth:
-  api_url = "https://api.textsynth.com/v1/engines/{model}/completions"
-  key_url = "https://textsynth.com/playground.html"
+class Vercel:
   streaming_supported = True
   proxy_requests = True
-  models = ["gptj_6B", "fairseq_gpt_13B", "gptneox_20B", "flan_t5_xxl"]
   max_length = 3000
-  
+
   def __init__(self, proxy=None):
-    self.proxy = proxy
-    self.api_key = self.get_api_key() 
-  
-  def get_api_key(self):
-    proxies = construct_proxy(self.proxy)
-    r = requests.get(self.key_url, proxies=proxies)
-    regex = r'<script>var textsynth_api_key = "([0-9a-f]+?)"</script>'
-    return re.findall(regex, r.text)[0]
-  
-  def generate_text_stream(self, *args, **kwargs):
-    r = requests.post(*args, **kwargs, stream=True)
-    r.raise_for_status()  
-      
-    for chunk in r.iter_content(chunk_size=None):
-      text = chunk.decode()
-      text_split = text.split("\n")
-      for string in text_split:
-        if len(string.strip()) == 0:
-          continue
-        data = json.loads(string)
-        if not data["reached_end"]:
-          yield data["text"]
-  
-  def generate_text(self, prompt, max_tokens:int=200, stream:bool=False, model:str="gptneox_20B"):
-    if not model in self.models:
-      raise KeyError("Model not valid.")
-    url = self.api_url.format(model=model)
-      
-    headers = {
-      "authorization": f"Bearer {self.api_key}",
-    }
-    payload = {
-      "prompt": prompt,
-      "stream": stream,
-      "max_tokens": max_tokens
-    }
-    proxies = construct_proxy(self.proxy)
+    self.client = vercel_ai.Client(proxy=proxy)
+
+  def generate_text(self, prompt:str, stream:bool=False, model="openai:gpt-3.5-turbo"):
+    text = ""
+    for chunk in self.client.generate(model, prompt, with_chat_break=True):
+      if stream:
+        text += chunk
+        yield chunk
     
-    if stream:
-      for text in self.generate_text_stream(url, headers=headers, json=payload, proxies=proxies):
-        yield text
-    else:
-      r = requests.post(url, headers=headers, json=payload, proxies=proxies)
-      r.raise_for_status()
-      text = r.json()["text"]
+    if not stream:
       yield text
 
 class DeepAI:
-  api_url = "https://api.deepai.org/chat_response"
+  api_url = "https://api.deepai.org/make_me_a_pizza"
   streaming_supported = True
   proxy_requests = True
   max_length = 3000

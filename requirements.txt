@@ -8,3 +8,4 @@ pymongo
 pytailwindcss
 alt-profanity-check
 poe-api
+vercel-llm-api

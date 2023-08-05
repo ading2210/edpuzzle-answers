@@ -18,7 +18,7 @@
     "Poe": "20/hour",
     "ChatGPT": "20/hour",
     "InferKit": "20/hour",
-    "TextSynth": "100/hour",
+    "Vercel": "100/hour",
     "DeepAI": "100/hour",
     "Hubble": "20/hour"
   }
