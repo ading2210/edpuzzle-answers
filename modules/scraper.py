@@ -63,60 +63,74 @@ def resolve_services():
   return services_list
 
 def scrape_proxies():
-  proxies_url = "https://raw.githubusercontent.com/mertguvencli/http-proxy-list/main/proxy-list/data.txt"
+  print("Refreshing proxy cache...")
+
+  proxies_url = "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt"
   r = requests.get(proxies_url)
   lines = r.text.split("\n")
-  proxy_cache["proxies"] = lines
+  
+  tested_proxies = []
+  def thread_func():
+    while lines:
+      proxy = lines.pop().strip()
+      if not proxy: continue
+      ping = test_proxy(proxy)
+
+      if ping == -1: continue
+      tested_proxies.append([ping, proxy])
+  
+  threads = []
+  for i in range(200):
+    t = threading.Thread(target=thread_func, daemon=True)
+    t.start()
+    threads.append(t)
+  
+  for thread in threads:
+    thread.join()
+  
+  proxy_cache["proxies"] = tested_proxies
   proxy_cache["updated"] = time.time()
-  return lines
+  return tested_proxies
 
 def get_proxies():
   current_time = time.time()
-  if current_time-proxy_cache["updated"] >= 300:
+  if proxy_cache["updated"] == 0:
     return scrape_proxies()
+  elif current_time-proxy_cache["updated"] >= 1800:
+    t = threading.Thread(target=scrape_proxies, daemon=True)
+    t.start()
   return proxy_cache["proxies"]
 
 def construct_proxy(proxy):
   if proxy:
     return {
-      "https": f"http://{proxy}",
-      "http": f"http://{proxy}"
+      "https": f"socks5h://{proxy}",
+      "http": f"socks5h://{proxy}"
     }
   return None
 
-def test_proxy(proxy, finish_queue, counter):
+def test_proxy(proxy):
   proxies = construct_proxy(proxy)
   ignored_exceptions = (
     requests.exceptions.SSLError,
     requests.exceptions.ConnectTimeout,
-    requests.exceptions.ProxyError
+    requests.exceptions.ProxyError,
+    requests.exceptions.ConnectionError,
+    requests.exceptions.ReadTimeout
   )
   try:
-    r = requests.get("https://ifconfig.me/ip", proxies=proxies, timeout=4)
-  except requests.exceptions.ReadTimeout:
-    pass
+    start = time.time()
+    r = requests.get("https://google.com/", proxies=proxies, timeout=1, allow_redirects=False)
+    end = time.time()
   except ignored_exceptions as e:
-    return
-  finish_queue.put((counter, proxy))
+    return -1
+  
+  return end-start
 
 def select_proxy(sample=10):
   proxies = get_proxies()
-  finish_queue = queue.Queue()
-  counter = 0
-  for proxy in random.sample(proxies, k=10):
-    #todo: use multiprocessing so that we don't have threads left over
-    thread = threading.Thread(
-      target=test_proxy, 
-      args=(proxy, finish_queue, counter),
-      daemon=True
-    )
-    thread.start()
-    counter += 1
-  
-  try:
-    return finish_queue.get(block=True, timeout=10)[1]
-  except queue.Empty:
-    return random.choice(proxies)
+  proxy = random.choice(proxies)
+  return proxy[1]
 
 def get_generator(service_name, *args, **kwargs):
   service = None
@@ -254,7 +268,7 @@ class Vercel:
 
   def generate_text(self, prompt:str, stream:bool=False, model="openai:gpt-3.5-turbo"):
     text = ""
-    for chunk in self.client.generate(model, prompt, with_chat_break=True):
+    for chunk in self.client.generate(model, prompt):
       if stream:
         text += chunk
         yield chunk
