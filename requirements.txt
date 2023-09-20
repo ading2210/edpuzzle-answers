@@ -3,9 +3,7 @@ Flask-Compress
 Flask-Limiter
 Flask-Cors
 lxml
-revChatGPT
 pymongo
 pytailwindcss
 alt-profanity-check
-poe-api
 vercel-llm-api

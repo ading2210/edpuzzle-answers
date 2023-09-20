@@ -21,10 +21,6 @@ with open(base_dir+"/config/config.json") as f:
 utils.include_traceback = config["dev_mode"]
 scraper.config = config
 
-if not config["chatgpt"]["enabled"]:
-  scraper.disabled_services.append("ChatGPT")
-if not config["poe"]["enabled"]:
-  scraper.disabled_services.append("Poe")
 scraper.services_full = scraper.resolve_services();
 
 print("Generating CSS...")
@@ -76,6 +72,12 @@ def update_invidous_cache():
   while True:
     print("Refreshing invidious cache...")
     invidious.test_instances()
+    time.sleep(30*60)
+
+def update_proxy_cache():
+  while True:
+    print("Refreshing proxy cache...")
+    scraper.scrape_proxies()
     time.sleep(30*60)
 
 #===== flask routes =====
@@ -182,6 +184,9 @@ def serve_app(path):
 #run the server
 if __name__ == "__main__":
   t = threading.Thread(target=update_invidous_cache, daemon=True)
+  t.start()
+
+  t = threading.Thread(target=update_proxy_cache, daemon=True)
   t.start()
   
   print("Starting flask...")

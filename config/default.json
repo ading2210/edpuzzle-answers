@@ -5,15 +5,6 @@
   "gzip_responses": true,
   "profanity_filter": true,
   "server_port": 5000,
-  "chatgpt": {
-    "enabled": false,
-    "token": "ACCESS_TOKEN_HERE",
-    "conversation_name": "RESERVED_CONVO_NAME"
-  },
-  "poe": {
-    "enabled": false,
-    "token": "POE_COOKIE_HERE"
-  },
   "rate_limits": {
     "Poe": "20/hour",
     "ChatGPT": "20/hour",

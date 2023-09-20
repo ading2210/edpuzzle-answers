@@ -1,8 +1,7 @@
 #Copyright (C) 2023 ading2210
 #see README.md for more information
 
-import requests, re, random, time, string, hashlib, json, queue, threading, inspect, types, poe
-from revChatGPT import V1 as chatgpt_api
+import requests, re, random, time, string, hashlib, json, queue, threading, inspect, types
 from modules import exceptions, utils
 import vercel_ai
 
@@ -13,7 +12,7 @@ proxy_cache = {
 config = {}
 
 #note that the default service is always the first one
-services = ["Vercel", "ChatGPT", "Poe", "DeepAI", "InferKit"]
+services = ["Vercel", "DeepAI", "InferKit"]
 disabled_services = []
 
 def inspect_func(func):
@@ -95,10 +94,8 @@ def scrape_proxies():
 def get_proxies():
   current_time = time.time()
   if proxy_cache["updated"] == 0:
-    return scrape_proxies()
-  elif current_time-proxy_cache["updated"] >= 1800:
-    t = threading.Thread(target=scrape_proxies, daemon=True)
-    t.start()
+    while not proxy_cache["updated"]:
+      time.sleep(0.1)
   return proxy_cache["proxies"]
 
 def construct_proxy(proxy):
@@ -160,61 +157,6 @@ def get_generator(service_name, *args, **kwargs):
     if service and hasattr(service, "clean_up") and callable(service.clean_up):
       print("Connection closed!")
       service.clean_up()
-
-class Poe:
-  streaming_supported = True
-  proxy_requests = False
-  max_length = 3000
-  client = None
-
-  def __init__(self):
-    self.api_key = config["poe"]["token"]
-
-    if not self.client: 
-      self.client = poe.Client(self.api_key)
-      self.__class__.client = self.client
-
-  def generate_text(self, prompt:str, stream:bool=False, model="capybara"):
-    for chunk in self.client.send_message(model, prompt, with_chat_break=True):
-      if stream:
-        yield chunk["text_new"]
-    
-    if not stream:
-      yield chunk["text"]
-    
-    self.client.purge_conversation(model)
-
-class ChatGPT:
-  streaming_supported = True
-  proxy_requests = False
-  max_length = 3000
-
-  def __init__(self):
-    self.api_key = config["chatgpt"]["token"]
-    self.chatbot = chatgpt_api.Chatbot({"access_token": self.api_key})
-    self.conversation_name = config["chatgpt"]["conversation_name"]
-
-  def generate_text(self, prompt:str, stream:bool=False):
-    if stream:
-      old_message = ""
-      for response in self.chatbot.ask(prompt):
-        new_text = response["message"][len(old_message):]
-        old_message = response["message"]
-        if old_message == prompt:
-          continue
-
-        yield new_text #only yield newest text
-
-    else:
-      for response in self.chatbot.ask(prompt):
-        pass
-      yield response["message"]
-    
-    self.chatbot.change_title(response["conversation_id"], self.conversation_name)
-
-    for conversation in self.chatbot.get_conversations():
-      if conversation["title"] == self.conversation_name:
-        self.chatbot.delete_conversation(conversation["id"])
 
 class InferKit:
   api_url = "https://api.inferkit.com/v1/models/standard/generate?useDemoCredits=true"
