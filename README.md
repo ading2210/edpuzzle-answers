@@ -118,6 +118,8 @@ Make sure your web server has a domain and HTTPS support. The easiest way to do 
  - `behind_proxy` - Tell Flask it is behind a reverse proxy such as Nginx. This allows IP rate limits to be enforced. 
  - `gzip_responses` - Compress response with gzip compression. 
  - `profanity_filter` - Whether or not to filter the text generation input for profanity.
+ - `server_port` - The port that the web server will listen on.
+ - `limiter_storage_uri` - The URI for the storage backend of the rate limiter. If you do not wish to use a database, you can set this to `memory://`. See the [Flask-Limiter documentation](https://flask-limiter.readthedocs.io/en/stable/#configuring-a-storage-backend) for more information.
  - `rate_limits` - Sets the rate limit for each generator service. The format for each value is listed on the [Flask-Limiter documentation](https://flask-limiter.readthedocs.io/en/stable/configuration.html#rate-limit-string-notation).
 
 ## Credits:

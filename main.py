@@ -32,7 +32,7 @@ print("Preparing flask instance...")
 app = Flask(__name__)
 limiter = Limiter(
   get_remote_address, app=app, 
-  storage_uri="mongodb://localhost:27017",
+  storage_uri=config["limiter_storage_uri"],
   strategy="moving-window"
 )
 

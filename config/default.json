@@ -5,12 +5,10 @@
   "gzip_responses": true,
   "profanity_filter": true,
   "server_port": 5000,
+  "limiter_storage_uri": "mongodb://localhost:27017",
   "rate_limits": {
-    "Poe": "20/hour",
-    "ChatGPT": "20/hour",
     "InferKit": "20/hour",
     "Vercel": "100/hour",
-    "DeepAI": "100/hour",
-    "Hubble": "20/hour"
+    "DeepAI": "100/hour"
   }
 }
