@@ -18,7 +18,7 @@ print("Reading config...")
 base_dir = os.path.dirname(os.path.abspath(__file__))
 with open(base_dir+"/config/config.json") as f:
   config = json.loads(f.read())
-utils.include_traceback = config["dev_mode"]
+utils.include_traceback = config["include_traceback"]
 scraper.config = config
 
 scraper.services_full = scraper.resolve_services();
@@ -77,7 +77,7 @@ def update_invidous_cache():
 def update_proxy_cache():
   while True:
     print("Refreshing proxy cache...")
-    scraper.scrape_proxies()
+    scraper.scrape_proxies(thread_count=config["proxy_checker_threads"])
     time.sleep(30*60)
 
 #===== flask routes =====

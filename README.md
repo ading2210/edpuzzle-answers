@@ -105,21 +105,24 @@ It is possible to simply host a static copy of this repository, however open-end
 
 If you want to run the backend for yourself, follow these steps:
 1. Clone this repository and cd into it.
-2. Install Python and MongoDB for your chosen Linux distro. Hosting on Windows should work but it is not supported.
-3. Install the needed dependencies by doing `pip3 install --upgrade -r requirements.txt`. If the `revChatGPT` package does not install, try upgrading your pip version by running `pip3 install --upgrade pip`. 
-4. Copy `config/default.json` to `config/config.json`, and fill out the relevant options.
-5. Run the server using `python3 main.py`.
+2. Install Python (and optionally MongoDB) for your chosen Linux distro. Hosting on Windows should work but it is not supported.
+3. Create a virtual environment by running `python3 -m venv .venv`, and activate it using `.venv/bin/activate`.
+4. Install the needed dependencies by doing `pip3 install --upgrade -r requirements.txt`. 
+5. Copy `config/default.json` to `config/config.json`, and fill out the relevant options.
+6. Run the server using `python3 main.py`.
 
 Make sure your web server has a domain and HTTPS support. The easiest way to do this is to use Nginx as a reverse proxy and Certbot for HTTPS.
 
 ### Server Configuration:
  - `discord` - The Discord invite ID visitors will be redirected to when navigating to `/discord`. 
- - `dev_mode` - Enables stack traces in error response. This will expose the path of wherever the server's files are located.
+ - `dev_mode` - Put Flask in debug mode, which will restart the server whenever a file is modified.
+ - `include_traceback` - Enables stack traces in error response. This will expose the path of wherever the server's files are located.
  - `behind_proxy` - Tell Flask it is behind a reverse proxy such as Nginx. This allows IP rate limits to be enforced. 
  - `gzip_responses` - Compress response with gzip compression. 
  - `profanity_filter` - Whether or not to filter the text generation input for profanity.
  - `server_port` - The port that the web server will listen on.
  - `limiter_storage_uri` - The URI for the storage backend of the rate limiter. If you do not wish to use a database, you can set this to `memory://`. See the [Flask-Limiter documentation](https://flask-limiter.readthedocs.io/en/stable/#configuring-a-storage-backend) for more information.
+ - `proxy_checker_threads` - The thread count for the proxy checker. On lower-end servers you should decrease this value.
  - `rate_limits` - Sets the rate limit for each generator service. The format for each value is listed on the [Flask-Limiter documentation](https://flask-limiter.readthedocs.io/en/stable/configuration.html#rate-limit-string-notation).
 
 ## Credits:

@@ -61,7 +61,7 @@ def resolve_services():
     
   return services_list
 
-def scrape_proxies():
+def scrape_proxies(thread_count=200):
   print("Refreshing proxy cache...")
 
   proxies_url = "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt"
@@ -79,7 +79,7 @@ def scrape_proxies():
       tested_proxies.append([ping, proxy])
   
   threads = []
-  for i in range(200):
+  for i in range(thread_count):
     t = threading.Thread(target=thread_func, daemon=True)
     t.start()
     threads.append(t)
@@ -99,12 +99,14 @@ def get_proxies():
   return proxy_cache["proxies"]
 
 def construct_proxy(proxy):
-  if proxy:
-    return {
-      "https": f"socks5h://{proxy}",
-      "http": f"socks5h://{proxy}"
-    }
-  return None
+  if not proxy:
+    return None
+  
+  return {
+    "https": f"socks5h://{proxy}",
+    "http": f"socks5h://{proxy}"
+  }
+
 
 def test_proxy(proxy):
   proxies = construct_proxy(proxy)
@@ -124,7 +126,7 @@ def test_proxy(proxy):
   
   return end-start
 
-def select_proxy(sample=10):
+def select_proxy():
   proxies = get_proxies()
   proxy = random.choice(proxies)
   return proxy[1]
