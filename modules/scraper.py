@@ -12,7 +12,7 @@ proxy_cache = {
 config = {}
 
 #note that the default service is always the first one
-services = ["Vercel", "DeepAI", "InferKit"]
+services = ["Cloudflare", "Vercel", "DeepAI", "InferKit"]
 disabled_services = []
 
 def inspect_func(func):
@@ -159,6 +159,36 @@ def get_generator(service_name, *args, **kwargs):
     if service and hasattr(service, "clean_up") and callable(service.clean_up):
       print("Connection closed!")
       service.clean_up()
+
+class Cloudflare:
+  streaming_supported = False
+  proxy_requests = False
+  max_length = 3000
+  models = ["llama-2-7b-chat-int8"]
+
+  def __init__(self):
+    pass
+
+  def generate_text(self, prompt:str, model:str="llama-2-7b-chat-int8"):
+    cf_config = config["cloudflare"]
+    models_dict = {
+      "llama-2-7b-chat-int8": "@cf/meta/llama-2-7b-chat-int8",
+    }
+    payload = {
+      "messages": [
+        {"role": "system", "content": "You are a friendly assistant"},
+        {"role": "user", "content": prompt}
+      ]
+    }
+    headers = {
+      "Authorization": f'Bearer {cf_config["token"]}'
+    }
+    
+    api_url = f'https://api.cloudflare.com/client/v4/accounts/{cf_config["account_id"]}/ai/run/{models_dict[model]}'
+    r = requests.post(api_url, json=payload, headers=headers)
+    r.raise_for_status()
+
+    yield r.json()["result"]["response"]
 
 class InferKit:
   api_url = "https://api.inferkit.com/v1/models/standard/generate?useDemoCredits=true"

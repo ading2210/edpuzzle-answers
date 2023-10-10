@@ -123,6 +123,9 @@ Make sure your web server has a domain and HTTPS support. The easiest way to do 
  - `server_port` - The port that the web server will listen on.
  - `limiter_storage_uri` - The URI for the storage backend of the rate limiter. If you do not wish to use a database, you can set this to `memory://`. See the [Flask-Limiter documentation](https://flask-limiter.readthedocs.io/en/stable/#configuring-a-storage-backend) for more information.
  - `proxy_checker_threads` - The thread count for the proxy checker. On lower-end servers you should decrease this value.
+ - `cloudflare.enabled` - Enable the Cloudflare Workers AI service.
+ - `cloudflare.account_id` - The account ID for your Cloudflare account.
+ - `cloudflare.token` - Your Cloudflare Workers AI token.
  - `rate_limits` - Sets the rate limit for each generator service. The format for each value is listed on the [Flask-Limiter documentation](https://flask-limiter.readthedocs.io/en/stable/configuration.html#rate-limit-string-notation).
 
 ## Credits:

@@ -37,7 +37,7 @@ static async get_captions() {
     return;
   }
   if (!request.ok) {
-    console.warn("Failed to fetch captions.")
+    console.warn("Failed to fetch captions. Response from server: ", await r.text());
     this.captions = false;
     return;
   }

@@ -20,6 +20,8 @@ with open(base_dir+"/config/config.json") as f:
   config = json.loads(f.read())
 utils.include_traceback = config["include_traceback"]
 scraper.config = config
+if not config["cloudflare"]["enabled"]:
+  scraper.disabled_services.append("Cloudflare")
 
 scraper.services_full = scraper.resolve_services();
 

@@ -8,7 +8,13 @@
   "server_port": 5000,
   "limiter_storage_uri": "mongodb://localhost:27017",
   "proxy_checker_threads": 100,
+  "cloudflare": {
+    "enabled": true,
+    "account_id": "xxxxxxxxxxx",
+    "token": "xxxxxxxxxxxxxxxxxxxxxxx" 
+  },
   "rate_limits": {
+    "Cloudflare": "200/hour",
     "InferKit": "20/hour",
     "Vercel": "100/hour",
     "DeepAI": "100/hour"
