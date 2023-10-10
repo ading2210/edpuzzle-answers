@@ -246,6 +246,9 @@ static async generate(service, prompt, model=null) {
   let save_button = this.menu.placeholder("save_button");
   
   let request = new XMLHttpRequest();
+  if (window.opener) {
+    request = new opener.XMLHttpRequest();
+  }
   let last_byte = 0;
   let last_status = {status: "pending"};
 

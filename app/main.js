@@ -39,10 +39,17 @@ function format_text(text, replacements) {
 
 function init() {
   console.info(gpl_text);
-  if (window.location.hostname == "edpuzzle.hs.vc") {
+
+  //support running from within ultraviolet
+  window.real_location = window.location;
+  if (window.__uv) {
+    window.real_location = __uv.location;
+  }
+
+  if (window.real_location.hostname == "edpuzzle.hs.vc") {
     alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
   }
-  else if ((/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.location.href)) {
+  else if ((/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.real_location.href)) {
     http_get(base_url+"/app/html/popup.html", open_popup);
   }
   else if (window.canvasReadyState) {
@@ -112,7 +119,7 @@ function write_popup(popup, html) {
 }
 
 function handle_canvas_url() {
-  let location_split = window.location.href.split("/");
+  let location_split = window.real_location.href.split("/");
   let url = `/api/v1/courses/${location_split[4]}/assignments/${location_split[6]}`;
   http_get(url, function(){
     let data = JSON.parse(this.responseText);
@@ -129,7 +136,7 @@ function handle_canvas_url() {
 }
 
 function handle_schoology_url() {
-  let assignment_id = window.location.href.split("/")[4];
+  let assignment_id = window.real_location.href.split("/")[4];
   let url = `/external_tool/${assignment_id}/launch/iframe`;
   http_get(url, function() {
     alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Schoology and try again.`);

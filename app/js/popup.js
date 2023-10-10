@@ -39,7 +39,9 @@ function fetch_wrapper(url, options={}) {
     if (!options.headers) {options.headers = {}}
     options.headers["authorization"] = edpuzzle_data.token;
   }
-
+  if (window.opener) {
+    return opener.fetch(url, options);
+  }
   return fetch_(url, options);
 }
 
@@ -144,7 +146,7 @@ function get_assignment_id() {
     return assignment.teacherAssignments[0]._id;
   }
   else {
-    return window.location.href.split("/")[4];
+    return window.real_location.href.split("/")[4];
   }
 }
 
@@ -170,7 +172,7 @@ async function construct_headers() {
     "accept_language": "en-US,en;q=0.9",
     "content-type": "application/json",
     "x-csrf-token": await get_csrf(),
-    "x-edpuzzle-referrer": opener.window.location.href,
+    "x-edpuzzle-referrer": window.real_location.href,
     "x-edpuzzle-web-version": edpuzzle_data.version
   }
 }
@@ -184,7 +186,7 @@ async function get_attempt() {
 }
 
 async function get_assignment() {
-  let assignment_id = window.location.href.split("/")[4];
+  let assignment_id = window.real_location.href.split("/")[4];
   if (typeof assignment_id == "undefined") {
     throw new Error("Could not infer the assignment ID. Are you on the correct URL?");
   }
@@ -201,7 +203,7 @@ function format_popup() {
   let teacher_assignment = assignment.teacherAssignments[0];
   let thumbnail = media.thumbnailURL;
   if (thumbnail.startsWith("/")) {
-    thumbnail = "https://"+window.location.hostname+thumbnail;
+    thumbnail = "https://"+window.real_location.hostname+thumbnail;
   }
   
   let deadline_text;
@@ -372,10 +374,13 @@ function parse_questions() {
 function open_copyright_notice() {
   let gpl_popup = window.open("about:blank", "", "width=600, height=300");
   let text = gpl_text.replaceAll("<", "<&zwj;");
-  gpl_popup.document.head.innerHTML = `<title>edpuzzle-answers: Copyright Notice</title>`;
-  gpl_popup.document.body.innerHTML = `
-    <pre style="font-size: 12px; white-space: pre-wrap">${text}</pre>
-  `;
+  //this fixes a bug that only occurs on firefox for some reason
+  setTimeout(() => {
+    gpl_popup.document.head.innerHTML = `<title>edpuzzle-answers: Copyright Notice</title>`;
+    gpl_popup.document.body.innerHTML = `
+      <pre style="font-size: 12px; white-space: pre-wrap">${text}</pre>
+    `;  
+  }, 100);
 }
 
 function textarea_initialize(textarea) {
@@ -550,6 +555,7 @@ async function init() {
   intercept_console();
   window.onerror = on_error;
   window.onbeforeunload = on_before_unload;
+  window.real_location = JSON.parse(JSON.stringify(opener.real_location));
 
   console.log(gpl_text);
 
