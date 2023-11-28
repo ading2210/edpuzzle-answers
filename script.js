@@ -202,43 +202,31 @@ function openPopup(assignment) {
   popup.document.assignment = assignment;
   popup.document.dev_env = document.dev_env;
   popup.document.edpuzzle_data = window.__EDPUZZLE_DATA__;
-
+  
   getMedia(assignment);
 }
 
-function getMedia(assignment, needle="", request_count=1) {
+function getMedia(assignment) {
   var text = popup.document.getElementById("loading_text");
-  text.innerHTML = `Fetching assignments (page ${request_count})...`;
+  text.innerHTML = `Fetching assignments...`;
   
   var media_id = assignment.teacherAssignments[0].contentId;
-  var classroom_id = assignment.teacherAssignments[0].classroom.id;
-  var url2 = "https://edpuzzle.com/api/v3/assignments/classrooms/"+classroom_id+"/students/?needle="+needle;
+  var url2 = `https://edpuzzle.com/api/v3/media/${media_id}`;
 
-  http_get(url2, function() {
-    if ((""+this.status)[0] == "2") {
-      var classroom = JSON.parse(this.responseText);
-      if (classroom.medias.length == 0) {
-        parseQuestions(null);
-        return;
+  fetch(url2, {credentials: "omit"})
+    .then(response => {
+      if (!response.ok) {
+        var text = popup.document.getElementById("loading_text");
+        var content = popup.document.getElementById("content");
+        popup.document.questions = questions;
+        text.remove();
+        content.innerHTML += `Error: Status code ${response.status} received when attempting to fetch the answers.`;
       }
-      var media;
-      for (let i=0; i<classroom.medias.length; i++) {
-        media = classroom.medias[i];
-        if (media._id == media_id) {
-          parseQuestions(media.questions);
-          return;
-        }
-      }
-      getMedia(assignment, classroom.teacherAssignments[classroom.teacherAssignments.length-1]._id, request_count+1);
-    }
-    else {
-      var text = popup.document.getElementById("loading_text");
-      var content = popup.document.getElementById("content");
-      popup.document.questions = questions;
-      text.remove();
-      content.innerHTML += `Error: Status code ${this.status} recieved when attempting to fetch the answers.`;
-    }
-  });
+      else return response.json();
+    })
+    .then(media => {
+      parseQuestions(media.questions);
+    })
 }
 
 function parseQuestions(questions) {
@@ -283,6 +271,8 @@ function parseQuestions(questions) {
       else {
         question_content = question.body[0].html;
       }
+
+      let answer_exists = false;
       for (let j=0; j<question.choices.length; j++) {
         let choice = question.choices[j];
         if (typeof choice.body != "undefined") {
@@ -296,12 +286,14 @@ function parseQuestions(questions) {
           }
           if (choice.isCorrect == true) {
             choices_lines.push(`<li class="choice choice-correct">${item_html}</li>`);
+            answer_exists = true;
           }
           else {
             choices_lines.push(`<li class="choice">${item_html}</li>`);
           }
         }
       }
+      if (!answer_exists) continue;
       
       let choices_html = choices_lines.join("\n");
       let table = ``
@@ -334,7 +326,7 @@ function parseQuestions(questions) {
     }
   }
   popup.document.getElementById("skipper").disabled = false;
-  if (counter == 0) {
+  if (counter == 0 || counter2 == 0) {
     content.innerHTML += `<p style="font-size: 12px">No valid multiple choice questions were found.</p>`;
   }
   else {
