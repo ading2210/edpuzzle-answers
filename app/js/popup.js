@@ -222,16 +222,12 @@ function format_popup() {
 }
 
 async function get_media() {
-  let data = await get_media_attempt();
-  while (data !== false) {
-    //received new needle
-    if (typeof data == "string") {
-      data = await get_media_attempt(data);
-      continue;
-    }
-    return data;
-  }
-  throw new Error("Media not found.");
+  let media_id = assignment.teacherAssignments[0].contentId;
+  let media_url = `https://edpuzzle.com/api/v3/media/${media_id}`;
+  let r = await fetch(media_url, {credentials: "omit"});
+  media = await r.json();
+  questions = media.questions
+  return questions
 }
 
 async function get_media_attempt(needle="") {
