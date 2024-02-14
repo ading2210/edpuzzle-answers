@@ -8,19 +8,17 @@ else {
   base_url = "https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main";
 }
 
-function http_get(url, callback, headers=[], method="GET", content=null) {
-  var request = new XMLHttpRequest();
-  request.addEventListener("load", callback);
-  request.open(method, url, true);
-
+function http_get(url, headers=[], method="GET", content=null) {
+  const fetchHeaders = new Headers(headers);
   if (window.__EDPUZZLE_DATA__ && window.__EDPUZZLE_DATA__.token) {
-    headers.push(["authorization", window.__EDPUZZLE_DATA__.token]);
+    fetchHeaders.append(["authorization", window.__EDPUZZLE_DATA__.token]);
   }
-  for (const header of headers) {
-    request.setRequestHeader(header[0], header[1]);
-  }
-  
-  request.send(content);
+
+  return fetch(url, {
+    method: method,
+    headers: fetchHeaders,
+    body: content,
+  }).then(r => new Promise((resolve, reject) => r.ok ? resolve(r) : reject(r)));
 }
 
 function init() {
@@ -41,66 +39,59 @@ function init() {
   }
 }
 
-function handleCanvasURL() {
-  let location_split = window.location.href.split("/");
-  let url = `/api/v1/courses/${location_split[4]}/assignments/${location_split[6]}`;
-  http_get(url, function(){
-    let data = JSON.parse(this.responseText);
-    let url2 = data.url;
+async function handleCanvasURL() {
+  const location_split = window.location.href.split("/");
+  const url = `/api/v1/courses/${location_split[4]}/assignments/${location_split[6]}`;
+  let data = await http_get(url).then(r => r.json());
+  data = await http_get(data.url).then(r => r.json());
+  const finalUrl = data.url;
 
-    http_get(url2, function() {
-      let data = JSON.parse(this.responseText);
-      let url3 = data.url;
-
-      alert(`Please re-run this script in the newly opened tab. If nothing happens, then allow popups on Canvas and try again.`);
-      open(url3);
-    });
-  });
+  alert(`Please re-run this script in the newly opened tab. If nothing happens, then allow popups on Canvas and try again.`);
+  open(finalUrl);
 }
 
-function handleSchoologyURL() {
+async function handleSchoologyURL() {
   let assignment_id = window.location.href.split("/")[4];
   let url = `/external_tool/${assignment_id}/launch/iframe`;
-  http_get(url, function() {
-    alert(`Please re-run this script in the newly opened tab. If nothing happens, then allow popups on Schoology and try again.`);
+  const responseText = await http_get(url).then(r => r.text());
 
-    //strip js tags from response and add to dom
-    let html = this.responseText.replace(/<script[\s\S]+?<\/script>/, ""); 
-    let div = document.createElement("div");
-    div.innerHTML = html;
-    let form = div.querySelector("form");
-    
-    let input = document.createElement("input")
-    input.setAttribute("type", "hidden");
-    input.setAttribute("name", "ext_submit");
-    input.setAttribute("value", "Submit");
-    form.append(input);
-    document.body.append(div);
+  alert(`Please re-run this script in the newly opened tab. If nothing happens, then allow popups on Schoology and try again.`);
 
-    //submit form in new tab
-    form.setAttribute("target", "_blank");
-    form.submit();
-    div.remove();
-  });
+  //strip js tags from response and add to dom
+  let html = responseText.replace(/<script[\s\S]+?<\/script>/, "");
+  let div = document.createElement("div");
+  div.innerHTML = html;
+  let form = div.querySelector("form");
+
+  let input = document.createElement("input")
+  input.setAttribute("type", "hidden");
+  input.setAttribute("name", "ext_submit");
+  input.setAttribute("value", "Submit");
+  form.append(input);
+  document.body.append(div);
+
+  //submit form in new tab
+  form.setAttribute("target", "_blank");
+  form.submit();
+  div.remove();
 }
 
-function getAssignment(callback) {
-  var assignment_id = window.location.href.split("/")[4];
+async function getAssignment() {
+  const assignment_id = window.location.href.split("/")[4];
   if (typeof assignment_id == "undefined") {
     alert("Error: Could not infer the assignment ID. Are you on the correct URL?");
     return;
   }
-  var url1 = "https://edpuzzle.com/api/v3/assignments/"+assignment_id;
+  const url1 = "https://edpuzzle.com/api/v3/assignments/"+assignment_id;
 
-  http_get(url1, function(){
-    var assignment = JSON.parse(this.responseText);
-    if ((""+this.status)[0] == "2") {
-      openPopup(assignment);
-    }
-    else {
-      alert(`Error: Status code ${this.status} recieved when attempting to fetch the assignment data.`)
-    }
-  });
+  let assignment;
+  try {
+    assignment = await http_get(url1).then(r => r.json());
+  } catch(response) {
+    alert(`Error: Status code ${response.status} recieved when attempting to fetch the assignment data.`)
+    return;
+  }
+  openPopup(assignment);
 }
 
 function openPopup(assignment) {
@@ -112,7 +103,7 @@ function openPopup(assignment) {
   if (thumbnail.startsWith("/")) {
     thumbnail = "https://"+window.location.hostname+thumbnail;
   }
-  
+
   var deadline_text;
   if (teacher_assignment.preferences.dueDate == "") {
     deadline_text = "no due date"
@@ -120,7 +111,7 @@ function openPopup(assignment) {
   else {
     deadline_text = "due on "+(new Date(teacher_assignment.preferences.dueDate)).toDateString();
   }
-  
+
   var base_html = `
   <!DOCTYPE html>
   <head>
@@ -129,24 +120,16 @@ function openPopup(assignment) {
     </style>
     <script>
       var base_url = "${base_url}";
-      function http_get(url, callback) {
-        var request = new XMLHttpRequest();
-        request.addEventListener("load", callback);
-        request.open("GET", url, true);
-        request.send();
+      function http_get(url) {
+        return fetch(url).then(r => new Promise((resolve, reject) => r.ok ? resolve(r) : reject(r)));
       }
       function get_tag(tag, url) {
-        console.log("Loading "+url);
-        http_get(url, function(){
-          if ((""+this.status)[0] == "2") {
-            var element = document.createElement(tag);
-            element.innerHTML = this.responseText;
-            document.getElementsByTagName("head")[0].appendChild(element);
-          }
-          else {
-            console.error("Could not fetch "+url);
-          }
-        });
+        console.log("Loading " + url);
+        return http_get(url).then(r => r.text()).then(responseText => {
+          var element = document.createElement(tag);
+          element.innerHTML = responseText;
+          document.getElementsByTagName("head")[0].appendChild(element);
+        }).catch(r => console.error("Could not fetch " + url));
       }
       get_tag("style", base_url+"/app/popup.css");
       get_tag("script", base_url+"/app/popup.js");
@@ -189,7 +172,7 @@ function openPopup(assignment) {
     </div>
   </div>
   <hr>
-  <div id="content"> 
+  <div id="content">
     <p style="font-size: 12px" id="loading_text"></p>
   </div>
   <hr>
@@ -202,31 +185,30 @@ function openPopup(assignment) {
   popup.document.assignment = assignment;
   popup.document.dev_env = document.dev_env;
   popup.document.edpuzzle_data = window.__EDPUZZLE_DATA__;
-  
+
   getMedia(assignment);
 }
 
-function getMedia(assignment) {
-  var text = popup.document.getElementById("loading_text");
+async function getMedia(assignment) {
+  const text = popup.document.getElementById("loading_text");
   text.innerHTML = `Fetching assignments...`;
-  
-  var media_id = assignment.teacherAssignments[0].contentId;
-  var url2 = `https://edpuzzle.com/api/v3/media/${media_id}`;
 
-  fetch(url2, {credentials: "omit"})
-    .then(response => {
-      if (!response.ok) {
-        var text = popup.document.getElementById("loading_text");
-        var content = popup.document.getElementById("content");
-        popup.document.questions = questions;
-        text.remove();
-        content.innerHTML += `Error: Status code ${response.status} received when attempting to fetch the answers.`;
-      }
-      else return response.json();
-    })
-    .then(media => {
-      parseQuestions(media.questions);
-    })
+  const media_id = assignment.teacherAssignments[0].contentId;
+  const url2 = `https://edpuzzle.com/api/v3/media/${media_id}`;
+
+  let media;
+  try {
+    media = await fetch(url2, {credentials: "omit"})
+      .then(r => new Promise((resolve, reject) => r.ok ? resolve(r.json()) : reject(r)))
+  } catch(response) {
+    const text = popup.document.getElementById("loading_text");
+    const content = popup.document.getElementById("content");
+    popup.document.questions = questions;
+    text.remove();
+    content.innerHTML += `Error: Status code ${response.status} received when attempting to fetch the answers.`;
+    return;
+  }
+  parseQuestions(media.questions);
 }
 
 function parseQuestions(questions) {
@@ -239,24 +221,15 @@ function parseQuestions(questions) {
     content.innerHTML += `<p style="font-size: 12px">Error: Could not get the media for this assignment. </p>`;
     return;
   }
-  
+
   var question;
   var counter = 0;
   var counter2 = 0;
-  for (let i=0; i<questions.length; i++) {
-    for (let j=0; j<questions.length-i-1; j++) {
-      if (questions[j].time > questions[j+1].time){
-       let question_old = questions[j];
-       questions[j] = questions[j + 1];
-       questions[j+1] = question_old;
-     }
-    }
-  }
-  
-  for (let i=0; i<questions.length; i++) {
-    question = questions[i];
+  questions.sort((a, b) => a.time - b.time);
+
+  for (const question of questions) {
     let choices_lines = [];
-    
+
     if (typeof question.choices != "undefined") {
       let min = Math.floor(question.time/60).toString();
       let secs = Math.floor(question.time%60).toString();
@@ -273,8 +246,7 @@ function parseQuestions(questions) {
       }
 
       let answer_exists = false;
-      for (let j=0; j<question.choices.length; j++) {
-        let choice = question.choices[j];
+      for (const choice of question.choices) {
         if (typeof choice.body != "undefined") {
           counter++;
           let item_html;
@@ -294,7 +266,7 @@ function parseQuestions(questions) {
         }
       }
       if (!answer_exists) continue;
-      
+
       let choices_html = choices_lines.join("\n");
       let table = ``
       if (counter2 != 0) {
@@ -320,7 +292,7 @@ function parseQuestions(questions) {
         </tr>
       </table>
       `;
-      
+
       content.innerHTML += table;
       counter2++;
     }

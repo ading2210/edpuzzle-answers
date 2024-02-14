@@ -1,44 +1,39 @@
 var button = document.getElementById("skipper");
 
-function httpGet(url, callback, headers=[], method="GET", content=null) {
-  var request = new XMLHttpRequest();
-  request.addEventListener("load", callback);
-  request.open(method, url, true);
+function httpGet(url, headers=[], method="GET", content=null) {
+  const fetchHeaders = new Headers(headers);
   if (document.edpuzzle_data && document.edpuzzle_data.token) {
-    headers.push(["authorization", document.edpuzzle_data.token]);
+    fetchHeaders.append(["authorization", document.edpuzzle_data.token]);
   }
-  for (const header of headers) {
-    request.setRequestHeader(header[0], header[1]);
-  }
-  request.send(content);
+
+  return fetch(url, {
+    method: method,
+    body: content,
+    headers: fetchHeaders,
+  }).then(r => new Promise((resolve, reject) => r.ok ? resolve(r) : reject(r)));
 }
 
-function init() {
+async function init() {
   button.value = "Getting CSRF token...";
-  getCSRF();
-}
 
-function getCSRF() {
   var csrfURL = "https://edpuzzle.com/api/v3/csrf";
-  httpGet(csrfURL, function(){
-    var data = JSON.parse(this.responseText);
-    var csrf = data.CSRFToken;
-    button.value = "Getting assignment data..."
-    getAssignment(csrf);
-  });
+
+  var data = await httpGet(csrfURL).then(r => r.json());
+  var csrf = data.CSRFToken;
+
+  button.value = "Getting attempt..."
+
+  const assignment = document.assignment;
+
+  var id = assignment.teacherAssignments[0]._id;
+  var attemptURL = "https://edpuzzle.com/api/v3/assignments/"+id+"/attempt";
+  data = await httpGet(attemptURL).then(r => r.json());
+
+  button.value = "Posting watchtime data..."
+  await postAttempt(csrf, data);
 }
 
-function getAssignment(csrf) {
-  var assignment_id = opener.location.href.split("/")[4];
-  var url1 = "https://edpuzzle.com/api/v3/assignments/" + assignment_id + "/attempt";
-  httpGet(url1, function(){
-    var data = JSON.parse(this.responseText);
-    button.value = "Posting watchtime data...";
-    postAttempt(csrf, data);
-  });
-}
-
-function postAttempt(csrf, data) {
+async function postAttempt(csrf, data) {
   var id = data._id;
   var teacher_assignment_id = data.teacherAssignmentId;
   var referrer = "https://edpuzzle.com/assignments/"+ teacher_assignment_id +"/watch";;
@@ -53,11 +48,10 @@ function postAttempt(csrf, data) {
     ['x-edpuzzle-referrer', referrer],
     ['x-edpuzzle-web-version', opener.__EDPUZZLE_DATA__.version]
   ];
-  
-  httpGet(url2, function(){
-    button.value = "Video skipped successfully.";
-    opener.location.reload();
-  }, headers, "POST", JSON.stringify(content));
+  await httpGet(url2, headers, "POST", JSON.stringify(content));
+
+  button.value = "Video skipped successfully.";
+  opener.location.reload();
 }
 
 init();
