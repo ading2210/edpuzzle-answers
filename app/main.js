@@ -12,19 +12,17 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU Affero General Public License along with this program.If not, see <https://www.gnu.org/licenses/>.`;
 
-function http_get(url, callback, headers=[], method="GET", content=null) {
-  var request = new XMLHttpRequest();
-  request.addEventListener("load", callback);
-  request.open(method, url, true);
-
+function http_get(url, headers=[], method="GET", content=null) {
+  const fetchHeaders = new Headers(headers);
   if (window.__EDPUZZLE_DATA__ && window.__EDPUZZLE_DATA__.token && (new URL(url).hostname) == "edpuzzle.com") {
-    headers.push(["authorization", window.__EDPUZZLE_DATA__.token]);
+    fetchHeaders.append(["authorization", window.__EDPUZZLE_DATA__.token]);
   }
-  for (const header of headers) {
-    request.setRequestHeader(header[0], header[1]);
-  }
-  
-  request.send(content);
+
+  return fetch(url, {
+    method: method,
+    body: content,
+    headers: fetchHeaders,
+  }).then(r => new Promise((resolve, reject) => r.ok ? resolve(r) : reject(r)));
 }
 
 function format_text(text, replacements) {
@@ -50,7 +48,7 @@ function init() {
     alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
   }
   else if ((/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.real_location.href)) {
-    http_get(base_url+"/app/html/popup.html", open_popup);
+    http_get(base_url+"/app/html/popup.html").then(r => r.text()).then(open_popup);
   }
   else if (window.canvasReadyState) {
     handle_canvas_url();
@@ -63,27 +61,26 @@ function init() {
   }
 }
 
-function open_popup() {
+function open_popup(text) {
   const popup = window.open("about:blank", "", "width=700, height=420");
   //const popup = window.open("about:blank");
   if (popup == null) {
     alert("Error: Could not open the popup. Please enable popups for edpuzzle.com and try again.");
     return;
   }
-  write_popup(popup, this.responseText);
-  
-  function popup_unload() { 
-    http_get(base_url+"/app/html/popup.html", function(){
-      if (popup.closed) return;
-      write_popup(popup, this.responseText);
-      popup.addEventListener("beforeunload", popup_unload);
-    });
+  write_popup(popup, text);
+
+  async function popup_unload() {
+    const text = await http_get(base_url+"/app/html/popup.html").then(r => r.text());
+    if (popup.closed) return;
+    write_popup(popup, text);
+    popup.addEventListener("beforeunload", popup_unload);
   }
 
   popup.addEventListener("beforeunload", popup_unload);
 }
 
-function write_popup(popup, html) {
+async function write_popup(popup, html) {
   popup.document.base_url = base_url;
   popup.document.edpuzzle_data = window.__EDPUZZLE_DATA__;
   popup.document.gpl_text = gpl_text;
@@ -95,70 +92,67 @@ function write_popup(popup, html) {
     popup.document.head.append(element);
     return element;
   }
-  
+
   create_element("script", `const from_id = (id) => document.getElementById(id)`);
 
-  http_get("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap", function(){
-    create_element("style", this.responseText);
-    setTimeout(function(){
+  http_get("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap")
+    .then(r => r.text())
+    .then(async text => {
+      create_element("style", text);
+      await new Promise(resolve => setTimeout(resolve, 200));
       if (popup.textarea_update_height) {
         for (let textarea of popup.document.getElementsByTagName("textarea")) {
           popup.textarea_update_height(textarea);
         }
-      }  
-    }, 200)
-  });
+      }
+    });
 
-  http_get(base_url+"/app/css/dist.css", function(){
-    create_element("style", this.responseText);
-  })
 
-  http_get(base_url+"/app/js/popup.js", function() {
-    create_element("script", this.responseText);
-  })
+  http_get(base_url+"/app/css/dist.css")
+    .then(r => r.text())
+    .then(r => create_element("style", r));
+
+  http_get(base_url+"/app/js/popup.js")
+    .then(r => r.text())
+    .then(r => create_element("script", r));
 }
 
-function handle_canvas_url() {
+async function handle_canvas_url() {
   let location_split = window.real_location.href.split("/");
   let url = `/api/v1/courses/${location_split[4]}/assignments/${location_split[6]}`;
-  http_get(url, function(){
-    let data = JSON.parse(this.responseText);
-    let url2 = data.url;
+  let data = await http_get(url).then(r => r.json());
+  let url2 = data.url;
+  data = await http_get(url2).then(r => r.json());
+  let url3 = data.url;
 
-    http_get(url2, function() {
-      let data = JSON.parse(this.responseText);
-      let url3 = data.url;
-
-      alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Canvas and try again.`);
-      open(url3);
-    });
-  });
+  alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Canvas and try again.`);
+  open(url3);
 }
 
-function handle_schoology_url() {
+async function handle_schoology_url() {
   let assignment_id = window.real_location.href.split("/")[4];
   let url = `/external_tool/${assignment_id}/launch/iframe`;
-  http_get(url, function() {
-    alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Schoology and try again.`);
+  const text = await http_get(url).then(r => r.text());
 
-    //strip js tags from response and add to dom
-    let html = this.responseText.replace(/<script[\s\S]+?<\/script>/, ""); 
-    let div = document.createElement("div");
-    div.innerHTML = html;
-    let form = div.querySelector("form");
-    
-    let input = document.createElement("input")
-    input.setAttribute("type", "hidden");
-    input.setAttribute("name", "ext_submit");
-    input.setAttribute("value", "Submit");
-    form.append(input);
-    document.body.append(div);
+  alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Schoology and try again.`);
 
-    //submit form in new tab
-    form.setAttribute("target", "_blank");
-    form.submit();
-    div.remove();
-  });
+  //strip js tags from response and add to dom
+  let html = text.replace(/<script[\s\S]+?<\/script>/, "");
+  let div = document.createElement("div");
+  div.innerHTML = html;
+  let form = div.querySelector("form");
+
+  let input = document.createElement("input")
+  input.setAttribute("type", "hidden");
+  input.setAttribute("name", "ext_submit");
+  input.setAttribute("value", "Submit");
+  form.append(input);
+  document.body.append(div);
+
+  //submit form in new tab
+  form.setAttribute("target", "_blank");
+  form.submit();
+  div.remove();
 }
 
 init();
