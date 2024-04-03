@@ -13,8 +13,13 @@
     "account_id": "xxxxxxxxxxx",
     "token": "xxxxxxxxxxxxxxxxxxxxxxx" 
   },
+  "gemini": {
+    "enabled": true,
+    "token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  },
   "rate_limits": {
-    "Cloudflare": "200/hour",
+    "Gemini": "200/hour",
+    "Cloudflare": "30/hour",
     "InferKit": "20/hour",
     "Vercel": "100/hour",
     "DeepAI": "100/hour"

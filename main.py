@@ -20,10 +20,12 @@ with open(base_dir+"/config/config.json") as f:
   config = json.loads(f.read())
 utils.include_traceback = config["include_traceback"]
 scraper.config = config
+if not config["gemini"]["enabled"]:
+  del scraper.services["Gemini"]
 if not config["cloudflare"]["enabled"]:
-  scraper.disabled_services.append("Cloudflare")
+  del scraper.services["Cloudflare"]
+ 
 
-scraper.services_full = scraper.resolve_services();
 
 print("Generating CSS...")
 css_path = base_dir+"/app/css"
@@ -100,19 +102,25 @@ def get_captions(id, language="en"):
 
 @app.route("/api/services")
 def resolve_services():
-  return scraper.services_full;
+  response = []
+  for name, service in scraper.services.items():
+    response.append({
+      "name": name,
+      "models": service.models,
+      "max_length": service.max_length,
+      "streaming": service.streaming_supported
+    })
+  return response
 
-@app.route("/api/generate/<service>", methods=["POST"])
+@app.route("/api/generate/<service_name>", methods=["POST"])
 @limiter.limit(get_path_limit)
-def generate(service):
+def generate(service_name):
+  print(service_name)
   try:
-    if not service in scraper.services:
+    if not service_name in scraper.services:
       raise exceptions.BadRequestError("Service does not exist.")
-    service_spec = scraper.resolve_service(service)
+    service = scraper.services[service_name]
 
-    if service_spec["disabled"]:
-      raise exceptions.ForbiddenError("Cannot access a service that is disabled.")
-    
     args = []
     kwargs = {}
     data = request.json
@@ -120,27 +128,20 @@ def generate(service):
     if "prompt" in data and config["profanity_filter"] and profanity_check.predict([data["prompt"]])[0]:
       raise exceptions.BadRequestError("This request may contain offensive language. As a result, it has been denied.")
 
-    for arg in service_spec["args"]:
-      annotation = str
-      if "annotation" in arg:
-        annotation = utils.type_dict[arg["annotation"]]
-
-      if not "default" in arg:
-        if not arg["name"] in data:
-          raise exceptions.BadRequestError(f"Missing argument {arg['name']}")
-        args.append(annotation(data[arg["name"]]))
-        
-      else:
-        if not arg["name"] in data:
-          continue
-        kwargs[arg["name"]] = annotation(data[arg["name"]])
+    if not "prompt" in data:
+      raise exceptions.BadRequestError("Missing required parameter 'prompt'.")
+    if not "model" in data and service.models:
+      raise exceptions.BadRequestError("Missing required parameter 'model'.")
+    for arg in data:
+      if not arg in ["prompt", "model"]:
+        raise exceptions.BadRequestError(f"Unknown parameter '{arg}'.")
     
-    if len(data["prompt"]) > service_spec["max_length"]:
+    if len(data["prompt"]) > service.max_length:
       raise exceptions.BadRequestError("Prompt too long.")
 
     def generator():
       try:
-        for chunk in scraper.get_generator(service, *args, **kwargs):
+        for chunk in scraper.get_generator(service, **data):
           if chunk == data["prompt"]:
             continue
           yield json.dumps(chunk)+"\n"

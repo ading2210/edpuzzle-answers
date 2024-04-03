@@ -4,62 +4,13 @@
 import requests, re, random, time, string, hashlib, json, queue, threading, inspect, types
 from modules import exceptions, utils
 import vercel_ai
+import google.generativeai as google_ai
 
 proxy_cache = {
   "updated": 0,
   "proxies": []
 }
 config = {}
-
-#note that the default service is always the first one
-services = ["Cloudflare", "Vercel", "DeepAI", "InferKit"]
-disabled_services = []
-
-def inspect_func(func):
-  argspec = inspect.getfullargspec(func)
-  args = []
-  args_str = []
-  
-  for arg in argspec.args:
-    if arg == "self": continue
-    args.append({"name": arg})
-    args_str.append(arg)
-  
-  if argspec.defaults != None:
-    for i in range(len(argspec.defaults)):
-      default = argspec.defaults[::-1][i]
-      args[::-1][i]["default"] = default
-    
-  for key in argspec.annotations:
-    index = args_str.index(key)
-    args[index]["annotation"] = argspec.annotations[key].__name__
-  
-  return args
-
-def resolve_service(service_name):
-  service = globals()[service_name]
-  arg_specs = inspect_func(service.generate_text)
-  
-  service_dict = {
-    "args": arg_specs,
-    "streaming": service.streaming_supported,
-    "models": False,
-    "proxy": service.proxy_requests,
-    "max_length": service.max_length,
-    "name": service_name,
-    "disabled": service_name in disabled_services
-  }
-  if hasattr(service, "models"):
-    service_dict["models"] = service.models
-    
-  return service_dict
-
-def resolve_services():
-  services_list = []
-  for service_name in services:
-    services_list.append(resolve_service(service_name))
-    
-  return services_list
 
 def scrape_proxies(thread_count=200):
   print("Refreshing proxy cache...")
@@ -131,10 +82,9 @@ def select_proxy():
   proxy = random.choice(proxies)
   return proxy[1]
 
-def get_generator(service_name, *args, **kwargs):
+def get_generator(service_cls, *args, **kwargs):
   service = None
   try:
-    service_cls = globals()[service_name]
     cls_args = []
     if service_cls.proxy_requests:
       yield {"status": "proxy"}
@@ -160,11 +110,27 @@ def get_generator(service_name, *args, **kwargs):
       print("Connection closed!")
       service.clean_up()
 
+class Gemini:
+  streaming_supported = False
+  proxy_requests = False
+  max_length = 3000
+  models = ["gemini-1.0-pro"]
+
+  def __init__(self):
+    google_ai.configure(api_key=config["gemini"]["token"])
+
+  def generate_text(self, prompt:str, model:str="gemini-1.0-pro"):
+    model = google_ai.GenerativeModel(model)
+    response = model.generate_content(prompt)
+
+    yield response.text
+
+
 class Cloudflare:
   streaming_supported = False
   proxy_requests = False
   max_length = 3000
-  models = ["llama-2-7b-chat-int8"]
+  models = ["mistral-7b-instruct", "llama-2-7b-chat-int8"]
 
   def __init__(self):
     pass
@@ -173,6 +139,7 @@ class Cloudflare:
     cf_config = config["cloudflare"]
     models_dict = {
       "llama-2-7b-chat-int8": "@cf/meta/llama-2-7b-chat-int8",
+      "mistral-7b-instruct": "@cf/mistral/mistral-7b-instruct-v0.1"
     }
     payload = {
       "messages": [
@@ -195,6 +162,7 @@ class InferKit:
   streaming_supported = True
   proxy_requests = True
   max_length = 3000
+  models = False
   
   def __init__(self, proxy=None):
     self.proxy = proxy
@@ -236,6 +204,7 @@ class Vercel:
   streaming_supported = True
   proxy_requests = True
   max_length = 3000
+  models = ["gpt-3.5-turbo"]
 
   def __init__(self, proxy=None):
     self.client = vercel_ai.Client(proxy=proxy)
@@ -251,10 +220,11 @@ class Vercel:
       yield text
 
 class DeepAI:
-  api_url = "https://api.deepai.org/make_me_a_pizza"
+  api_url = "https://api.deepai.org/hacking_is_a_serious_crime"
   streaming_supported = True
   proxy_requests = True
   max_length = 3000
+  models = ["gpt-3.5-turbo"]
   
   def __init__(self, proxy=None):
     self.proxy = proxy
@@ -296,9 +266,13 @@ class DeepAI:
     else:
       yield r.text
 
-services_full = resolve_services();
 
-if __name__ == "__main__":
-  chatbot = ChatGPT.create_from_config()
-  for chunk in chatbot.generate_text("summarize the GNU GPL v3."):
-    print(chunk)
+#note that the default service is always the first one
+services = {
+  "Gemini": Gemini,
+  "Cloudflare": Cloudflare,
+  "DeepAI": DeepAI,
+  "Vercel": Vercel,
+  "InferKit": InferKit
+}
+disabled_services = []

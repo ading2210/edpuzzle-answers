@@ -238,7 +238,6 @@ static async generate(service, prompt, model=null) {
 
   let body = {
     prompt: prompt,
-    stream: true
   };
   if (model) body.model = model;
 
