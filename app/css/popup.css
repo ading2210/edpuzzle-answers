@@ -17,9 +17,6 @@
   .textarea {
     @apply w-full rounded-lg p-2 bg-slate-900 border border-slate-700 overflow-y-hidden resize-none;
   }
-  .footer_table {
-    @apply border-separate border-spacing-x-1;
-  }
   .footer_icon {
     @apply stroke-slate-200 w-6 h-6;
   }

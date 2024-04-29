@@ -78,12 +78,6 @@ def update_invidous_cache():
     invidious.test_instances()
     time.sleep(30*60)
 
-def update_proxy_cache():
-  while True:
-    print("Refreshing proxy cache...")
-    scraper.scrape_proxies(thread_count=config["proxy_checker_threads"])
-    time.sleep(30*60)
-
 #===== flask routes =====
 
 @app.route("/api/captions/<id>")
@@ -115,7 +109,6 @@ def resolve_services():
 @app.route("/api/generate/<service_name>", methods=["POST"])
 @limiter.limit(get_path_limit)
 def generate(service_name):
-  print(service_name)
   try:
     if not service_name in scraper.services:
       raise exceptions.BadRequestError("Service does not exist.")
@@ -189,8 +182,5 @@ if __name__ == "__main__":
   t = threading.Thread(target=update_invidous_cache, daemon=True)
   t.start()
 
-  t = threading.Thread(target=update_proxy_cache, daemon=True)
-  t.start()
-  
   print("Starting flask...")
   app.run(host="0.0.0.0", port=config["server_port"], threaded=True, debug=config["dev_mode"])

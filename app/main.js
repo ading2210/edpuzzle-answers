@@ -12,6 +12,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU Affero General Public License along with this program.If not, see <https://www.gnu.org/licenses/>.`;
 
+//legacy code - use the fetch api instead
 function http_get(url, callback, headers=[], method="GET", content=null) {
   var request = new XMLHttpRequest();
   request.addEventListener("load", callback);
@@ -64,8 +65,7 @@ function init() {
 }
 
 function open_popup() {
-  const popup = window.open("about:blank", "", "width=700, height=420");
-  //const popup = window.open("about:blank");
+  const popup = window.open("about:blank", "", "width=760, height=450");
   if (popup == null) {
     alert("Error: Could not open the popup. Please enable popups for edpuzzle.com and try again.");
     return;
@@ -111,11 +111,15 @@ function write_popup(popup, html) {
 
   http_get(base_url+"/app/css/dist.css", function(){
     create_element("style", this.responseText);
-  })
+  });
 
   http_get(base_url+"/app/js/popup.js", function() {
     create_element("script", this.responseText);
-  })
+  });
+  /*
+  http_get("https://cdn.jsdelivr.net/npm/libcurl.js@latest/libcurl_full.js", function() {
+    create_element("script", this.responseText);
+  });*/
 }
 
 function handle_canvas_url() {

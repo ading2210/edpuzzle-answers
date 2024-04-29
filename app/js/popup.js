@@ -9,6 +9,12 @@ const csrf_cache = {
   latest: null,
   updated: 0
 }
+/*
+const wisp_servers = [
+  "wss://wisp.mercurywork.shop/",
+  "wss://anura.pro/"
+];
+*/
 
 const skipper_button = from_id("skipper_button");
 const answers_button = from_id("answers_button");
@@ -225,34 +231,13 @@ async function get_media() {
   let media_id = assignment.teacherAssignments[0].contentId;
   let media_url = `https://edpuzzle.com/api/v3/media/${media_id}`;
   let r = await fetch(media_url, {credentials: "omit"});
+  //edpuzzle is private
+  if (r.status !== 200) {
+    throw new Error("The assignment is private, so the answers cannot be extracted.");
+  }
   media = await r.json();
-  questions = media.questions
+  questions = media.questions;
   return questions
-}
-
-async function get_media_attempt(needle="") {
-  let classroom_id = assignment.teacherAssignments[0].classroom.id;
-  let media_id = assignment.teacherAssignments[0].contentId;
-  let media_url = `https://edpuzzle.com/api/v3/assignments/classrooms/${classroom_id}/students/?needle=${needle}`;
-
-  let response = await fetch(media_url);
-
-  if (!response.ok) {
-    throw new Error(`Status code ${response.status} received when attempting to fetch the answers.`)
-  }
-
-  let classroom = await response.json();
-  if (classroom.medias.length == 0) {
-    return false;
-  }
-
-  for (let media of classroom.medias) {
-    if (media._id == media_id) {
-      return media.questions;
-    }
-  }
-
-  return classroom.teacherAssignments.slice(-1)[0]._id;
 }
 
 //associates user responses with their corresponding questions.
@@ -272,22 +257,35 @@ async function get_responses(questions) {
   return questions;
 }
 
+//wrapper function for question fetcher - with error handling
+async function get_questions() {
+  questions = await get_media();
+  questions = await get_responses(questions);
+
+  //validate the questions to make sure they all have an answer listed
+  for (let question of questions) {
+    if (question.type !== "multiple-choice") continue;
+    let correct_found = false;
+    for (let choice of question.choices) {
+      if (choice.isCorrect) {
+        correct_found = true;
+        break;
+      };
+    }
+    if (!correct_found) {
+      throw new Error("Some questions have invalid data. The assignment might be a private one, so the answers cannot be extracted.");
+    }
+  }
+}
+
 //display the questions onto the popup
 function parse_questions() {
   if (questions == null) {
     throw new Error("Failed to fetch the questions for this assignment.")
   }
   
-  //bubble sort the questions by time
-  for (let i=0; i<questions.length; i++) {
-    for (let j=0; j<questions.length-i-1; j++) {
-      if (questions[j].time > questions[j+1].time){
-       let question_old = questions[j];
-       questions[j] = questions[j + 1];
-       questions[j+1] = question_old;
-     }
-    }
-  }
+  //sort the questions by time
+  questions.sort((a, b) => a.time - b.time);
 
   for (let question of questions) {
     let min = fixed_length_int(Math.floor(question.time/60), 2);
@@ -308,7 +306,6 @@ function parse_questions() {
     if (question.type == "multiple-choice") {
       let choices_list = get_template("multiple_choice_template");
       let choice_template = choices_list.placeholder("question_choice");
-      
       for (let choice of question.choices) {
         let list_item = choice_template.cloneNode(true);
         if (choice.isCorrect) {
@@ -376,7 +373,7 @@ function open_copyright_notice() {
     gpl_popup.document.body.innerHTML = `
       <pre style="font-size: 12px; white-space: pre-wrap">${text}</pre>
     `;  
-  }, 100);
+  }, 500);
 }
 
 function textarea_initialize(textarea) {
@@ -572,13 +569,11 @@ async function init() {
   try {
     assignment = await get_assignment();
     format_popup();
-
-    questions = await get_media();
-    questions = await get_responses(questions);
-
+    await get_questions();
     parse_questions();
   }
   catch (error) {
+    console.error(error + "");
     console.error(error.stack);
     status_text.innerHTML = `An error has occurred. Please check the JS console for more details.<br><br>${error+""}`;
   }
