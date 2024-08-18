@@ -73,6 +73,7 @@ function video_speed() {
         events[i+1] = function(){};
       }
     }
+    player.setPlaybackRate(speed)
   }
 
   else if (media_source == "vimeo") {
