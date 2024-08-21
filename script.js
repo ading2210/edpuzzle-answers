@@ -4,8 +4,7 @@ if (typeof document.dev_env != "undefined") {
   base_url = document.dev_env;
 }
 else {
-  //get resources off of github to not inflate the jsdelivr stats
-  base_url = "https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main";
+  base_url = "https://raw.githack.com/Star-TIW/edpuzzle/main";
 }
 
 function http_get(url, callback, headers=[], method="GET", content=null) {
@@ -24,10 +23,7 @@ function http_get(url, callback, headers=[], method="GET", content=null) {
 }
 
 function init() {
-  if (window.location.hostname == "edpuzzle.hs.vc") {
-    alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
-  }
-  else if ((/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.location.href)) {
+  if ((/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.location.href)) {
     getAssignment();
   }
   else if (window.canvasReadyState) {
@@ -51,8 +47,6 @@ function handleCanvasURL() {
     http_get(url2, function() {
       let data = JSON.parse(this.responseText);
       let url3 = data.url;
-
-      alert(`Please re-run this script in the newly opened tab. If nothing happens, then allow popups on Canvas and try again.`);
       open(url3);
     });
   });
@@ -153,7 +147,7 @@ function openPopup(assignment) {
       get_tag("script", base_url+"/app/videooptions.js");
       get_tag("script", base_url+"/app/videospeed.js");
     </script>
-    <title>Answers for: ${media.title}</title>
+    <title>Star Skipper</title>
   </head>
   <div id="header_div">
     <div>
@@ -193,9 +187,7 @@ function openPopup(assignment) {
     <p style="font-size: 12px" id="loading_text"></p>
   </div>
   <hr>
-  <p style="font-size: 12px">Made by: <a target="_blank" href="https://github.com/ading2210">ading2210</a> on Github | Website: <a target="_blank" href="https://edpuzzle.hs.vc">edpuzzle.hs.vc</a> | Source code: <a target="_blank" href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a></p>
-  <p style="font-size: 12px">Licenced under the <a target="_blank" href="https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE">GNU GPL v3</a>. Do not reupload or redistribute without abiding by those terms.</p>
-  <p style="font-size: 12px">Available now from our <a target="_blank" href="https://edpuzzle.hs.vc/discord.html">Discord server</a>: <i> An open beta of a completely overhauled GUI, with proper mobile support, ChatGPT integration for open-ended questions, and more. </i></p>`;
+  <p style="font-size: 12px">Made by: <a target="_blank" href="https://github.com/ading2210">ading2210</a> on Github and refined by <a target="_blank" href="https://github.com/Star-TIW">Star-TIW</a></p>
   popup = window.open("about:blank", "", "width=600, height=400");
   popup.document.write(base_html);
 
@@ -208,7 +200,7 @@ function openPopup(assignment) {
 
 function getMedia(assignment) {
   var text = popup.document.getElementById("loading_text");
-  text.innerHTML = `Fetching assignments...`;
+  text.innerHTML = `If you're seeing this, the edpuzzle is private so good luck! Ur on ur own...`;
   
   var media_id = assignment.teacherAssignments[0].contentId;
   var url2 = `https://edpuzzle.com/api/v3/media/${media_id}`;
