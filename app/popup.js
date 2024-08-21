@@ -1,7 +1,7 @@
 var video_script = null;
 
 if (typeof base_url == "undefined") {
-  var base_url = "https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main";
+  var base_url = "https://raw.githack.com/Star-TIW/edpuzzle/main";
 }
 
 function http_exec(url) {
