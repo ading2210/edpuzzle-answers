@@ -4,7 +4,7 @@ if (typeof document.dev_env != "undefined") {
   base_url = document.dev_env;
 }
 else {
-  base_url = "https://raw.githack.com/Star-TIW/edpuzzle/main";
+  base_url = "https://raw.githubusercontent.com/Star-TIW/edpuzzle/main";
 }
 
 function http_get(url, callback, headers=[], method="GET", content=null) {
@@ -23,11 +23,17 @@ function http_get(url, callback, headers=[], method="GET", content=null) {
 }
 
 function init() {
-  if ((/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.location.href)) {
+  if (window.location.hostname == "edpuzzle.hs.vc") {
+    alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
+  }
+  else if ((/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.location.href)) {
     getAssignment();
   }
   else if (window.canvasReadyState) {
     handleCanvasURL();
+  }
+  else if (window.schoologyMoreLess) {
+    handleSchoologyURL();
   }
   else {
     alert("Please run this script on an Edpuzzle assignment. For reference, the URL should look like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch");
@@ -44,8 +50,36 @@ function handleCanvasURL() {
     http_get(url2, function() {
       let data = JSON.parse(this.responseText);
       let url3 = data.url;
+
+      alert(`Please re-run this script in the newly opened tab. If nothing happens, then allow popups on Canvas and try again.`);
       open(url3);
     });
+  });
+}
+
+function handleSchoologyURL() {
+  let assignment_id = window.location.href.split("/")[4];
+  let url = `/external_tool/${assignment_id}/launch/iframe`;
+  http_get(url, function() {
+    alert(`Please re-run this script in the newly opened tab. If nothing happens, then allow popups on Schoology and try again.`);
+
+    //strip js tags from response and add to dom
+    let html = this.responseText.replace(/<script[\s\S]+?<\/script>/, ""); 
+    let div = document.createElement("div");
+    div.innerHTML = html;
+    let form = div.querySelector("form");
+    
+    let input = document.createElement("input")
+    input.setAttribute("type", "hidden");
+    input.setAttribute("name", "ext_submit");
+    input.setAttribute("value", "Submit");
+    form.append(input);
+    document.body.append(div);
+
+    //submit form in new tab
+    form.setAttribute("target", "_blank");
+    form.submit();
+    div.remove();
   });
 }
 
@@ -118,7 +152,7 @@ function openPopup(assignment) {
       get_tag("script", base_url+"/app/videooptions.js");
       get_tag("script", base_url+"/app/videospeed.js");
     </script>
-    <title>Star Skipper</title>
+    <title>Star Hacks</title>
     <link rel="icon" href="${base_url}/star.png">
   </head>
   <div id="header_div">
@@ -159,7 +193,9 @@ function openPopup(assignment) {
     <p style="font-size: 12px" id="loading_text"></p>
   </div>
   <hr>
-  <p style="font-size: 12px">Made by: <a target="_blank" href="https://github.com/ading2210">ading2210</a> on Github and refined by <a target="_blank" href="https://github.com/Star-TIW">Star-TIW</a></p>
+  <p style="font-size: 12px">Made by: <a target="_blank" href="https://github.com/ading2210">ading2210</a> on Github | Website: <a target="_blank" href="https://edpuzzle.hs.vc">edpuzzle.hs.vc</a> | Source code: <a target="_blank" href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a></p>
+  <p style="font-size: 12px">Licenced under the <a target="_blank" href="https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE">GNU GPL v3</a>. Do not reupload or redistribute without abiding by those terms.</p>
+  <p style="font-size: 12px">Available now from our <a target="_blank" href="https://edpuzzle.hs.vc/discord.html">Discord server</a>: <i> An open beta of a completely overhauled GUI, with proper mobile support, ChatGPT integration for open-ended questions, and more. </i></p>`;
   popup = window.open("about:blank", "", "width=600, height=400");
   popup.document.write(base_html);
 
