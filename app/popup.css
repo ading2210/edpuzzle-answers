@@ -146,7 +146,7 @@ main {
   border-radius: 3px;
 }
 
-.choices li.correct {
+.choice-correct {
   color: var(--green);
   font-weight: bold;
 }
