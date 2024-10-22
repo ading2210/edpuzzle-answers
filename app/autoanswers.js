@@ -38,19 +38,6 @@ class ProgressBar {
 var button = document.getElementById("answers_button");
 var progressBar;
 
-function httpGet(url, callback, headers=[], method="GET", content=null) {
-  var request = new XMLHttpRequest();
-  request.addEventListener("load", () => callback.call(this, request.responseText));
-  request.open(method, url, true);
-  if (document.edpuzzle_data && document.edpuzzle_data.token) {
-    headers.push(["authorization", document.edpuzzle_data.token]);
-  }
-  for (const header of headers) {
-    request.setRequestHeader(header[0], header[1]);
-  }
-  request.send(content);
-}
-
 class EdpuzzleAutoanswer {
   constructor() {
     this.button = document.getElementById("answers_button");
@@ -192,6 +179,19 @@ class EdpuzzleAutoanswer {
         this.postAnswers(remainingQuestions, attemptId, total);
       }
     }, headers, "POST", JSON.stringify(content));
+  }
+
+  httpGet(url, callback, headers = [], method = "GET", content = null) {
+    var request = new XMLHttpRequest();
+    request.addEventListener("load", () => callback.call(this, request.responseText));
+    request.open(method, url, true);
+    if (document.edpuzzle_data && document.edpuzzle_data.token) {
+      headers.push(["authorization", document.edpuzzle_data.token]);
+    }
+    for (const header of headers) {
+      request.setRequestHeader(header[0], header[1]);
+    }
+    request.send(content);
   }
 }
 
