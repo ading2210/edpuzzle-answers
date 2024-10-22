@@ -153,41 +153,7 @@ function openPopup(assignment) {
       });
     }
     // Define ProgressBar class here
-    class ProgressBar {
-      constructor(element, totalSteps, solvedColor, currentStep = 0) {
-        this.element = element;
-        this.totalSteps = totalSteps;
-        this.currentStep = currentStep;
-        this.solvedColor = solvedColor;
-        this.isSolved = false;
-        this.render();
-      }
     
-      updateStep(step) {
-        this.currentStep = Math.min(step, this.totalSteps);
-        if (this.currentStep === this.totalSteps) {
-          this.setSolved(true);
-        }
-        this.render();
-      }
-    
-      setSolved(solved) {
-        this.isSolved = solved;
-        this.render();
-      }
-    
-      reset() {
-        this.currentStep = 0;
-        this.isSolved = false;
-        this.render();
-      }
-    
-      render() {
-        const progress = (this.currentStep / this.totalSteps) * 100;
-        this.element.style.width = \`\${progress}%\`;
-        this.element.style.backgroundColor = this.isSolved ? this.solvedColor : '';
-      }
-    }
     get_tag("style", base_url+"/app/popup.css");
     get_tag("script", base_url+"/app/popup.js");
     get_tag("script", base_url+"/app/videooptions.js");

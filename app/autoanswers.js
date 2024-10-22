@@ -1,19 +1,4 @@
-var button = document.getElementById("answers_button");
-var progressBar;
-
-function httpGet(url, callback, headers=[], method="GET", content=null) {
-  var request = new XMLHttpRequest();
-  request.addEventListener("load", callback);
-  request.open(method, url, true);
-  if (document.edpuzzle_data && document.edpuzzle_data.token) {
-    headers.push(["authorization", document.edpuzzle_data.token]);
-  }
-  for (const header of headers) {
-    request.setRequestHeader(header[0], header[1]);
-  }
-  request.send(content);
-}
-
+// Add ProgressBar class definition at the beginning of the file
 class ProgressBar {
   constructor(element, totalSteps, solvedColor, currentStep = 0) {
     this.element = element;
@@ -48,6 +33,22 @@ class ProgressBar {
     this.element.style.width = `${progress}%`;
     this.element.style.backgroundColor = this.isSolved ? this.solvedColor : '';
   }
+}
+
+var button = document.getElementById("answers_button");
+var progressBar;
+
+function httpGet(url, callback, headers=[], method="GET", content=null) {
+  var request = new XMLHttpRequest();
+  request.addEventListener("load", () => callback.call(this, request.responseText));
+  request.open(method, url, true);
+  if (document.edpuzzle_data && document.edpuzzle_data.token) {
+    headers.push(["authorization", document.edpuzzle_data.token]);
+  }
+  for (const header of headers) {
+    request.setRequestHeader(header[0], header[1]);
+  }
+  request.send(content);
 }
 
 class EdpuzzleAutoanswer {
