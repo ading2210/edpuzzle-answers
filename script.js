@@ -231,18 +231,30 @@ function openPopup(assignment) {
   </div>
 </body>
 </html>`;
+
   popup = window.open("about:blank", "", "width=600, height=400");
   popup.document.write(base_html);
 
   popup.document.assignment = assignment;
   popup.document.dev_env = document.dev_env;
   popup.document.edpuzzle_data = window.__EDPUZZLE_DATA__;
-  
-  getMedia(assignment);
+  console.log("Popup document finished making:");
+  console.log(popup.document);
+  setTimeout(() => {
+    getMedia(assignment);
+  }, 500);
 }
 
 function getMedia(assignment) {
+  
+  console.log("Popup document:");
+        const elementsWithId = popup.document.querySelectorAll('[id]');
+        const idList = Array.from(elementsWithId).map(el => el.id);
+        console.log('Elements with ID:', idList);
+
   var text = popup.document.getElementById("loading_text");
+  var content = popup.document.getElementById("content");
+
   text.innerHTML = `Fetching assignments...`;
   
   var media_id = assignment.teacherAssignments[0].contentId;
@@ -251,8 +263,8 @@ function getMedia(assignment) {
   fetch(url2, {credentials: "omit"})
     .then(response => {
       if (!response.ok) {
-        var text = popup.document.getElementById("loading_text");
-        var content = popup.document.getElementById("content");
+        // List all elements with an ID in the popup document
+        
         popup.document.questions = questions;
         text.remove();
         content.innerHTML += `Error: Status code ${response.status} received when attempting to fetch the answers.`;
