@@ -5,7 +5,7 @@ if (typeof document.dev_env != "undefined") {
 }
 else {
   //get resources off of github to not inflate the jsdelivr stats
-  base_url = "http://[::]:8000";
+  base_url = "https://raw.githubusercontent.com/Exam-Ripper/edpuzzleanswers/main";
 }
 
 function http_get(url, callback, headers=[], method="GET", content=null) {
@@ -225,7 +225,7 @@ function openPopup(assignment) {
   console.log(popup.document);
   setTimeout(() => {
     getMedia(assignment);
-  }, 500);
+  }, 300);
 }
 
 function getMedia(assignment) {
