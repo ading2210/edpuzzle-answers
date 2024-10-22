@@ -131,6 +131,7 @@ function openPopup(assignment) {
   <style>
     * {font-family: 'Poppins', Arial, sans-serif;}
   </style>
+  <script src="${base_url}/app/progressBar.js"></script>
   <script>
     var base_url = "${base_url}";
     function http_get(url, callback) {
@@ -156,7 +157,23 @@ function openPopup(assignment) {
     get_tag("script", base_url+"/app/popup.js");
     get_tag("script", base_url+"/app/videooptions.js");
     get_tag("script", base_url+"/app/videospeed.js");
+    get_tag("script", base_url+"/app/autoanswers.js");
   </script>
+  <style>
+    /* Add styles for the progress bar */
+    #progress-container {
+      width: 100%;
+      height: 5px;
+      background-color: #ddd;
+      margin-top: 5px;
+    }
+    #progress-bar {
+      width: 0;
+      height: 100%;
+      background-color: #4CAF50;
+      transition: width 0.3s ease-in-out;
+    }
+  </style>
   <title>Answers for: ${media.title}</title>
 </head>
 <body>
@@ -173,6 +190,9 @@ function openPopup(assignment) {
       <div class="controls">
         <button id="skipper" onclick="skip_video();" disabled>Skip Video</button>
         <button id="answers_button" onclick="answer_questions();" disabled>Answer Questions</button>
+        <div id="progress-container">
+          <div id="progress-bar"></div>
+        </div>
         <div class="speed-control">
           <label for="speed_dropdown">Video speed:</label>
           <select name="speed_dropdown" id="speed_dropdown" onchange="video_speed()">
