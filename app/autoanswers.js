@@ -14,6 +14,42 @@ function httpGet(url, callback, headers=[], method="GET", content=null) {
   request.send(content);
 }
 
+class ProgressBar {
+  constructor(element, totalSteps, solvedColor, currentStep = 0) {
+    this.element = element;
+    this.totalSteps = totalSteps;
+    this.currentStep = currentStep;
+    this.solvedColor = solvedColor;
+    this.isSolved = false;
+    this.render();
+  }
+
+  updateStep(step) {
+    this.currentStep = Math.min(step, this.totalSteps);
+    if (this.currentStep === this.totalSteps) {
+      this.setSolved(true);
+    }
+    this.render();
+  }
+
+  setSolved(solved) {
+    this.isSolved = solved;
+    this.render();
+  }
+
+  reset() {
+    this.currentStep = 0;
+    this.isSolved = false;
+    this.render();
+  }
+
+  render() {
+    const progress = (this.currentStep / this.totalSteps) * 100;
+    this.element.style.width = `${progress}%`;
+    this.element.style.backgroundColor = this.isSolved ? this.solvedColor : '';
+  }
+}
+
 function init() {
   button.value = "Getting CSRF token...";
   var progressBarElement = document.getElementById("progress-bar");
@@ -147,39 +183,3 @@ function postAnswers(csrf, assignment, remainingQuestions, attemptId, total) {
 }
 
 init();
-
-class ProgressBar {
-  constructor(element, totalSteps, solvedColor, currentStep = 0) {
-    this.element = element;
-    this.totalSteps = totalSteps;
-    this.currentStep = currentStep;
-    this.solvedColor = solvedColor;
-    this.isSolved = false;
-    this.render();
-  }
-
-  updateStep(step) {
-    this.currentStep = Math.min(step, this.totalSteps);
-    if (this.currentStep === this.totalSteps) {
-      this.setSolved(true);
-    }
-    this.render();
-  }
-
-  setSolved(solved) {
-    this.isSolved = solved;
-    this.render();
-  }
-
-  reset() {
-    this.currentStep = 0;
-    this.isSolved = false;
-    this.render();
-  }
-
-  render() {
-    const progress = (this.currentStep / this.totalSteps) * 100;
-    this.element.style.width = `${progress}%`;
-    this.element.style.backgroundColor = this.isSolved ? this.solvedColor : '';
-  }
-}
