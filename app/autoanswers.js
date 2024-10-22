@@ -41,25 +41,21 @@ var progressBar;
 class EdpuzzleAutoanswer {
   constructor() {
     this.button = document.getElementById("answers_button");
-    this.progressBar = null;
     this.csrf = null;
     this.assignment = document.assignment;
     this.questions = document.questions;
+
+    // Bind methods to ensure correct 'this' context
+    this.getCSRF = this.getCSRF.bind(this);
+    this.getAttempt = this.getAttempt.bind(this);
+    this.skipVideo = this.skipVideo.bind(this);
+    this.postAnswers = this.postAnswers.bind(this);
+    this.httpGet = this.httpGet.bind(this);
   }
 
   init() {
     this.button.value = "Getting CSRF token...";
-    this.initProgressBar();
     this.getCSRF();
-  }
-
-  initProgressBar() {
-    const progressBarElement = document.getElementById("progress-bar");
-    if (progressBarElement) {
-      this.progressBar = new ProgressBar(progressBarElement, 1, "#4CAF50");
-    } else {
-      console.error("Progress bar element not found");
-    }
   }
 
   getCSRF() {
@@ -77,7 +73,6 @@ class EdpuzzleAutoanswer {
     this.httpGet(attemptURL, (response) => {
       const data = JSON.parse(response);
       this.button.value = "Skipping video...";
-      if (this.progressBar) this.progressBar.updateStep(2);
       this.skipVideo(data);
     });
   }
@@ -98,7 +93,7 @@ class EdpuzzleAutoanswer {
       ['x-edpuzzle-web-version', opener.__EDPUZZLE_DATA__.version]
     ];
     
-    this.httpGet(url2, function(){
+    this.httpGet(url2, () => {
       var attemptId = attempt._id;
       var filteredQuestions = [];
       
@@ -162,20 +157,14 @@ class EdpuzzleAutoanswer {
       ['x-edpuzzle-referrer', referrer],
       ['x-edpuzzle-web-version', opener.__EDPUZZLE_DATA__.version]
     ];
-    this.httpGet(answersURL, function() {
+    this.httpGet(answersURL, () => {
       if (remainingQuestions.length == 0) {
         this.button.value = "Answers submitted successfully.";
-        if (this.progressBar) {
-          this.progressBar.updateStep(total);
-          this.progressBar.setSolved(true);
-        }
         opener.location.reload();
       }
       else {
         var progress = total - remainingQuestions.length;
         this.button.value = `Posting answers... (${progress}/${total})`;
-        // Update progress bar
-        if (this.progressBar) this.progressBar.updateStep(progress);
         this.postAnswers(remainingQuestions, attemptId, total);
       }
     }, headers, "POST", JSON.stringify(content));
@@ -183,7 +172,7 @@ class EdpuzzleAutoanswer {
 
   httpGet(url, callback, headers = [], method = "GET", content = null) {
     var request = new XMLHttpRequest();
-    request.addEventListener("load", () => callback.call(this, request.responseText));
+    request.addEventListener("load", () => callback(request.responseText));
     request.open(method, url, true);
     if (document.edpuzzle_data && document.edpuzzle_data.token) {
       headers.push(["authorization", document.edpuzzle_data.token]);

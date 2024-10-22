@@ -5,7 +5,7 @@ if (typeof document.dev_env != "undefined") {
 }
 else {
   //get resources off of github to not inflate the jsdelivr stats
-  base_url = "https://raw.githubusercontent.com/Exam-Ripper/edpuzzleanswers/main";
+  base_url = "http://[::]:8000";
 }
 
 function http_get(url, callback, headers=[], method="GET", content=null) {
@@ -160,22 +160,6 @@ function openPopup(assignment) {
     get_tag("script", base_url+"/app/videospeed.js");
     get_tag("script", base_url+"/app/autoanswers.js");
   </script>
-  <style>
-    /* Add styles for the progress bar */
-    #answers_button {
-      position: relative;
-      overflow: hidden;
-    }
-    #progress-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      height: 4px;
-      background-color: #4CAF50;
-      transition: width 0.3s ease-in-out;
-    }
-  </style>
   <title>Answers for: ${media.title}</title>
 </head>
 <body>
@@ -191,13 +175,7 @@ function openPopup(assignment) {
       </div>
       <div class="controls">
         <button id="skipper" onclick="skip_video();" disabled>Skip Video</button>
-        <button id="answers_button" onclick="answer_questions();" disabled>
-          Answer Questions
-          <div id="progress-bar"></div>
-        </button>
-        <div id="progress-container">
-          <div id="progress-bar"></div>
-        </div>
+        <button id="answers_button" onclick="answer_questions();" disabled>Answer Questions</button>
         <div class="speed-control">
           <label for="speed_dropdown">Video speed:</label>
           <select name="speed_dropdown" id="speed_dropdown" onchange="video_speed()">
