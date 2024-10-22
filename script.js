@@ -196,15 +196,16 @@ function openPopup(assignment) {
   </script>
   <style>
     /* Add styles for the progress bar */
-    #progress-container {
-      width: 100%;
-      height: 5px;
-      background-color: #ddd;
-      margin-top: 5px;
+    #answers_button {
+      position: relative;
+      overflow: hidden;
     }
     #progress-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
       width: 0;
-      height: 100%;
+      height: 4px;
       background-color: #4CAF50;
       transition: width 0.3s ease-in-out;
     }
@@ -224,7 +225,10 @@ function openPopup(assignment) {
       </div>
       <div class="controls">
         <button id="skipper" onclick="skip_video();" disabled>Skip Video</button>
-        <button id="answers_button" onclick="answer_questions();" disabled>Answer Questions</button>
+        <button id="answers_button" onclick="answer_questions();" disabled>
+          Answer Questions
+          <div id="progress-bar"></div>
+        </button>
         <div id="progress-container">
           <div id="progress-bar"></div>
         </div>

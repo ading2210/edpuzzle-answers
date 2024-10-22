@@ -85,7 +85,6 @@ function skipVideo(csrf, attempt) {
     if (filteredQuestions.length > 0) {
       var total = filteredQuestions.length;
       button.value = "Posting answers...";
-      if (progressBar) progressBar.updateStep(3);
       postAnswers(csrf, document.assignment, filteredQuestions, attemptId, total);
     }
   }, headers, "POST", JSON.stringify(content));
@@ -97,7 +96,6 @@ function postAnswers(csrf, assignment, remainingQuestions, attemptId, total) {
   var answersURL = "https://edpuzzle.com/api/v3/attempts/"+attemptId+"/answers";
 
   var content = {answers: []};
-  var now = new Date().toISOString();
   var questionsPart = remainingQuestions.shift();
   for (let i=0; i<questionsPart.length; i++) {
     let question = questionsPart[i];
@@ -114,6 +112,7 @@ function postAnswers(csrf, assignment, remainingQuestions, attemptId, total) {
       "type": "multiple-choice",
     });
   }
+  console.log(remainingQuestions.length)
   
   var headers = [
     ['accept', 'application/json, text/plain, */*'],
@@ -131,7 +130,7 @@ function postAnswers(csrf, assignment, remainingQuestions, attemptId, total) {
     }
     else {
       button.value = `Posting answers... (${total-remainingQuestions.length+1}/${total})`;
-      postAnswers(csrf, assignment, remainingQuestions, attemptId, total);
+    //  postAnswers(csrf, assignment, remainingQuestions, attemptId, total);
     }
   }, headers, "POST", JSON.stringify(content));
 }
