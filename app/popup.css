@@ -28,13 +28,13 @@ body {
 .container {
   max-width: 800px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0;
 }
 
 header {
   background-color: var(--current-line);
   border-radius: 10px;
-  padding: 20px;
+  padding: 10px;
   margin-bottom: 20px;
 }
 
@@ -42,7 +42,7 @@ header {
   display: flex;
   align-items: flex-start;
   gap: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .thumbnail {
@@ -53,7 +53,7 @@ header {
 
 .video-info h1 {
   font-size: 24px;
-  color: var(--purple);
+  color: var(--foreground);
   margin-bottom: 10px;
 }
 
@@ -103,7 +103,7 @@ button:disabled {
 main {
   background-color: var(--current-line);
   border-radius: 10px;
-  padding: 20px;
+  padding: 10px;
 }
 
 .info {
@@ -121,7 +121,7 @@ main {
 .question {
   background-color: var(--background);
   border-radius: 5px;
-  padding: 15px;
+  padding: 10px;
 }
 
 .timestamp {

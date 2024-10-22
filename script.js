@@ -300,7 +300,7 @@ function parseQuestions(questions) {
             item_html = `${choice.body[0].html}`;
           }
           if (choice.isCorrect == true) {
-            choices_lines.push(`<li class="choice choice-correct">${item_html}</li>`);
+            choices_lines.push(`<li class="choice choice-correct" style="color: var(--green); font-weight: bold;">${item_html}</li>`);
             answer_exists = true;
           }
           else {
