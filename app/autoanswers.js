@@ -16,7 +16,12 @@ function httpGet(url, callback, headers=[], method="GET", content=null) {
 
 function init() {
   button.value = "Getting CSRF token...";
-  progressBar = new ProgressBar(document.getElementById("progress-bar"), 3, "#4CAF50");
+  var progressBarElement = document.getElementById("progress-bar");
+  if (progressBarElement) {
+    progressBar = new ProgressBar(progressBarElement, 3, "#4CAF50");
+  } else {
+    console.error("Progress bar element not found");
+  }
   getCSRF();
 }
 
@@ -26,7 +31,7 @@ function getCSRF() {
     var data = JSON.parse(this.responseText);
     var csrf = data.CSRFToken;
     button.value = "Getting attempt...";
-    progressBar.updateStep(1);
+    if (progressBar) progressBar.updateStep(1);
     getAttempt(csrf, document.assignment);
   });
 }
@@ -37,7 +42,7 @@ function getAttempt(csrf, assignment) {
   httpGet(attemptURL, function(){
     var data = JSON.parse(this.responseText);
     button.value = "Skipping video...";
-    progressBar.updateStep(2);
+    if (progressBar) progressBar.updateStep(2);
     skipVideo(csrf, data);
   });
 }
@@ -80,7 +85,7 @@ function skipVideo(csrf, attempt) {
     if (filteredQuestions.length > 0) {
       var total = filteredQuestions.length;
       button.value = "Posting answers...";
-      progressBar.updateStep(3);
+      if (progressBar) progressBar.updateStep(3);
       postAnswers(csrf, document.assignment, filteredQuestions, attemptId, total);
     }
   }, headers, "POST", JSON.stringify(content));
@@ -121,7 +126,7 @@ function postAnswers(csrf, assignment, remainingQuestions, attemptId, total) {
   httpGet(answersURL, function() {
     if (remainingQuestions.length == 0) {
       button.value = "Answers submitted successfully.";
-      progressBar.setSolved(true);
+      if (progressBar) progressBar.setSolved(true);
       opener.location.reload();
     }
     else {
