@@ -1,42 +1,6 @@
-// Add ProgressBar class definition at the beginning of the file
-class ProgressBar {
-  constructor(element, totalSteps, solvedColor, currentStep = 0) {
-    this.element = element;
-    this.totalSteps = totalSteps;
-    this.currentStep = currentStep;
-    this.solvedColor = solvedColor;
-    this.isSolved = false;
-    this.render();
-  }
 
-  updateStep(step) {
-    this.currentStep = Math.min(step, this.totalSteps);
-    if (this.currentStep === this.totalSteps) {
-      this.setSolved(true);
-    }
-    this.render();
-  }
-
-  setSolved(solved) {
-    this.isSolved = solved;
-    this.render();
-  }
-
-  reset() {
-    this.currentStep = 0;
-    this.isSolved = false;
-    this.render();
-  }
-
-  render() {
-    const progress = (this.currentStep / this.totalSteps) * 100;
-    this.element.style.width = `${progress}%`;
-    this.element.style.backgroundColor = this.isSolved ? this.solvedColor : '';
-  }
-}
 
 var button = document.getElementById("answers_button");
-var progressBar;
 
 class EdpuzzleAutoanswer {
   constructor() {
@@ -116,10 +80,7 @@ class EdpuzzleAutoanswer {
         var total = filteredQuestions.length;
         this.button.value = "Posting answers...";
         // Set total steps for the progress bar
-        if (this.progressBar) {
-          this.progressBar.totalSteps = total;
-          this.progressBar.render();
-        }
+       
         this.postAnswers(filteredQuestions, attemptId, total);
       }
     }, headers, "POST", JSON.stringify(content));
