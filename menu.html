@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/app/popup.css">
+  <script src="/app/popup.js"></script>
+  <script src="/app/videooptions.js"></script>
+  <script src="/app/videospeed.js"></script>
+  <title>Answers for: ${media.title}</title>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <img src="${thumbnail}" alt="Video Thumbnail" class="thumbnail">
+        <div class="video-info">
+          <h1>${media.title}</h1>
+          <p>Uploaded by ${media.user.name} on ${date.toDateString()}</p>
+          <p>Assigned on ${assigned_date.toDateString()}, ${deadline_text}</p>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="skipper" onclick="skip_video();" disabled>Skip Video</button>
+        <button id="answers_button" onclick="answer_questions();" disabled>Answer Questions</button>
+        <div class="speed-control">
+          <label for="speed_dropdown">Video speed:</label>
+          <select name="speed_dropdown" id="speed_dropdown" onchange="video_speed()">
+            <option value="0.25">0.25x</option>
+            <option value="0.5">0.5x</option>
+            <option value="0.75">0.75x</option>
+            <option value="1" selected>Normal</option>
+            <option value="1.25">1.25x</option>
+            <option value="1.5">1.5x</option>
+            <option value="1.75">1.75x</option>
+            <option value="2">2x</option>
+            <option value="-1">Custom</option>
+          </select>
+        </div>
+        <div class="custom-speed">
+          <label id="custom_speed_label" for="custom_speed"></label>
+          <input type="range" id="custom_speed" name="custom_speed" value="1" min="0.1" max="16" step="0.1" oninput="video_speed()" hidden>
+        </div>
+        <div class="pause-control">
+          <label for="pause_on_focus">Don't pause on unfocus:</label>
+          <input type="checkbox" id="pause_on_focus" name="pause_on_focus" onchange="toggle_unfocus();">
+        </div>
+      </div>
+    </header>
+    <main>
+      <p class="info">Correct choices are highlighted in green.</p>
+      <div class="questions">
+        <div class="question">
+          <div class="timestamp">[1:30]</div>
+          <p class="question-text">What is the capital of France?</p>
+          <ul class="choices">
+            <li>London</li>
+            <li class="correct">Paris</li>
+            <li>Berlin</li>
+            <li>Madrid</li>
+          </ul>
+        </div>
+        
+        <div class="question">
+          <div class="timestamp">[3:45]</div>
+          <p class="question-text">Which of the following is a primary color?</p>
+          <ul class="choices">
+            <li class="correct">Blue</li>
+            <li>Green</li>
+            <li class="correct">Red</li>
+            <li>Orange</li>
+          </ul>
+        </div>
+        
+        <div class="question">
+          <div class="timestamp">[5:20]</div>
+          <p class="question-text">What is the largest planet in our solar system?</p>
+          <ul class="choices">
+            <li>Mars</li>
+            <li>Saturn</li>
+            <li class="correct">Jupiter</li>
+            <li>Neptune</li>
+          </ul>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <p>Made by: <a href="https://github.com/ading2210" target="_blank">ading2210</a> on Github | Website: <a href="https://edpuzzle.hs.vc" target="_blank">edpuzzle.hs.vc</a> | Source code: <a href="https://github.com/ading2210/edpuzzle-answers" target="_blank">ading2210/edpuzzle-answers</a></p>
+      <p>Licenced under the <a href="https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE" target="_blank">GNU GPL v3</a>. Do not reupload or redistribute without abiding by those terms.</p>
+      <p>Available now from our <a href="https://edpuzzle.hs.vc/discord.html" target="_blank">Discord server</a>: <i>An open beta of a completely overhauled GUI, with proper mobile support, ChatGPT integration for open-ended questions, and more.</i></p>
+    </footer>
+  </div>
+</body>
+</html>
