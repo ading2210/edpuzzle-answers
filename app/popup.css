@@ -81,7 +81,7 @@ button, select {
 }
 
 button:hover, select:hover {
-  background-color: var(--cyan);
+  background-color: var(--background);
 }
 
 button:disabled {
