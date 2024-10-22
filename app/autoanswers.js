@@ -18,7 +18,8 @@ function init() {
   button.value = "Getting CSRF token...";
   var progressBarElement = document.getElementById("progress-bar");
   if (progressBarElement) {
-    progressBar = new ProgressBar(progressBarElement, 3, "#4CAF50");
+    // Initialize progressBar without steps, we'll set them later
+    progressBar = new ProgressBar(progressBarElement, 0, "#4CAF50");
   } else {
     console.error("Progress bar element not found");
   }
@@ -31,7 +32,6 @@ function getCSRF() {
     var data = JSON.parse(this.responseText);
     var csrf = data.CSRFToken;
     button.value = "Getting attempt...";
-    if (progressBar) progressBar.updateStep(1);
     getAttempt(csrf, document.assignment);
   });
 }
@@ -85,6 +85,10 @@ function skipVideo(csrf, attempt) {
     if (filteredQuestions.length > 0) {
       var total = filteredQuestions.length;
       button.value = "Posting answers...";
+      // Initialize progress bar with the total number of question groups
+      if (progressBar) {
+        progressBar.setTotalSteps(total);
+      }
       postAnswers(csrf, document.assignment, filteredQuestions, attemptId, total);
     }
   }, headers, "POST", JSON.stringify(content));
@@ -129,8 +133,11 @@ function postAnswers(csrf, assignment, remainingQuestions, attemptId, total) {
       opener.location.reload();
     }
     else {
-      button.value = `Posting answers... (${total-remainingQuestions.length+1}/${total})`;
-    //  postAnswers(csrf, assignment, remainingQuestions, attemptId, total);
+      var progress = total - remainingQuestions.length + 1;
+      button.value = `Posting answers... (${progress}/${total})`;
+      // Update progress bar
+      if (progressBar) progressBar.updateStep(progress);
+      postAnswers(csrf, assignment, remainingQuestions, attemptId, total);
     }
   }, headers, "POST", JSON.stringify(content));
 }
