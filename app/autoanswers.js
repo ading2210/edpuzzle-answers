@@ -18,8 +18,8 @@ function init() {
   button.value = "Getting CSRF token...";
   var progressBarElement = document.getElementById("progress-bar");
   if (progressBarElement) {
-    // Initialize progressBar without steps, we'll set them later
-    progressBar = new ProgressBar(progressBarElement, 0, "#4CAF50");
+    // Initialize progressBar with default values
+    progressBar = new ProgressBar(progressBarElement, 1, "#4CAF50");
   } else {
     console.error("Progress bar element not found");
   }
@@ -85,9 +85,10 @@ function skipVideo(csrf, attempt) {
     if (filteredQuestions.length > 0) {
       var total = filteredQuestions.length;
       button.value = "Posting answers...";
-      // Initialize progress bar with the total number of question groups
+      // Set total steps for the progress bar
       if (progressBar) {
-        progressBar.setTotalSteps(total);
+        progressBar.totalSteps = total;
+        progressBar.render();
       }
       postAnswers(csrf, document.assignment, filteredQuestions, attemptId, total);
     }
@@ -129,11 +130,14 @@ function postAnswers(csrf, assignment, remainingQuestions, attemptId, total) {
   httpGet(answersURL, function() {
     if (remainingQuestions.length == 0) {
       button.value = "Answers submitted successfully.";
-      if (progressBar) progressBar.setSolved(true);
+      if (progressBar) {
+        progressBar.updateStep(total);
+        progressBar.setSolved(true);
+      }
       opener.location.reload();
     }
     else {
-      var progress = total - remainingQuestions.length + 1;
+      var progress = total - remainingQuestions.length;
       button.value = `Posting answers... (${progress}/${total})`;
       // Update progress bar
       if (progressBar) progressBar.updateStep(progress);
@@ -143,3 +147,39 @@ function postAnswers(csrf, assignment, remainingQuestions, attemptId, total) {
 }
 
 init();
+
+class ProgressBar {
+  constructor(element, totalSteps, solvedColor, currentStep = 0) {
+    this.element = element;
+    this.totalSteps = totalSteps;
+    this.currentStep = currentStep;
+    this.solvedColor = solvedColor;
+    this.isSolved = false;
+    this.render();
+  }
+
+  updateStep(step) {
+    this.currentStep = Math.min(step, this.totalSteps);
+    if (this.currentStep === this.totalSteps) {
+      this.setSolved(true);
+    }
+    this.render();
+  }
+
+  setSolved(solved) {
+    this.isSolved = solved;
+    this.render();
+  }
+
+  reset() {
+    this.currentStep = 0;
+    this.isSolved = false;
+    this.render();
+  }
+
+  render() {
+    const progress = (this.currentStep / this.totalSteps) * 100;
+    this.element.style.width = `${progress}%`;
+    this.element.style.backgroundColor = this.isSolved ? this.solvedColor : '';
+  }
+}
