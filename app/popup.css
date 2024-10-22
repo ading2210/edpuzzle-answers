@@ -151,6 +151,13 @@ main {
   font-weight: bold;
 }
 
+.choice-correct {
+  color: var(--green);
+  font-weight: bold;
+}
+
+
+
 footer {
   margin-top: 20px;
   font-size: 12px;

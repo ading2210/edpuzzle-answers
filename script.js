@@ -122,80 +122,95 @@ function openPopup(assignment) {
   }
   
   var base_html = `
-  <!DOCTYPE html>
-  <head>
-    <style>
-      * {font-family: Arial}
-    </style>
-    <script>
-      var base_url = "${base_url}";
-      function http_get(url, callback) {
-        var request = new XMLHttpRequest();
-        request.addEventListener("load", callback);
-        request.open("GET", url, true);
-        request.send();
-      }
-      function get_tag(tag, url) {
-        console.log("Loading "+url);
-        http_get(url, function(){
-          if ((""+this.status)[0] == "2") {
-            var element = document.createElement(tag);
-            element.innerHTML = this.responseText;
-            document.getElementsByTagName("head")[0].appendChild(element);
-          }
-          else {
-            console.error("Could not fetch "+url);
-          }
-        });
-      }
-      get_tag("style", base_url+"/app/popup.css");
-      get_tag("script", base_url+"/app/popup.js");
-      get_tag("script", base_url+"/app/videooptions.js");
-      get_tag("script", base_url+"/app/videospeed.js");
-    </script>
-    <title>Answers for: ${media.title}</title>
-  </head>
-  <div id="header_div">
-    <div>
-      <img src="${thumbnail}" height="108px">
-    </div>
-    <div id="title_div">
-      <p style="font-size: 16px"><b>${media.title}</b></h2>
-      <p style="font-size: 12px">Uploaded by ${media.user.name} on ${date.toDateString()}</p>
-      <p style="font-size: 12px">Assigned on ${assigned_date.toDateString()}, ${deadline_text}</p>
-      <p style="font-size: 12px">Correct choices are <u>underlined</u>.</p>
-      <input id="skipper" type="button" value="Skip Video" onclick="skip_video();" disabled/>
-      <input id="answers_button" type="button" value="Answer Questions" onclick="answer_questions();" disabled/>
-      <div id="speed_container" hidden>
-        <label style="font-size: 12px" for="speed_dropdown">Video speed:</label>
-        <select name="speed_dropdown" id="speed_dropdown" onchange="video_speed()">
-          <option value="0.25">0.25</option>
-          <option value="0.5">0.5</option>
-          <option value="0.75">0.75</option>
-          <option value="1" selected>Normal</option>
-          <option value="1.25">1.25</option>
-          <option value="1.5">1.5</option>
-          <option value="1.75">1.75</option>
-          <option value="2">2</option>
-          <option value="-1">Custom</option>
-        </select>
-        <label id="custom_speed_label" style="font-size: 12px" for="custom_speed"></label>
-        <input type="range" id="custom_speed" name="custom_speed" value="1" min="0.1" max="16" step="0.1" oninput="video_speed()" hidden>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {font-family: 'Poppins', Arial, sans-serif;}
+  </style>
+  <script>
+    var base_url = "${base_url}";
+    function http_get(url, callback) {
+      var request = new XMLHttpRequest();
+      request.addEventListener("load", callback);
+      request.open("GET", url, true);
+      request.send();
+    }
+    function get_tag(tag, url) {
+      console.log("Loading "+url);
+      http_get(url, function(){
+        if ((""+this.status)[0] == "2") {
+          var element = document.createElement(tag);
+          element.innerHTML = this.responseText;
+          document.getElementsByTagName("head")[0].appendChild(element);
+        }
+        else {
+          console.error("Could not fetch "+url);
+        }
+      });
+    }
+    get_tag("style", base_url+"/app/popup.css");
+    get_tag("script", base_url+"/app/popup.js");
+    get_tag("script", base_url+"/app/videooptions.js");
+    get_tag("script", base_url+"/app/videospeed.js");
+  </script>
+  <title>Answers for: ${media.title}</title>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <img src="${thumbnail}" alt="Video Thumbnail" class="thumbnail">
+        <div class="video-info">
+          <h1>${media.title}</h1>
+          <p>Uploaded by ${media.user.name} on ${date.toDateString()}</p>
+          <p>Assigned on ${assigned_date.toDateString()}, ${deadline_text}</p>
+        </div>
       </div>
-      <div id="options_container">
-        <label for="pause_on_focus" style="font-size: 12px">Don't pause on unfocus: </label>
-        <input type="checkbox" id="pause_on_focus" name="pause_on_focus" onchange="toggle_unfocus();">
+      <div class="controls">
+        <button id="skipper" onclick="skip_video();" disabled>Skip Video</button>
+        <button id="answers_button" onclick="answer_questions();" disabled>Answer Questions</button>
+        <div class="speed-control">
+          <label for="speed_dropdown">Video speed:</label>
+          <select name="speed_dropdown" id="speed_dropdown" onchange="video_speed()">
+            <option value="0.25">0.25x</option>
+            <option value="0.5">0.5x</option>
+            <option value="0.75">0.75x</option>
+            <option value="1" selected>Normal</option>
+            <option value="1.25">1.25x</option>
+            <option value="1.5">1.5x</option>
+            <option value="1.75">1.75x</option>
+            <option value="2">2x</option>
+            <option value="-1">Custom</option>
+          </select>
+        </div>
+        <div class="custom-speed">
+          <label id="custom_speed_label" for="custom_speed"></label>
+          <input type="range" id="custom_speed" name="custom_speed" value="1" min="0.1" max="16" step="0.1" oninput="video_speed()" hidden>
+        </div>
+        <div class="pause-control">
+          <label for="pause_on_focus">Don't pause on unfocus:</label>
+          <input type="checkbox" id="pause_on_focus" name="pause_on_focus" onchange="toggle_unfocus();">
+        </div>
       </div>
-    </div>
+    </header>
+    <main>
+      <p class="info">Correct choices are highlighted in green.</p>
+      <div id="content" class="questions">
+        <p id="loading_text"></p>
+      </div>
+    </main>
+    <footer>
+      <p>Made by: <a href="https://github.com/ading2210" target="_blank">ading2210</a> on Github | Website: <a href="https://edpuzzle.hs.vc" target="_blank">edpuzzle.hs.vc</a> | Source code: <a href="https://github.com/ading2210/edpuzzle-answers" target="_blank">ading2210/edpuzzle-answers</a></p>
+      <p>Licenced under the <a href="https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE" target="_blank">GNU GPL v3</a>. Do not reupload or redistribute without abiding by those terms.</p>
+      <p>Available now from our <a href="https://edpuzzle.hs.vc/discord.html" target="_blank">Discord server</a>: <i>An open beta of a completely overhauled GUI, with proper mobile support, ChatGPT integration for open-ended questions, and more.</i></p>
+    </footer>
   </div>
-  <hr>
-  <div id="content"> 
-    <p style="font-size: 12px" id="loading_text"></p>
-  </div>
-  <hr>
-  <p style="font-size: 12px">Made by: <a target="_blank" href="https://github.com/ading2210">ading2210</a> on Github | Website: <a target="_blank" href="https://edpuzzle.hs.vc">edpuzzle.hs.vc</a> | Source code: <a target="_blank" href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a></p>
-  <p style="font-size: 12px">Licenced under the <a target="_blank" href="https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE">GNU GPL v3</a>. Do not reupload or redistribute without abiding by those terms.</p>
-  <p style="font-size: 12px">Available now from our <a target="_blank" href="https://edpuzzle.hs.vc/discord.html">Discord server</a>: <i> An open beta of a completely overhauled GUI, with proper mobile support, ChatGPT integration for open-ended questions, and more. </i></p>`;
+</body>
+</html>`;
   popup = window.open("about:blank", "", "width=600, height=400");
   popup.document.write(base_html);
 
