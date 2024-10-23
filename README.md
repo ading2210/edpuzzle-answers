@@ -3,7 +3,7 @@
 ![jsdelivr weekly badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/week)
 ![jsdelivr daily badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/day)
 
-<img src="https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/static/images/screenshot4.png" alt="A screenshot of the generated webpage" width="500"/>
+<img src="https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/static/images/screenshot5.png" alt="A screenshot of the generated webpage" width="500"/>
 
 This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, as well as automatically answer the questions and change the video speed.
 
@@ -90,8 +90,28 @@ javascript: fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest
  4. If this doesn't work, make sure you allow popups on both Edpuzzle and Canvas.
 
 ## Credits:
-The code for the video skipper is based off of [this](https://github.com/ASmallYawn/EdpuzzleSkipper), with permission from the original author and some major refactoring.
+The code for the video skipper is based off of [ASmallYawn/EdpuzzleSkipper](https://github.com/ASmallYawn/EdpuzzleSkipper), with permission from the original author and some major refactoring.
 
 All other code has been written solely by me, [ading2210](https://github.com/ading2210).
 
+Other contributors:
+- [@smatian](https://github.com/smatian) - Improved the popup CSS and auto answerer (#68)
+
 This project is licensed under the GNU General Public License v3.0.
+```
+ading2210/edpuzzle-answers - A bookmarklet for fetching Edpuzzle answers
+Copyright (C) 2024 ading2210
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+```
