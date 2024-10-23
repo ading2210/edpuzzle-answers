@@ -23,11 +23,21 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+p, label, button, select {
+  font-size: 12px;
+}
+footer p {
+  font-size: 11px;
 }
 
 .container {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 8px;
   padding: 0;
 }
 
@@ -52,13 +62,12 @@ header {
 }
 
 .video-info h1 {
-  font-size: 24px;
+  font-size: 20px;
   color: var(--foreground);
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .video-info p {
-  font-size: 14px;
   margin-bottom: 5px;
 }
 
@@ -73,7 +82,7 @@ button, select {
   background-color: var(--comment);
   color: var(--foreground);
   border: none;
-  padding: 6px 10px;
+  padding: 4px 7px;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -108,14 +117,15 @@ main {
 
 .info {
   font-size: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   color: var(--cyan);
+  font-weight: bold;
 }
 
 .questions {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
 }
 
 .question {
@@ -124,16 +134,8 @@ main {
   padding: 10px;
 }
 
-.timestamp {
-  color: var(--orange);
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.question-text {
-  color: var(--pink);
-  font-weight: bold;
-  margin-bottom: 10px;
+.timestamp_div {
+  width: 45px
 }
 
 .choices {
@@ -146,16 +148,10 @@ main {
   border-radius: 3px;
 }
 
-.choices li.correct {
-  color: var(--green);
-  font-weight: bold;
-}
-
 .choice-correct {
-  color: var(--green);
+  color: var(--green) !important;
   font-weight: bold;
 }
-
 
 
 footer {

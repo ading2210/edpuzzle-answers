@@ -152,13 +152,11 @@ function openPopup(assignment) {
         }
       });
     }
-    // Define ProgressBar class here
     
     get_tag("style", base_url+"/app/popup.css");
     get_tag("script", base_url+"/app/popup.js");
     get_tag("script", base_url+"/app/videooptions.js");
     get_tag("script", base_url+"/app/videospeed.js");
-    get_tag("script", base_url+"/app/autoanswers.js");
   </script>
   <title>Answers for: ${media.title}</title>
 </head>
@@ -207,6 +205,8 @@ function openPopup(assignment) {
       </div>
     </main>
     <footer>
+      <!-- if you want to fork this project, please don't remove the credits here. -->
+      <!-- not only do you have to keep the credits and copyright notice, you also have to make sure your fork is also open source under the same license -->
       <p>Made by: <a href="https://github.com/ading2210" target="_blank">ading2210</a> on Github | Website: <a href="https://edpuzzle.hs.vc" target="_blank">edpuzzle.hs.vc</a> | Source code: <a href="https://github.com/ading2210/edpuzzle-answers" target="_blank">ading2210/edpuzzle-answers</a></p>
       <p>Licenced under the <a href="https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE" target="_blank">GNU GPL v3</a>. Do not reupload or redistribute without abiding by those terms.</p>
       <p>Available now from our <a href="https://edpuzzle.hs.vc/discord.html" target="_blank">Discord server</a>: <i>An open beta of a completely overhauled GUI, with proper mobile support, ChatGPT integration for open-ended questions, and more.</i></p>
@@ -217,24 +217,15 @@ function openPopup(assignment) {
 
   popup = window.open("about:blank", "", "width=600, height=400");
   popup.document.write(base_html);
+  popup.document.close();
 
   popup.document.assignment = assignment;
   popup.document.dev_env = document.dev_env;
   popup.document.edpuzzle_data = window.__EDPUZZLE_DATA__;
-  console.log("Popup document finished making:");
-  console.log(popup.document);
-  setTimeout(() => {
-    getMedia(assignment);
-  }, 300);
+  popup.window.onload = () => {getMedia(assignment)};
 }
 
 function getMedia(assignment) {
-  
-  console.log("Popup document:");
-        const elementsWithId = popup.document.querySelectorAll('[id]');
-        const idList = Array.from(elementsWithId).map(el => el.id);
-        console.log('Elements with ID:', idList);
-
   var text = popup.document.getElementById("loading_text");
   var content = popup.document.getElementById("content");
 
@@ -243,19 +234,25 @@ function getMedia(assignment) {
   var media_id = assignment.teacherAssignments[0].contentId;
   var url2 = `https://edpuzzle.com/api/v3/media/${media_id}`;
 
+  function handle_error(msg) {
+    text.remove();
+    content.innerHTML += `<p style="font-size: 12px">${msg}</p>`;
+    popup.document.getElementById("skipper").disabled = false;
+  }
+
   fetch(url2, {credentials: "omit"})
     .then(response => {
       if (!response.ok) {
-        // List all elements with an ID in the popup document
-        
-        popup.document.questions = questions;
-        text.remove();
-        content.innerHTML += `Error: Status code ${response.status} received when attempting to fetch the answers.`;
+        handle_error(`Error: Status code ${response.status} received when attempting to fetch the answers.`);
       }
       else return response.json();
     })
     .then(media => {
+      if (!media) return;
       parseQuestions(media.questions);
+    })
+    .catch((error) => {
+      handle_error(`Error when trying to fetch the answers: ${error}`);
     })
 }
 
@@ -315,7 +312,7 @@ function parseQuestions(questions) {
             item_html = `${choice.body[0].html}`;
           }
           if (choice.isCorrect == true) {
-            choices_lines.push(`<li class="choice choice-correct" style="color: var(--green); font-weight: bold;">${item_html}</li>`);
+            choices_lines.push(`<li class="choice choice-correct">${item_html}</li>`);
             answer_exists = true;
           }
           else {
