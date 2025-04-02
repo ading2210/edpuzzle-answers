@@ -249,14 +249,14 @@ function getMedia(assignment) {
     })
     .then(media => {
       if (!media) return;
-      parseQuestions(media.questions);
+      parseQuestions(media.questions, media_id);
     })
     .catch((error) => {
       handle_error(`Error when trying to fetch the answers: ${error}`);
     })
 }
 
-function parseQuestions(questions) {
+function parseQuestions(questions, media_id) {
   var text = popup.document.getElementById("loading_text");
   var content = popup.document.getElementById("content");
   popup.document.questions = questions;
@@ -354,7 +354,17 @@ function parseQuestions(questions) {
   }
   popup.document.getElementById("skipper").disabled = false;
   if (counter == 0 || counter2 == 0) {
-    content.innerHTML += `<p style="font-size: 12px">No valid multiple choice questions were found.</p>`;
+    var url2 = `https://edpuzzle.com/media/${media_id}`;
+    content.innerHTML += `
+      <p style="font-size: 12px">No valid multiple choice questions were found.</p>
+      <p>Note: As of April 2nd, Edpuzzle has patched the previous method that this script use. While we work on a more permanent fix, follow the steps listed below.</p>
+      <p style="font-size: 12px"><b>Temporary workaround:</b></p>
+      <ol style="font-size: 12px; padding-left: 12px;">
+        <li>Open edpuzzle.com in a different browser, or new incognito window.</li>
+        <li>Sign up for a teacher account. You only need an email address for this.</li>
+        <li>Open the following link with your teacher account: <a href="${url2}" target="_blank">${url2}</a></li>
+      </ol>
+    `;
   }
   else {
     popup.document.getElementById("answers_button").disabled = false;
