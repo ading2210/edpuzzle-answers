@@ -13,7 +13,7 @@ Discord server: [edpuzzle.hs.vc/discord.html](https://edpuzzle.hs.vc/discord.htm
 
 ![Examripper banner](https://raw.githubusercontent.com/Exam-Ripper/Google-Forms-Quiz-Hack/refs/heads/main/banner.webp)
 
-[Stuck on **private** assignments? Examripper offers a hack for these, supporting **open-ended** questions too. It also includes hacks for multiple other platforms like Google Forms, Apex Learning, Kahoot, and way more! Subscribe by clicking here.](https://patreon.com/examripper)
+[Stuck on **private** assignments? Examripper offers a hack for these, supporting **open-ended** questions too. It also includes hacks for multiple other platforms like Google Forms, Apex Learning, Kahoot, and way more for only **3.99**! Subscribe by clicking here.](https://examripper.com/edpuzzle)
 
 *This is a paid advertisement. If you want to sponsor this project and advertise your own service, please contact me on Discord.*
 
