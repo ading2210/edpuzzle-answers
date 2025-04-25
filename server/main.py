@@ -27,10 +27,6 @@ if not config["cloudflare"]["enabled"]:
  
 
 
-print("Generating CSS...")
-css_path = base_dir+"/app/css"
-os.system(f"tailwindcss -i {css_path}/popup.css -o {css_path}/dist.css -c {base_dir}/app/tailwind.config.js -m")
-
 #handle compression and rate limits
 print("Preparing flask instance...") 
 app = Flask(__name__)
@@ -153,6 +149,8 @@ def generate(service_name):
 def homepage():
   return render_template("index.html", dev_mode=config["dev_mode"])
 
+# I hate all of these routes, they need to be removed
+
 @app.route("/discord")
 @app.route("/discord.html")
 def discord():
@@ -165,15 +163,16 @@ def github():
 
 @app.route("/script.js")
 def loader_script():
-  return send_from_directory("", "script.js")
+  return send_from_directory("..", "script.js")
 
-@app.route("/static/<path:path>")
-def serve_static(path):
-  return send_from_directory("static", path)
+@app.route("/open.js")
+def loader_script():
+  return send_from_directory("..", "open.js")
 
-@app.route("/app/<path:path>")
+
+@app.route("/dist/<path:path>")
 def serve_app(path):
-  return send_from_directory("app", path)
+  return send_from_directory("../dist", path)
 
 #===== main func =====
 

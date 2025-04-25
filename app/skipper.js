@@ -1,6 +1,10 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
 
+export var skipper_loaded = false;
+export var content_loaded = false;
+
+
 class video_skipper {
 
 static {

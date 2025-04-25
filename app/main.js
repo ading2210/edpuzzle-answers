@@ -1,25 +1,70 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
+import * as skipper from "./skipper.js";
+import * as autoanswers from "./autoanswers.js";
+import * as videooptions from "./videooptions.js";
+import * as openended from "./openended.js";
 
-//this script launches the popup and contains handlers for canvas/schoology
+const gpl_text = document.gpl_text;
+const base_url = document.base_url;
+const edpuzzle_data = document.edpuzzle_data;
+const lti_edpuzzle = !!edpuzzle_data.token;
+const csrf_cache = {
+  latest: null,
+  updated: 0
+}
+/*
+const wisp_servers = [
+  "wss://wisp.mercurywork.shop/",
+  "wss://anura.pro/"
+];
+*/
 
-const gpl_text = `ading2210/edpuzzle-answers: a Javascript bookmarklet that provides many useful utilities for Edpuzzle
-Copyright (C) 2023 ading2210
+const css_link = document.getElementById("css_link");
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+const skipper_button = document.getElementById("skipper_button");
+const answers_button = document.getElementById("answers_button");
+const unfocus_checkbox = document.getElementById("unfocus_checkbox"); 
+const speed_button = document.getElementById("speed_button");
+const speed_dropdown = document.getElementById("speed_dropdown");
+const custom_speed_container = document.getElementById("custom_speed_container");
+const custom_speed = document.getElementById("custom_speed");
+const custom_speed_label = document.getElementById("custom_speed_label");
+const custom_speed_value = document.getElementById("custom_speed_value");
+const status_text = document.getElementById("status_text");
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+const questions_div = document.getElementById("questions_div");
+const open_ended_div = document.getElementById("open_ended_div");
+const content_div = document.getElementById("content_div");
+const console_log = [];
 
-You should have received a copy of the GNU Affero General Public License along with this program.If not, see <https://www.gnu.org/licenses/>.`;
+var assignment = null;
+var questions = null;
+var console_html = null;
+var console_popup = null;
 
-//legacy code - use the fetch api instead
+function fetch_wrapper(url, options={}) {
+  if (edpuzzle_data && edpuzzle_data.token && (new URL(url).hostname) == "edpuzzle.com") {
+    if (!options.headers) {options.headers = {}}
+    options.headers["authorization"] = edpuzzle_data.token;
+  }
+  if (window.opener) {
+    return opener.fetch(url, options);
+  }
+  return fetch_(url, options);
+}
+
 function http_get(url, callback, headers=[], method="GET", content=null) {
+  let real_callback = function(){
+    callback(this);
+  };
+
   var request = new XMLHttpRequest();
-  request.addEventListener("load", callback);
+  request.addEventListener("load", real_callback);
   request.open(method, url, true);
 
-  if (window.__EDPUZZLE_DATA__ && window.__EDPUZZLE_DATA__.token && (new URL(url).hostname) == "edpuzzle.com") {
-    headers.push(["authorization", window.__EDPUZZLE_DATA__.token]);
+  if (edpuzzle_data && edpuzzle_data.token && (new URL(url).hostname) == "edpuzzle.com") {
+    headers.push(["authorization", edpuzzle_data.token]);
   }
   for (const header of headers) {
     request.setRequestHeader(header[0], header[1]);
@@ -28,141 +73,495 @@ function http_get(url, callback, headers=[], method="GET", content=null) {
   request.send(content);
 }
 
-function format_text(text, replacements) {
-  let formatted = text;
-  for (let key of Object.keys(replacements)) {
-    while (formatted.includes("{{"+key+"}}")) {
-      formatted = formatted.replace("{{"+key+"}}", replacements[key]);
+function deindent(str) {
+  return str.replace(/^\s+/gm, "");
+}
+
+function strip_html(str) {
+  let temp = document.createElement("div");
+  temp.innerHTML = str; //potential xss here but idc
+  return (temp.textContent || temp.innerText);
+}
+
+function sanitize_html(str) {
+  return str.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+}
+
+function hide_element(element) {
+  if (typeof element == "string") {
+    element = document.getElementById(element);
+  }
+  else if (Array.isArray(element)) {
+    for (let item of element) {
+      hide_element(item);
     }
-  }
-  return formatted;
-}
-
-function init() {
-  console.info(gpl_text);
-
-  //support running from within ultraviolet
-  window.real_location = window.location;
-  if (window.__uv) {
-    window.real_location = __uv.location;
-  }
-
-  if (window.real_location.hostname == "edpuzzle.hs.vc") {
-    alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
-  }
-  else if ((/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.real_location.href)) {
-    http_get(base_url+"/app/html/popup.html", open_popup);
-  }
-  else if (window.canvasReadyState) {
-    handle_canvas_url();
-  }
-  else if (window.schoologyMoreLess) {
-    handle_schoology_url();
-  }
-  else {
-    alert("Please run this script on an Edpuzzle assignment. For reference, the URL should look like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch");
-  }
-}
-
-function open_popup() {
-  const popup = window.open("about:blank", "", "width=760, height=450");
-  if (popup == null) {
-    alert("Error: Could not open the popup. Please enable popups for edpuzzle.com and try again.");
     return;
   }
-  write_popup(popup, this.responseText);
-  
-  function popup_unload() { 
-    http_get(base_url+"/app/html/popup.html", function(){
-      if (popup.closed) return;
-      write_popup(popup, this.responseText);
-      popup.addEventListener("beforeunload", popup_unload);
-    });
+
+  element.classList.add("hidden");
+}
+
+function show_element(element, flex=false) {
+  if (typeof element == "string") {
+    element = document.getElementById(element);
+  }
+  else if (Array.isArray(element)) {
+    for (let item of element) {
+      show_element(item);
+    }
+    return;
   }
 
-  popup.addEventListener("beforeunload", popup_unload);
-}
-
-function write_popup(popup, html) {
-  popup.document.base_url = base_url;
-  popup.document.edpuzzle_data = window.__EDPUZZLE_DATA__;
-  popup.document.gpl_text = gpl_text;
-  popup.document.write(html);
-
-  let create_element = function(tag, innerHTML) {
-    let element = popup.document.createElement(tag);
-    element.innerHTML = innerHTML;
-    popup.document.head.append(element);
-    return element;
+  element.classList.remove("hidden");
+  if (flex) {
+    element.classList.add("flex")
   }
-  
-  create_element("script", `const from_id = (id) => document.getElementById(id)`);
-
-  http_get("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap", function(){
-    create_element("style", this.responseText);
-    setTimeout(function(){
-      if (popup.textarea_update_height) {
-        for (let textarea of popup.document.getElementsByTagName("textarea")) {
-          popup.textarea_update_height(textarea);
-        }
-      }  
-    }, 200)
-  });
-
-  http_get(base_url+"/app/css/dist.css", function(){
-    create_element("style", this.responseText);
-  });
-
-  http_get(base_url+"/app/js/popup.js", function() {
-    create_element("script", this.responseText);
-  });
-  /*
-  http_get("https://cdn.jsdelivr.net/npm/libcurl.js@latest/libcurl_full.js", function() {
-    create_element("script", this.responseText);
-  });*/
 }
 
-function handle_canvas_url() {
-  let location_split = window.real_location.href.split("/");
-  let url = `/api/v1/courses/${location_split[4]}/assignments/${location_split[6]}`;
-  http_get(url, function(){
-    let data = JSON.parse(this.responseText);
-    let url2 = data.url;
+function get_template(id, flex=false) {
+  let element = document.getElementById(id).cloneNode(true);
+  element.removeAttribute("id");
+  element.classList.remove("hidden");
+  if (flex) {
+    element.classList.add("flex");
+  }
 
-    http_get(url2, function() {
-      let data = JSON.parse(this.responseText);
-      let url3 = data.url;
-
-      alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Canvas and try again.`);
-      open(url3);
-    });
-  });
+  element.placeholder = function(name) {
+    return element.querySelector(`*[key="${name}"]`)
+  }
+  return element;
 }
 
-function handle_schoology_url() {
+function fixed_length_int(int, length) {
+  return ("0".repeat(length) + int).slice(-length);
+}
+
+function get_assignment_id() {
+  if (assignment) {
+    return assignment.teacherAssignments[0]._id;
+  }
+  else {
+    return window.real_location.href.split("/")[4];
+  }
+}
+
+async function get_csrf() {
+  let now = Date.now()/1000;
+  if (!csrf_cache.latest ||  now - csrf_cache.updated > 60) {
+    let csrf_url = "https://edpuzzle.com/api/v3/csrf";
+    let request = await fetch(csrf_url);
+    let data = await request.json();
+    let csrf = data.CSRFToken;
+    csrf_cache.updated = now;
+    csrf_cache.latest = csrf;
+    return csrf;
+  }
+  else {
+    return csrf_cache.latest
+  }
+}
+
+async function construct_headers() {
+  return {
+    "accept": "application/json, text/plain, */*",
+    "accept_language": "en-US,en;q=0.9",
+    "content-type": "application/json",
+    "x-csrf-token": await get_csrf(),
+    "x-edpuzzle-referrer": window.real_location.href,
+    "x-edpuzzle-web-version": edpuzzle_data.version
+  }
+}
+
+async function get_attempt() {
+  let assignment_id = get_assignment_id();
+  let attempt_url = `https://edpuzzle.com/api/v3/assignments/${assignment_id}/attempt`;
+  let request = await fetch(attempt_url);
+  let data = await request.json();
+  return data;
+}
+
+async function get_assignment() {
   let assignment_id = window.real_location.href.split("/")[4];
-  let url = `/external_tool/${assignment_id}/launch/iframe`;
-  http_get(url, function() {
-    alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Schoology and try again.`);
+  if (typeof assignment_id == "undefined") {
+    throw new Error("Could not infer the assignment ID. Are you on the correct URL?");
+  }
+  let assignment_url = `https://edpuzzle.com/api/v3/assignments/${assignment_id}`;
+  let response = await fetch(assignment_url);
+  if (!response.ok) {
+    throw new Error(`Status code ${response.status} received when attempting to fetch the assignment.`);
+  }
+  return await response.json();
+}
 
-    //strip js tags from response and add to dom
-    let html = this.responseText.replace(/<script[\s\S]+?<\/script>/, ""); 
-    let div = document.createElement("div");
-    div.innerHTML = html;
-    let form = div.querySelector("form");
-    
-    let input = document.createElement("input")
-    input.setAttribute("type", "hidden");
-    input.setAttribute("name", "ext_submit");
-    input.setAttribute("value", "Submit");
-    form.append(input);
-    document.body.append(div);
+function format_popup() {
+  let media = assignment.medias[0];
+  let teacher_assignment = assignment.teacherAssignments[0];
+  let thumbnail = media.thumbnailURL;
+  if (thumbnail.startsWith("/")) {
+    thumbnail = "https://"+window.real_location.hostname+thumbnail;
+  }
+  
+  let deadline_text;
+  if (teacher_assignment.preferences.dueDate == "") {
+    deadline_text = "No due date"
+  }
+  else {
+    deadline_text = "Due on "+(new Date(teacher_assignment.preferences.dueDate)).toDateString();
+  }
 
-    //submit form in new tab
-    form.setAttribute("target", "_blank");
-    form.submit();
-    div.remove();
-  });
+  document.getElementById("title").innerHTML = `Answers for: ${media.title}`;
+  document.getElementById("assignment_title").innerHTML = media.title;
+  document.getElementById("assignment_author").innerHTML = media.user.name;
+  document.getElementById("assignment_end").innerHTML = deadline_text;
+  document.getElementById("thumbnail_img").src = thumbnail;
+}
+
+async function get_media() {
+  let media_id = assignment.teacherAssignments[0].contentId;
+  let media_url = `https://edpuzzle.com/api/v3/media/${media_id}`;
+  let r = await fetch(media_url, {credentials: "omit"});
+  //edpuzzle is private
+  if (r.status !== 200) {
+    throw new Error("The assignment is private, so the answers cannot be extracted.");
+  }
+  let media = await r.json();
+  questions = media.questions;
+  return questions
+}
+
+//associates user responses with their corresponding questions.
+async function get_responses(questions) {
+  let attempt = await get_attempt();
+  for (let question of questions) {
+    for (let answer of attempt.answers) {
+      if (answer.questionId == question._id) {
+        question.response = answer;
+        break;
+      }
+    }
+    if (!question.response) {
+      question.response = null;
+    }
+  }
+  return questions;
+}
+
+//wrapper function for question fetcher - with error handling
+async function get_questions() {
+  questions = await get_media();
+  questions = await get_responses(questions);
+
+  //validate the questions to make sure they all have an answer listed
+  for (let question of questions) {
+    if (question.type !== "multiple-choice") continue;
+    let correct_found = false;
+    for (let choice of question.choices) {
+      if (choice.isCorrect) {
+        correct_found = true;
+        break;
+      };
+    }
+    if (!correct_found) {
+      throw new Error("Some questions have invalid data. The assignment might be a private one, so the answers cannot be extracted.");
+    }
+  }
+}
+
+//display the questions onto the popup
+function parse_questions() {
+  if (questions == null) {
+    throw new Error("Failed to fetch the questions for this assignment.")
+  }
+  
+  //sort the questions by time
+  questions.sort((a, b) => a.time - b.time);
+
+  for (let question of questions) {
+    let min = fixed_length_int(Math.floor(question.time/60), 2);
+    let secs = fixed_length_int(Math.floor(question.time%60), 2);
+    let timestamp = `[${min}:${secs}]`;
+
+    if (question.body[0].text != "") {
+      question.title = `<p>${question.body[0].text}</p>`;
+    }
+    else {
+      question.title = question.body[0].html;
+    }
+
+    let table = get_template("question_template");
+    table.placeholder("timestamp").innerHTML = timestamp;
+    table.placeholder("title").innerHTML = question.title;
+
+    if (question.type == "multiple-choice") {
+      let choices_list = get_template("multiple_choice_template");
+      let choice_template = choices_list.placeholder("question_choice");
+      for (let choice of question.choices) {
+        let list_item = choice_template.cloneNode(true);
+        if (choice.isCorrect) {
+          list_item.classList.add("underline");
+        }
+        if (choice.body[0].text != "") {
+          list_item.innerHTML = `<p>${choice.body[0].text}</p>`;
+        }
+        else {
+          list_item.innerHTML = `${choice.body[0].html}`;
+        }
+        choices_list.append(list_item);
+      }
+      choice_template.remove();
+      table.placeholder("question_content").append(choices_list);
+    }
+    else if (question.type == "open-ended") {
+      let question_div = get_template("open_ended_template", true);
+      let generate_button = question_div.placeholder("generator_button");
+      let submit_button = question_div.placeholder("submit_button");
+      let question_textarea = question_div.placeholder("question_textarea");
+      let buttons_div = question_div.placeholder("buttons_div");
+      
+      if (question.response) {
+        question_textarea.innerHTML = question.response.body[0].text;
+        question_textarea.disabled = true;
+        buttons_div.classList.add("hidden");
+      }
+      else {
+        generate_button.onclick = function(){
+          open_ended.open_menu(question, question_div)
+        };
+        submit_button.onclick = async function(){
+          let success = await open_ended.submit_button_callback(question_textarea.value.trim(), question)
+          if (success) {
+            buttons_div.remove();
+          }
+        }
+      }
+
+      table.placeholder("question_content").append(question_div);
+    }
+
+    questions_div.append(table);
+  }
+
+  content_loaded = true;
+
+  skipper_button.disabled = !skipper_loaded;
+  if (questions.length == 0) {
+    status_text.innerHTML = "No valid multiple choice questions were found.";
+  }
+  else {
+    status_text.classList.add("hidden");
+    answers_button.disabled = !answerer_loaded;
+  }
+}
+
+function open_copyright_notice() {
+  let gpl_popup = window.open("about:blank", "", "width=600, height=300");
+  let text = gpl_text.replaceAll("<", "<&zwj;");
+  //this fixes a bug that only occurs on firefox for some reason
+  setTimeout(() => {
+    gpl_popup.document.head.innerHTML = `<title>edpuzzle-answers: Copyright Notice</title>`;
+    gpl_popup.document.body.innerHTML = `
+      <pre style="font-size: 12px; white-space: pre-wrap">${text}</pre>
+    `;  
+  }, 500);
+}
+
+function textarea_initialize(textarea) {
+  textarea_update_height(textarea);
+  textarea.addEventListener("input", function(){textarea_update_height(textarea)});
+  let old_width;
+  new ResizeObserver(function(changes){
+    for (let change of changes) {
+      if (change.contentRect.width === old_width) {return}
+      old_width = change.contentRect.width
+      textarea_update_height(textarea);
+    }
+  }).observe(textarea);
+}
+
+function textarea_update_height(textarea) {
+  textarea.style.marginBottom = textarea.style.height;
+  textarea.style.height = 0;
+  textarea.style.height = textarea.scrollHeight+"px";
+  textarea.style.marginBottom = 0;
+}
+
+function mutation_observer_callback(mutations_list, observer) {
+  for (let mutation of mutations_list) {
+    if (mutation.type == "childList") {
+      for (let added_node of mutation.addedNodes) {
+        if (added_node instanceof Text && added_node.parentNode && added_node.parentNode.tagName == "TEXTAREA") {
+          textarea_update_height(added_node.parentNode);
+        }
+        else if (added_node instanceof HTMLElement) {
+          for (let textarea of added_node.getElementsByTagName("textarea")) {
+            textarea_initialize(textarea);
+          }
+        }
+      }
+    }
+  }
+}
+
+function intercept_console() {
+  let function_names = ["log", "debug", "info", "warn", "error"];
+  for (let key of function_names) {
+    console[key+"_"] = console[key].bind(console);
+    console[key] = function() {
+      let log_entry = {
+        message: arguments[0] || "",
+        type: key
+      }
+      if (arguments.length > 0) {
+        console_log.push(log_entry);
+      }
+      if (console_popup) {
+        display_console_message(log_entry);
+      }
+
+      return console[key+"_"](...arguments);
+    }
+  }
+}
+
+async function load_console_html() {
+  let url = base_url+"/app/html/console.html";
+  console.log(`Loading ${url}`);
+  let request = await fetch(url);
+
+  if (!request.ok) {
+    console.error("Failed to load JS console.");
+    return;
+  }
+  console_html = await request.text();
+}
+
+function open_console() {
+  if (console_popup) {
+    console_popup.close();
+  }
+
+  console_popup = window.open("about:blank", "", "width=500, height=500");
+  console_popup.document.write(console_html);
+  for (let element of document.getElementsByTagName("style")) {
+    console_popup.document.head.append(element.cloneNode(true));
+  }
+  
+  let js_textarea = console_popup.document.getElementById("js_input");
+  js_textarea.onkeydown = function(event) {
+    if (event.code == "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      if (js_textarea.value === ""){
+        return;
+      }  
+      let command = js_textarea.value;
+      js_textarea.value = "";
+      let message = {
+        message: eval(command),
+        type: "eval"
+      }
+      add_console_message(message);
+    }
+  }
+
+  console_popup.onbeforeunload = function(){
+    setTimeout(function(){
+      console_popup.close();
+    }, 200)
+  }
+  
+  for (let log_entry of console_log) {
+    display_console_message(log_entry);
+  }
+}
+
+function add_console_message(log_entry) {
+  if (console_popup) {
+    display_console_message(log_entry);
+  }
+}
+
+function display_console_message(log_entry) {
+  let colors = {
+    eval: "bg-slate-900",
+    debug: "bg-slate-900",
+    info: "bg-slate-900",
+    log: "bg-slate-900",
+    warn: "bg-yellow-700",
+    error: "bg-red-800"
+  }
+
+  let table_container = console_popup.document.getElementById("table_container");
+  let console_table = console_popup.document.getElementById("console_table");
+  let message_row = console_popup.document.createElement("tr");
+  let type_cell = console_popup.document.createElement("td");
+  let text_cell = console_popup.document.createElement("td");
+
+  let message = log_entry.message;
+  if (typeof message == "object") {
+    message = JSON.stringify(message);
+  }
+  else if (typeof message != "string") {
+    message = message+"";
+  }
+
+  type_cell.innerHTML = log_entry.type;
+  text_cell.innerHTML = sanitize_html(message).replaceAll("\n", "<br>");
+  text_cell.className = type_cell.className = "border border-slate-600 align-top";
+  message_row.classList.add(colors[log_entry.type]);
+  text_cell.classList.add("w-full");
+
+  message_row.append(type_cell);
+  message_row.append(text_cell);
+  console_table.append(message_row);
+  table_container.scrollTop = table_container.scrollHeight;
+}
+
+function on_before_unload() {
+  if (console_popup) {
+    console_popup.close();
+  }
+}
+
+function on_error(error_old, url, line, col, error) {
+  error_text = error?.stack || error_old;
+  let message = {
+    message: error_text,
+    type: "error"
+  }
+  add_console_message(message)
+}
+
+async function init() {
+  var fetch_ = fetch;
+  fetch = fetch_wrapper;
+  intercept_console();
+  window.onerror = on_error;
+  window.onbeforeunload = on_before_unload;
+  window.real_location = JSON.parse(JSON.stringify(opener.real_location));
+
+  console.log(gpl_text);
+
+  load_console_html();
+
+  let textarea_list = document.getElementsByTagName("textarea");
+  for (let textarea of textarea_list) {
+    textarea_initialize(textarea);
+  }
+
+  let observer = new MutationObserver(mutation_observer_callback);
+  observer.observe(document.getRootNode(), {childList: true, subtree: true});
+
+  try {
+    assignment = await get_assignment();
+    format_popup();
+    await get_questions();
+    parse_questions();
+  }
+  catch (error) {
+    console.error(error + "");
+    console.error(error.stack);
+    status_text.innerHTML = `An error has occurred. Please check the JS console for more details.<br><br>${error+""}`;
+  }
 }
 
 init();

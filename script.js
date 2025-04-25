@@ -2,7 +2,7 @@
 //see README.md for more information
 
 //this script mainly just serves to load the rest of the program
-
+document.dev_env = "http://localhost:5500"
 var mirrors = [
   "https://edpuzzle.librecheats.net",
   "https://edpuzzle.hs.vc",
@@ -10,7 +10,7 @@ var mirrors = [
 ];
 
 async function try_mirror(mirror) {
-  let r = await fetch(mirror + "/app/main.js");
+  let r = await fetch(mirror + "/open.js");
   let script = await r.text();
   window.base_url = mirror;
   eval(script);

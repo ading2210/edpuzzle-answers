@@ -4,7 +4,6 @@ Flask-Limiter
 Flask-Cors
 lxml
 pymongo
-pytailwindcss
 alt-profanity-check
 vercel-llm-api
 requests[socks]

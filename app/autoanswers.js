@@ -1,6 +1,9 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
 
+export var answerer_loaded = false;
+export var content_loaded = false;
+
 class auto_answers {
   
 static {
