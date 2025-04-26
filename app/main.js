@@ -1,7 +1,7 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
-import {video_skipper} from "./skipper.js";
-import {auto_answers} from "./autoanswers.js";
+import {video_skipper, skipper_loaded} from "./skipper.js";
+import {auto_answers, answerer_loaded} from "./autoanswers.js";
 import {video_options} from "./videooptions.js";
 import * as openended from "./openended.js";
 
@@ -41,10 +41,12 @@ const open_ended_div = document.getElementById("open_ended_div");
 const content_div = document.getElementById("content_div");
 const console_log = [];
 
-var questions = null;
+export var questions = null;
 var console_html = null;
 var console_popup = null;
 export var assignment = null;
+export var content_loaded = false;
+
 
 function fetch_wrapper(url, options={}) {
   if (edpuzzle_data && edpuzzle_data.token && (new URL(url).hostname) == "edpuzzle.com") {
@@ -164,7 +166,7 @@ async function get_csrf() {
   }
 }
 
-async function construct_headers() {
+export async function construct_headers() {
   return {
     "accept": "application/json, text/plain, */*",
     "accept_language": "en-US,en;q=0.9",
@@ -175,7 +177,7 @@ async function construct_headers() {
   }
 }
 
-async function get_attempt() {
+export async function get_attempt() {
   let assignment_id = get_assignment_id();
   let attempt_url = `https://edpuzzle.com/api/v3/assignments/${assignment_id}/attempt`;
   let request = await fetch(attempt_url);
@@ -221,8 +223,10 @@ function format_popup() {
 
 async function get_media() {
   let media_id = assignment.teacherAssignments[0].contentId;
-  let media_url = `https://edpuzzle.com/api/v3/media/${media_id}`;
-  let r = await fetch(media_url, {credentials: "omit"});
+  let r = await fetch(base_url + `/api/media/${media_id}`);
+  console.log(r)
+
+
   //edpuzzle is private
   if (r.status !== 200) {
     throw new Error("The assignment is private, so the answers cannot be extracted.");

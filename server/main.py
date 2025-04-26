@@ -8,6 +8,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.middleware.proxy_fix import ProxyFix
 import profanity_check
+import requests
 
 from modules import exceptions, utils, invidious, scraper
 import threading, time, json, os
@@ -145,6 +146,12 @@ def generate(service_name):
   except Exception as e:
     return utils.handle_exception(e)
 
+@app.route("/api/media/<media_id>")
+def media_proxy(media_id):
+  return requests.get(f"https://edpuzzle.com/api/v3/media/{media_id}", cookies={
+    "token": config["teacher_token"]
+  }).json()
+
 @app.route("/")
 def homepage():
   return render_template("index.html", dev_mode=config["dev_mode"])
@@ -166,7 +173,7 @@ def loader_script():
   return send_from_directory("..", "script.js")
 
 @app.route("/open.js")
-def loader_script():
+def open_script():
   return send_from_directory("..", "open.js")
 
 

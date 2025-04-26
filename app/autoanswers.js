@@ -1,8 +1,9 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
+import { content_loaded, construct_headers, get_attempt, questions } from "./main.js";
+import { video_skipper } from "./skipper.js";
 
 export var answerer_loaded = false;
-export var content_loaded = false;
 
 export class auto_answers {
   

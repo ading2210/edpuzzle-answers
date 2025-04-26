@@ -8,6 +8,7 @@
   "server_port": 5000,
   "limiter_storage_uri": "mongodb://localhost:27017",
   "proxy_checker_threads": 100,
+  "teacher_token": "",
   "cloudflare": {
     "enabled": true,
     "account_id": "xxxxxxxxxxx",
