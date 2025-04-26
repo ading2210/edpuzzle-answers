@@ -1,8 +1,8 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
-import * as skipper from "./skipper.js";
-import * as autoanswers from "./autoanswers.js";
-import * as videooptions from "./videooptions.js";
+import {video_skipper} from "./skipper.js";
+import {auto_answers} from "./autoanswers.js";
+import {video_options} from "./videooptions.js";
 import * as openended from "./openended.js";
 
 const gpl_text = document.gpl_text;
@@ -22,6 +22,9 @@ const wisp_servers = [
 
 const css_link = document.getElementById("css_link");
 
+const open_notice_button = document.getElementById("open-notice");
+const open_console_button = document.getElementById("open-console");
+
 const skipper_button = document.getElementById("skipper_button");
 const answers_button = document.getElementById("answers_button");
 const unfocus_checkbox = document.getElementById("unfocus_checkbox"); 
@@ -38,10 +41,10 @@ const open_ended_div = document.getElementById("open_ended_div");
 const content_div = document.getElementById("content_div");
 const console_log = [];
 
-var assignment = null;
 var questions = null;
 var console_html = null;
 var console_popup = null;
+export var assignment = null;
 
 function fetch_wrapper(url, options={}) {
   if (edpuzzle_data && edpuzzle_data.token && (new URL(url).hostname) == "edpuzzle.com") {
@@ -250,6 +253,8 @@ async function get_responses(questions) {
 async function get_questions() {
   questions = await get_media();
   questions = await get_responses(questions);
+
+  console.log(questions)
 
   //validate the questions to make sure they all have an answer listed
   for (let question of questions) {
@@ -523,13 +528,21 @@ function on_before_unload() {
 }
 
 function on_error(error_old, url, line, col, error) {
-  error_text = error?.stack || error_old;
+  let error_text = error?.stack || error_old;
   let message = {
     message: error_text,
     type: "error"
   }
   add_console_message(message)
 }
+
+open_notice_button.addEventListener("click", open_copyright_notice);
+open_console_button.addEventListener("click", open_console);
+unfocus_checkbox.addEventListener("change", video_options.toggle_unfocus);
+speed_dropdown.addEventListener("change", video_options.video_speed.bind(video_options));
+skipper_button.addEventListener("click", video_skipper.skip_video.bind(video_skipper));
+answers_button.addEventListener("click", auto_answers.answer_questions.bind(auto_answers));
+custom_speed.addEventListener("input", video_options.video_speed.bind(video_options))
 
 async function init() {
   var fetch_ = fetch;

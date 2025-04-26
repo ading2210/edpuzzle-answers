@@ -1,7 +1,8 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
+import { assignment } from "./main.js";
 
-class video_options {
+export class video_options {
 
 static {
   if (typeof opener.document.visability_change != "undefined") {

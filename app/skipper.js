@@ -5,7 +5,7 @@ export var skipper_loaded = false;
 export var content_loaded = false;
 
 
-class video_skipper {
+export class video_skipper {
 
 static {
   skipper_loaded = true;

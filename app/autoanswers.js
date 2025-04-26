@@ -4,7 +4,7 @@
 export var answerer_loaded = false;
 export var content_loaded = false;
 
-class auto_answers {
+export class auto_answers {
   
 static {
   answerer_loaded = true;
