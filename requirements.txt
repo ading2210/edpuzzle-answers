@@ -5,7 +5,6 @@ Flask-Cors
 lxml
 pymongo
 alt-profanity-check
-vercel-llm-api
 requests[socks]
 pysocks
-google-generativeai
+curl_cffi

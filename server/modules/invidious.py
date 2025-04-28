@@ -92,23 +92,17 @@ def get_captions(id, language=None, timestamp=None, count=None):
   if count != None:
     count = int(count)
   
-  if time.time() - cache["updated"] >= 600:
-    refresh_cache()
-  
-  instances = cache["instances_sorted"] or cache["instances"]
-  for instance in instances:
-    url = instance["uri"]
-    try:
-      captions = get_captions_attempt(url, id, language, 3)
-      captions = truncate_captions(captions, timestamp, count)
-          
-      returned = {
-        "source": instance["uri"],
-        "captions": captions
+
+  return {
+    "source": "",
+    "captions": [
+      {
+        "timestamp": "00",
+        "duration": "5",
+        "text": "test"
       }
-      return returned
-    except exceptions.BadGatewayError:
-      pass
+    ]
+  }
 
 def get_captions_attempt(base_url, id, language=None, timeout=None):
   if language:

@@ -3,10 +3,10 @@
 import {video_skipper, skipper_loaded} from "./skipper.js";
 import {auto_answers, answerer_loaded} from "./autoanswers.js";
 import {video_options} from "./videooptions.js";
-import * as openended from "./openended.js";
+import { open_ended } from "./openended.js";
 
 const gpl_text = document.gpl_text;
-const base_url = document.base_url;
+export const base_url = document.base_url;
 const edpuzzle_data = document.edpuzzle_data;
 const lti_edpuzzle = !!edpuzzle_data.token;
 const csrf_cache = {
@@ -78,52 +78,12 @@ function http_get(url, callback, headers=[], method="GET", content=null) {
   request.send(content);
 }
 
-function deindent(str) {
-  return str.replace(/^\s+/gm, "");
-}
-
-function strip_html(str) {
-  let temp = document.createElement("div");
-  temp.innerHTML = str; //potential xss here but idc
-  return (temp.textContent || temp.innerText);
-}
 
 function sanitize_html(str) {
   return str.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
-function hide_element(element) {
-  if (typeof element == "string") {
-    element = document.getElementById(element);
-  }
-  else if (Array.isArray(element)) {
-    for (let item of element) {
-      hide_element(item);
-    }
-    return;
-  }
-
-  element.classList.add("hidden");
-}
-
-function show_element(element, flex=false) {
-  if (typeof element == "string") {
-    element = document.getElementById(element);
-  }
-  else if (Array.isArray(element)) {
-    for (let item of element) {
-      show_element(item);
-    }
-    return;
-  }
-
-  element.classList.remove("hidden");
-  if (flex) {
-    element.classList.add("flex")
-  }
-}
-
-function get_template(id, flex=false) {
+export function get_template(id, flex=false) {
   let element = document.getElementById(id).cloneNode(true);
   element.removeAttribute("id");
   element.classList.remove("hidden");
@@ -224,14 +184,19 @@ function format_popup() {
 async function get_media() {
   let media_id = assignment.teacherAssignments[0].contentId;
   let r = await fetch(base_url + `/api/media/${media_id}`);
-  console.log(r)
-
 
   //edpuzzle is private
   if (r.status !== 200) {
     throw new Error("The assignment is private, so the answers cannot be extracted.");
   }
+
   let media = await r.json();
+  console.log(media)
+  if (media.success != true) {
+    throw new Error("Failed to get questions! Reason: " + media.error)
+    console.log(media)
+  }
+
   questions = media.questions;
   return questions
 }
@@ -257,8 +222,6 @@ async function get_responses(questions) {
 async function get_questions() {
   questions = await get_media();
   questions = await get_responses(questions);
-
-  console.log(questions)
 
   //validate the questions to make sure they all have an answer listed
   for (let question of questions) {
