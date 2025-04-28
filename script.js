@@ -8,6 +8,14 @@ else {
   base_url = "https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main";
 }
 
+var api_url;
+if (typeof document.api_env != "undefined") {
+  api_url = document.api_env
+}
+else {
+  api_url = "https://edpuzzle.com";
+}
+
 function http_get(url, callback, headers=[], method="GET", content=null) {
   var request = new XMLHttpRequest();
   request.addEventListener("load", callback);
@@ -232,7 +240,7 @@ function getMedia(assignment) {
   text.innerHTML = `Fetching assignments...`;
   
   var media_id = assignment.teacherAssignments[0].contentId;
-  var url2 = `https://edpuzzle.com/api/v3/media/${media_id}`;
+  var url2 = `${api_url}/api/v3/media/${media_id}`;
 
   function handle_error(msg) {
     text.remove();
