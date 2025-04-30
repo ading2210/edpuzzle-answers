@@ -13,7 +13,7 @@ if (typeof document.api_env != "undefined") {
   api_url = document.api_env
 }
 else {
-  api_url = "https://edpuzzle.com";
+  api_url = "https://n.villainsrule.xyz";
 }
 
 function http_get(url, callback, headers=[], method="GET", content=null) {
