@@ -14,6 +14,8 @@ module.exports = {
       patterns: [
         { from: "app/html", to: "" },
         { from: "app/css", to: "styles" },
+        { from: "script.js", to: ""},
+        { from: "open.js", to: ""}
       ],
     }),
   ],
