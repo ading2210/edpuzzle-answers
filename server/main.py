@@ -235,7 +235,7 @@ def media_proxy(media_id):
     url = f"https://edpuzzle.com/api/v3/media/{media_id}"
     csrf_token = requests.get("https://edpuzzle.com/api/v3/csrf").json()
     cookies = {
-        "token": random.choice(config["teacher_tokens"]),
+        "token": current_token,
         "edpuzzleCSRF": csrf_token["CSRFToken"],
     }
     print(cookies)
