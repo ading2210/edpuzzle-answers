@@ -1,6 +1,6 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
-import {get_template, assignment, base_url, get_attempt} from "./main.js";
+import {get_template, assignment, base_url, get_attempt, construct_headers} from "./main.js";
 
 function hide_element(element) {
   if (typeof element == "string") {
@@ -80,7 +80,6 @@ static async get_captions() {
     console.log("Video supported, but no English captions available.");
     return;
   }
-  console.log(data.captions);
   this.captions = data.captions;
 }
 
@@ -165,15 +164,6 @@ static handle_generate_event(last_status, event) {
       generated_textarea.disabled = true;
       generated_textarea.innerHTML = "Waiting for backend response...";
     }
-    else if (event.status == "proxy") {
-      generated_textarea.innerHTML = "Waiting for proxy...";
-    }
-    else if (event.status == "init") {
-      generated_textarea.innerHTML = "Loading scraper...";
-    }
-    else if (event.status == "waiting") {
-      generated_textarea.innerHTML = "Waiting for service...";
-    }
     else if (event.status == "generating") {
       generated_textarea.innerHTML = "";
     }
@@ -200,14 +190,13 @@ static handle_generate_event(last_status, event) {
   }
 }
 
-static async generate(token, prompt) {
+static async generate(prompt) {
   if (this.active_request instanceof XMLHttpRequest) {
     this.active_request.abort();
   }
 
   let body = {
     prompt: prompt,
-    token: token
   };
 
   let generate_button = this.menu.placeholder("generate_button");
@@ -262,7 +251,7 @@ static async generate(token, prompt) {
     });
   }.bind(this)
 
-  request.open("POST", base_url+"/api/generate/openai");
+  request.open("POST", base_url+"/api/generate");
   request.setRequestHeader("content-type", "application/json");
   request.send(JSON.stringify(body));
 
@@ -299,7 +288,7 @@ static generate_button_callback() {
   this.menu.placeholder("generate_button").disabled = true;
   this.menu.placeholder("save_button").disabled = true;
   this.format_prompt().then(prompt => { // No max length because users input their own key
-    this.generate(null, prompt);
+    this.generate(prompt);
   }) 
 }
 

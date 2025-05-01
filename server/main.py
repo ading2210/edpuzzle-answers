@@ -16,10 +16,9 @@ from flask_limiter.util import get_remote_address
 from werkzeug.middleware.proxy_fix import ProxyFix
 import profanity_check
 from curl_cffi import requests
-import curlify
 import random
 
-from modules import exceptions, utils, captions, scraper
+from modules import exceptions, utils, captions, ai
 import threading, time, json, os, hashlib, re
 
 # ===== setup flask =====
@@ -28,7 +27,6 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 with open(base_dir + "/config/config.json") as f:
     config = json.loads(f.read())
 utils.include_traceback = config["include_traceback"]
-scraper.config = config
 
 # handle compression and rate limits
 print("Preparing flask instance...")
@@ -156,36 +154,21 @@ def get_captions(id, language="en"):
         timestamp = request.args.get("timestamp")
         count = request.args.get("count")
 
-        captions = captions.get_captions(id, language, count=count, timestamp=timestamp)
-        return captions
+        c = captions.get_captions(id, language, count=count, timestamp=timestamp)
+        return c
 
     except Exception as e:
         return utils.handle_exception(e)
 
 
-@app.route("/api/services")
-def resolve_services():
-    response = []
-    for name, service in scraper.services.items():
-        response.append(
-            {
-                "name": name,
-                "models": service.models,
-                "max_length": service.max_length,
-                "streaming": service.streaming_supported,
-            }
-        )
-    return response
-
-
-@app.route("/api/generate/openai", methods=["POST"])
+@app.route("/api/generate", methods=["POST"])
 @limiter.limit(get_path_limit)
-def generate(service_name="OpenAI"):
+def generate():
     try:
-        service = scraper.services[service_name]
+        # service = scraper.services[service_name]
 
         data = request.json
-
+        print(data)
         if (
             "prompt" in data
             and config["profanity_filter"]
@@ -198,21 +181,19 @@ def generate(service_name="OpenAI"):
         if not "prompt" in data:
             raise exceptions.BadRequestError("Missing required parameter 'prompt'.")
 
-        if not "token" in data:
-            raise exceptions.BadRequestError("Missing required parameter 'token'.")
-
         for arg in data:
-            if not arg in ["prompt", "token"]:
+            if not arg in ["prompt"]:
                 raise exceptions.BadRequestError(f"Unknown parameter '{arg}'.")
 
-        if len(data["prompt"]) > service.max_length:
+        if len(data["prompt"]) > ai.max_length:
             raise exceptions.BadRequestError("Prompt too long.")
 
         def generator():
             try:
-                for chunk in scraper.get_generator(service, **data):
+                for chunk in ai.generate(data):
                     if chunk == data["prompt"]:
                         continue
+                    print(chunk)
                     yield json.dumps(chunk) + "\n"
             except Exception as e:
                 exception = utils.handle_exception(e)[0]
@@ -238,7 +219,7 @@ def media_proxy(media_id):
         "token": current_token,
         "edpuzzleCSRF": csrf_token["CSRFToken"],
     }
-    print(cookies)
+
     res = requests.get(url, cookies=cookies, impersonate="chrome")
 
     if res.status_code != 200:

@@ -191,10 +191,8 @@ async function get_media() {
   }
 
   let media = await r.json();
-  console.log(media)
   if (media.success != true) {
     throw new Error("Failed to get questions! Reason: " + media.error)
-    console.log(media)
   }
 
   questions = media.questions;
@@ -396,7 +394,7 @@ function intercept_console() {
 }
 
 async function load_console_html() {
-  let url = base_url+"/app/html/console.html";
+  let url = base_url+"/dist/console.html";
   console.log(`Loading ${url}`);
   let request = await fetch(url);
 
