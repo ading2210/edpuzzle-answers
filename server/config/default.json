@@ -10,9 +10,12 @@
   "proxy_checker_threads": 100,
   "teacher_creds": [
     {
-      "username": "",
-      "password": ""
+      "username": "EDPUZZLE_EMAIL",
+      "password": "EDPUZZLE_PASSWORD"
     }
   ],
-  "yt_api_key": "API_KEY_HERE"
+  "openrouter": {
+    "key": "OPENROUTER_API_KEY",
+    "model": "deepseek/deepseek-chat-v3-0324:free"
+  }
 }

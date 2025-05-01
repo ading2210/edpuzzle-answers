@@ -27,6 +27,7 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 with open(base_dir + "/config/config.json") as f:
     config = json.loads(f.read())
 utils.include_traceback = config["include_traceback"]
+ai.config = config
 
 # handle compression and rate limits
 print("Preparing flask instance...")
@@ -165,10 +166,7 @@ def get_captions(id, language="en"):
 @limiter.limit(get_path_limit)
 def generate():
     try:
-        # service = scraper.services[service_name]
-
         data = request.json
-        print(data)
         if (
             "prompt" in data
             and config["profanity_filter"]
@@ -193,7 +191,6 @@ def generate():
                 for chunk in ai.generate(data):
                     if chunk == data["prompt"]:
                         continue
-                    print(chunk)
                     yield json.dumps(chunk) + "\n"
             except Exception as e:
                 exception = utils.handle_exception(e)[0]
