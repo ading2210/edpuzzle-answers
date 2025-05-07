@@ -91,13 +91,13 @@ static async format_captions(max_length=null) {
     }
   }
 
-  // let captions_trimmed = [];
-  // for (let i=0; i<this.captions.length; i++) {
-  //   let caption = this.captions[i];
-  //   if (this.question.time > caption.timestamp) {
-  //     captions_trimmed = this.captions.slice(0, i+1);
-  //   }
-  // }
+  let captions_trimmed = [];
+  for (let i=0; i<this.captions.length; i++) {
+    let caption = this.captions[i];
+    if (this.question.time > caption.timestamp) {
+      captions_trimmed = this.captions.slice(0, i+1);
+    }
+  }
 
   let formatted = "";
   for (let line of this.captions.reverse()) {

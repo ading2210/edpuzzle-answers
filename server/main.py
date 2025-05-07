@@ -155,7 +155,7 @@ def get_captions(id, language="en"):
         timestamp = request.args.get("timestamp")
         count = request.args.get("count")
 
-        c = captions.get_captions(id, language, count=count, timestamp=timestamp)
+        c = captions.get_captions(id)
         return c
 
     except Exception as e:

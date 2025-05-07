@@ -73,7 +73,7 @@ function open_popup() {
   write_popup(popup, this.responseText);
   
   function popup_unload() { 
-    http_get(base_url+"/app/html/popup.html", function(){
+    http_get(base_url+"/popup.html", function(){
       if (popup.closed) return;
       write_popup(popup, this.responseText);
       popup.addEventListener("beforeunload", popup_unload);
