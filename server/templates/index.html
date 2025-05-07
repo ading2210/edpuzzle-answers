@@ -10,10 +10,10 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="Edpuzzle Answers Script">
   <meta property="og:url" content="https://edpuzzle.hs.vc/">
-  <meta property="og:image" content="https://edpuzzle.hs.vc/static/images/screenshot4.png">
+  <meta property="og:image" content="//images/screenshot4.png">
   <meta property="og:article:author" content="ading2210">
   <meta property="og:description" content="This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, as well as automatically answer the questions and change the video speed. This project is also fully open source and licensed under the GNU AGPL v3.">
-  <meta property="twitter:image" content="https://edpuzzle.hs.vc/static/images/screenshot4.png">
+  <meta property="twitter:image" content="/landing/images/screenshot4.png">
   <meta property="twitter:card" content="summary_large_image">
   
   {% if dev_mode %}
@@ -21,9 +21,9 @@
   {% endif %}
   
   <title>Edpuzzle Answers Script</title>
-  <link href="./static/images/icon.png" rel="icon" type="image/png"/>
+  <link href="./landing/images/icon.png" rel="icon" type="image/png"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-  <script src="./static/graph.js"></script>
+  <script src="./landing/graph.js"></script>
   
   <style>
     * {  
@@ -90,7 +90,7 @@
   <div class="wrapper_div">
     <h2 style="margin-top: 0px; margin-bottom: 0px; font-size: 32px">Edpuzzle Answers Script</h1>
     <hr>
-    <img style="max-width: 100%; height: auto;" alt="screenshot" src="./static/images/screenshot4.png">
+    <img style="max-width: 100%; height: auto;" alt="screenshot" src="./landing/images/screenshot4.png">
     <p style="font-size: 12px">Source code: <a href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a></p>
     <hr>
     
@@ -170,7 +170,7 @@
     <p style="font-size: 12px;">If you need further help, you can join our discord server here: <a href="/discord">discord.html</a></p>
     <p style="margin-top: 16px; margin-bottom: 8px">To use this, just drag this button into your bookmarks bar and click it when on an Edpuzzle assignment. If you're on Firefox, right click on the button, then select "bookmark link."</p>
     <!-- <a href='javascript: fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js").then(r => r.text()).then(r => eval(r))'> -->
-    <a href='javascript: fetch("http://localhost:5000/script.js").then(r => r.text()).then(r => eval(r))'>
+    <a href='javascript: fetch("{{ script_js }}").then(r => r.text()).then(r => eval(r))'>
       <button>
         Get Answers
       </button>

@@ -2,15 +2,12 @@
 //see README.md for more information
 
 //this script mainly just serves to load the rest of the program
-document.dev_env = "http://localhost:5000"
-var mirrors = [
-  "https://edpuzzle.librecheats.net",
-  "https://edpuzzle.hs.vc",
-  "https://edpuzzle-beta.hs.vc"
-];
+document.dev_env = "http://localhost:5000";
+
+var mirrors = ["https://edpuzzle.hs.vc"];
 
 async function try_mirror(mirror) {
-  let r = await fetch(mirror + "/dist/open.js");
+  let r = await fetch(mirror + "/open.js");
   let script = await r.text();
   window.base_url = mirror;
   eval(script);
@@ -18,22 +15,25 @@ async function try_mirror(mirror) {
 
 async function init() {
   if (window.location.hostname == "edpuzzle.hs.vc") {
-    alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
+    alert(
+      "To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment."
+    );
     return;
   }
   if (document.dev_env) {
-    return try_mirror(document.dev_env)
+    return try_mirror(document.dev_env);
   }
 
   for (let mirror of mirrors) {
     try {
       await try_mirror(mirror);
       return;
-    }
-    catch {}
+    } catch {}
   }
-  
-  alert("Error: Could not connect to any of the mirrors. Check that they're not blocked.")
+
+  alert(
+    "Error: Could not connect to any of the mirrors. Check that they're not blocked."
+  );
 }
 
 init();

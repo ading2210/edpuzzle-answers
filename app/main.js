@@ -394,7 +394,7 @@ function intercept_console() {
 }
 
 async function load_console_html() {
-  let url = base_url+"/dist/console.html";
+  let url = base_url+"/console.html";
   console.log(`Loading ${url}`);
   let request = await fetch(url);
 

@@ -7,6 +7,7 @@
   "profanity_filter": true,
   "server_port": 5000,
   "limiter_storage_uri": "mongodb://localhost:27017",
+  "script.js": "http://localhost:5000/script.js",
   "proxy_checker_threads": 100,
   "teacher_creds": [
     {

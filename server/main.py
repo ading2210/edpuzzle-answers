@@ -31,7 +31,7 @@ ai.config = config
 
 # handle compression and rate limits
 print("Preparing flask instance...")
-app = Flask(__name__, static_folder="../dist", static_url_path="/dist")
+app = Flask(__name__, static_folder="../dist", static_url_path="/")
 limiter = Limiter(
     get_remote_address,
     app=app,
@@ -238,7 +238,7 @@ def media_proxy(media_id):
 
 @app.route("/")
 def homepage():
-    return render_template("index.html", dev_mode=config["dev_mode"])
+    return render_template("index.html", dev_mode=config["dev_mode"], script_js=config["script.js"])
 
 
 @app.route("/discord")

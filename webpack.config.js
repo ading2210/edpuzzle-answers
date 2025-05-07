@@ -15,7 +15,8 @@ module.exports = {
         { from: "app/html", to: "" },
         { from: "app/css", to: "styles" },
         { from: "script.js", to: ""},
-        { from: "open.js", to: ""}
+        { from: "open.js", to: ""},
+        { from: "landing", to: "landing"}
       ],
     }),
   ],
