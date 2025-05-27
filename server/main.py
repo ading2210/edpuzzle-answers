@@ -161,6 +161,9 @@ def get_captions(id, language="en"):
     except Exception as e:
         return utils.handle_exception(e)
 
+@app.route("/api/models", methods=["GET"])
+def get_models():
+    return jsonify(ai.get_available_models())
 
 @app.route("/api/generate", methods=["POST"])
 @limiter.limit(get_path_limit)
@@ -180,11 +183,14 @@ def generate():
             raise exceptions.BadRequestError("Missing required parameter 'prompt'.")
 
         for arg in data:
-            if not arg in ["prompt"]:
+            if not arg in ["prompt", "model"]:
                 raise exceptions.BadRequestError(f"Unknown parameter '{arg}'.")
 
         if len(data["prompt"]) > ai.max_length:
             raise exceptions.BadRequestError("Prompt too long.")
+        
+        if not "model" in data:
+            raise exceptions.BadRequestError("Missing required parameter 'model'.")
 
         def generator():
             try:

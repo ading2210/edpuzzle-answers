@@ -16,7 +16,12 @@
     }
   ],
   "openrouter": {
-    "key": "OPENROUTER_API_KEY",
-    "model": "deepseek/deepseek-chat-v3-0324:free"
+    "key": "OPENROUTER_KEY",
+    "models": [
+      {
+        "name": "Deepseek V3",
+        "model": "deepseek/deepseek-chat-v3-0324:free"
+      }
+    ]
   }
 }

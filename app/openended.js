@@ -45,6 +45,7 @@ function deindent(str) {
 
 export class open_ended {
 
+static models = [];
 static captions = null;
 static element = null;
 static menu = null;
@@ -156,6 +157,26 @@ static async display_prompt() {
   }
 }
 
+static async populate_services() {
+  let res = await fetch(base_url + "/api/models")
+  this.models = (await res.json())["models"]
+
+  let model_dropdown = this.menu.placeholder("model_dropdown");
+  let model_label = this.menu.placeholder("model_label");
+  hide_element([model_dropdown, model_label]);
+  
+  while (model_dropdown.firstChild) {
+    model_dropdown.firstChild.remove();
+  }
+
+  for (let model in this.models) {
+    let option = document.createElement("option");
+    option.text = option.value = model;
+    model_dropdown.append(option);
+  }
+  show_element([model_dropdown, model_label]);
+}
+
 static handle_generate_event(last_status, event) {
   let generated_textarea = this.menu.placeholder("generated_textarea");
   if (event.status) {
@@ -197,6 +218,7 @@ static async generate(prompt) {
 
   let body = {
     prompt: prompt,
+    model: this.models[this.menu.placeholder("model_dropdown").value]
   };
 
   let generate_button = this.menu.placeholder("generate_button");
@@ -330,6 +352,7 @@ static open_menu(question, element) {
   this.menu.placeholder("title").innerHTML = question.title;
   this.menu.placeholder("cancel_button").onclick = this.close_menu.bind(this);
   this.display_prompt(question);
+  this.populate_services();
   this.menu.placeholder("generate_button").onclick = this.generate_button_callback.bind(this);
   this.menu.placeholder("save_button").onclick = this.save_button_callback.bind(this);
 
