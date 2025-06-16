@@ -12,18 +12,18 @@ See README.md for more information
   <body class="flex sm:w-screen sm:h-screen max-sm:flex-col text-slate-200 bg-slate-900">
     <div id="header_div" class="flex flex-col sm:w-72 gap-2 p-3 bg-slate-800 sm:overflow-auto">
       <div class="w-full">
-        <img id="thumbnail_img" src="https://via.placeholder.com/320x180?text=Loading..." class="rounded-lg mt-0.5">
+        <img id="thumbnail_img" src="https://dummyimage.com/320x180?text=Loading..." class="rounded-lg mt-0.5">
       </div>
       <div id="title_div" class="space-y-1">
         <p class="text-lg font-bold"><span id="assignment_title">Loading assignment data...</span></h2>
         <p class="text-xs">Assigned by <span id="assignment_author" class="">[unknown]</span></p>
         <p class="text-xs"><span id="assignment_end">Due [unknown]</span></p>
         <p class="text-xs">Correct choices are <u>underlined</u>.</p>
-        <input id="skipper_button" class="ui_button" type="button" value="Skip Video" onclick="video_skipper.skip_video();" disabled/>
-        <input id="answers_button" class="ui_button" type="button" value="Answer Questions" onclick="auto_answers.answer_questions();" disabled/>
+        <input id="skipper_button" class="ui_button" type="button" value="Skip Video" disabled/>
+        <input id="answers_button" class="ui_button" type="button" value="Answer Questions" disabled/>
         <div id="speed_container" class="flex gap-1 items-center">
           <label class="text-xs" for="speed_dropdown">Video speed:</label>
-          <select id="speed_dropdown" class="ui_button" name="speed_dropdown" onchange="video_options.video_speed()" disabled>
+          <select id="speed_dropdown" class="ui_button" name="speed_dropdown" disabled>
             <option value="0.25">0.25</option>
             <option value="0.5">0.5</option>
             <option value="0.75">0.75</option>
@@ -37,11 +37,11 @@ See README.md for more information
         </div>
         <div id="custom_speed_container" class="gap-1 items-center hidden">
           <label id="custom_speed_label" class="text-xs" for="custom_speed">Custom speed: <span id="custom_speed_value" class="font-mono"></span></label>
-          <input id="custom_speed" class="accent-slate-500" type="range" name="custom_speed" value="1" min="0.1" max="16" step="0.1" oninput="video_options.video_speed()">
+          <input id="custom_speed" class="accent-slate-500" type="range" name="custom_speed" value="1" min="0.1" max="16" step="0.1">
         </div>
         <div id="options_container" class="flex gap-1 items-center">
           <label for="unfocus_checkbox" class="text-xs">Don't pause on unfocus: </label>
-          <input id="unfocus_checkbox" class="accent-slate-500" type="checkbox" name="unfocus_checkbox" onchange="video_options.toggle_unfocus();" disabled>
+          <input id="unfocus_checkbox" class="accent-slate-500" type="checkbox" name="unfocus_checkbox" disabled>
         </div>
       </div>
     </div>
@@ -87,9 +87,6 @@ See README.md for more information
           <textarea key="generated_textarea" class="textarea" rows=4 placeholder="Generated text will appear here."></textarea>
           
           <div class="flex items-center gap-2">
-            <p>Service:</p>
-            <select key="service_dropdown" class="ui_button" disabled>
-            </select>
             <p key="model_label">Model:</p>
             <select key="model_dropdown" class="ui_button hidden">
               <option value="default">Default</option>
@@ -154,14 +151,14 @@ See README.md for more information
           <svg class="footer_icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM13.5 9.17a3 3 0 100 5.659" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
           <div>
             <p class="text-xs">Copyright:</p>
-            <a class="link" href="javascript: open_copyright_notice()">View Notice</a>
+            <a class="link" id="open-notice">View Notice</a>
           </div>
         </div>
         <div class="flex gap-2 items-center w-52">
           <svg class="footer_icon" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 16h5M6 8l4 4-4 4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2 18V6a2 2 0 012-2h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
           <div>
             <p class="text-xs">Javascript Console:</p>
-            <a class="link" href="javascript:open_console()">Open Console</a>
+            <a class="link" id="open-console">Open Console</a>
           </div>
         </div>
         <div class="flex gap-2 items-center w-52">

@@ -108,8 +108,8 @@ If you want to run the backend for yourself, follow these steps:
 2. Install Python (and optionally MongoDB) for your chosen Linux distro. Hosting on Windows should work but it is not supported.
 3. Create a virtual environment by running `python3 -m venv .venv`, and activate it using `.venv/bin/activate`.
 4. Install the needed dependencies by doing `pip3 install --upgrade -r requirements.txt`. 
-5. Copy `config/default.json` to `config/config.json`, and fill out the relevant options.
-6. Run the server using `python3 main.py`.
+5. Copy `server/config/default.json` to `server/config/config.json`, and fill out the relevant options.
+6. Run the server using `python3 server/main.py`.
 
 Make sure your web server has a domain and HTTPS support. The easiest way to do this is to use Nginx as a reverse proxy and Certbot for HTTPS.
 
@@ -151,5 +151,4 @@ This project is licensed under the GNU Affero General Public License v3.0.
 | [lxml](https://lxml.de/)                                                         | [Multiple Licenses](https://github.com/lxml/lxml/blob/master/LICENSES.txt)           |
 | [vercel-llm-api](https://github.com/ading2210/vercel-llm-api)                    | [GNU GPL v3](https://github.com/ading2210/vercel-llm-api/blob/main/LICENSE)          |
 | [PyMongo](https://github.com/mongodb/mongo-python-driver)                        | [Apache-2.0](https://github.com/mongodb/mongo-python-driver/blob/master/LICENSE)     |
-| [pytailwindcss](https://github.com/timonweb/pytailwindcss)                       | [MIT](https://github.com/timonweb/pytailwindcss/blob/main/LICENSE)                   |
 | [alt-profanity-check](https://github.com/dimitrismistriotis/alt-profanity-check) | [MIT](https://github.com/dimitrismistriotis/alt-profanity-check/blob/master/LICENSE) |

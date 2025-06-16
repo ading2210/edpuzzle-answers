@@ -1,7 +1,11 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
 
-class video_skipper {
+import { content_loaded, construct_headers } from "./main.js";
+
+export var skipper_loaded = false;
+
+export class video_skipper {
 
 static {
   skipper_loaded = true;

@@ -1,0 +1,27 @@
+{
+  "discord": "DISCORD_INVITE_ID_HERE",
+  "dev_mode": false,
+  "include_traceback": false,
+  "behind_proxy": true,
+  "gzip_responses": true,
+  "profanity_filter": true,
+  "server_port": 5000,
+  "limiter_storage_uri": "mongodb://localhost:27017",
+  "script.js": "http://localhost:5000/script.js",
+  "proxy_checker_threads": 100,
+  "teacher_creds": [
+    {
+      "username": "EDPUZZLE_EMAIL",
+      "password": "EDPUZZLE_PASSWORD"
+    }
+  ],
+  "openrouter": {
+    "key": "OPENROUTER_KEY",
+    "models": [
+      {
+        "name": "Deepseek V3",
+        "model": "deepseek/deepseek-chat-v3-0324:free"
+      }
+    ]
+  }
+}

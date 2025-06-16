@@ -1,0 +1,28 @@
+{
+  "name": "edpuzzle-answers",
+  "version": "1.0.0",
+  "description": "A Javascript bookmarklet that can get the answers for Edpuzzle assignments, skip the video, change the video speed, and automatically answer the questions.",
+  "main": "bookmarklet.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx webpack build --watch",
+    "build": "npx webpack build",
+    "build:prod": "npx webpack build --mode=production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ading2210/edpuzzle-answers.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aing2210/edpuzzle-answers/issues"
+  },
+  "homepage": "https://github.com/ading2210/edpuzzle-answers#readme",
+  "devDependencies": {
+    "copy-webpack-plugin": "^13.0.0",
+    "webpack": "^5.99.6",
+    "webpack-cli": "^6.0.1"
+  }
+}

@@ -1,23 +1,56 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
+import {get_template, assignment, base_url, get_attempt, construct_headers} from "./main.js";
 
-class open_ended {
+function hide_element(element) {
+  if (typeof element == "string") {
+    element = document.getElementById(element);
+  }
+  else if (Array.isArray(element)) {
+    for (let item of element) {
+      hide_element(item);
+    }
+    return;
+  }
 
-static services = null;
+  element.classList.add("hidden");
+}
+
+function show_element(element, flex=false) {
+  if (typeof element == "string") {
+    element = document.getElementById(element);
+  }
+  else if (Array.isArray(element)) {
+    for (let item of element) {
+      show_element(item);
+    }
+    return;
+  }
+
+  element.classList.remove("hidden");
+  if (flex) {
+    element.classList.add("flex")
+  }
+}
+
+function strip_html(str) {
+  let temp = document.createElement("div");
+  temp.innerHTML = str; //potential xss here but idc
+  return (temp.textContent || temp.innerText);
+}
+
+function deindent(str) {
+  return str.replace(/^\s+/gm, "");
+}
+
+export class open_ended {
+
+static models = [];
 static captions = null;
 static element = null;
 static menu = null;
 static question = null;
 static active_request = null;
-
-static {
-  this.get_services()
-    .then(success => {
-      if (!success) {
-        console.warn("Failed to fetch available generation services.");
-      }
-    });
-}
 
 static async get_captions() {
   if (assignment.medias[0].source != "youtube") {
@@ -51,24 +84,9 @@ static async get_captions() {
   this.captions = data.captions;
 }
 
-static async get_services() {
-  let request;
-  try {
-    request = await fetch(base_url+"/api/services");
-  }
-  catch (e) {
-    console.warn("Request for generation services failed.");
-    return false;
-  }
-  if (request.ok) {
-    this.services = await request.json();
-  }
-  return request.ok
-}
-
 static async format_captions(max_length=null) {
   if (!this.captions) {
-    await this.get_captions();
+    await this.get_captions(this.question);
     if (!this.captions) {
       return "";
     }
@@ -83,7 +101,7 @@ static async format_captions(max_length=null) {
   }
 
   let formatted = "";
-  for (let line of captions_trimmed.reverse()) {
+  for (let line of this.captions.reverse()) {
     if (max_length && (line.text+" "+formatted).length > max_length) {
       break;
     }
@@ -140,47 +158,18 @@ static async display_prompt() {
 }
 
 static async populate_services() {
-  if (this.services === null) {
-    let success = await this.get_services();
-    if (!success) {
-      console.warn("Failed to fetch generatation services from the backend.");
-      return;
-    }
-  }
+  let res = await fetch(base_url + "/api/models")
+  this.models = (await res.json())["models"]
 
-  let service_dropdown = this.menu.placeholder("service_dropdown");
-  for (let service of this.services) {
-    let option = document.createElement("option");
-    option.text = option.value = service.name;
-    option.disabled = service.disabled;
-    service_dropdown.append(option);
-  }
-  service_dropdown.disabled = false;
-
-  this.update_model_dropdown();
-}
-
-static update_model_dropdown() {
   let model_dropdown = this.menu.placeholder("model_dropdown");
   let model_label = this.menu.placeholder("model_label");
   hide_element([model_dropdown, model_label]);
+  
   while (model_dropdown.firstChild) {
     model_dropdown.firstChild.remove();
   }
 
-  let service_name = this.menu.placeholder("service_dropdown").value;
-  let service;
-  for (let item of this.services) {
-    if (service_name == item.name) {
-      service = item;
-      break;
-    }
-  }
-  if (!service.models) {
-    return;
-  }
-
-  for (let model of service.models) {
+  for (let model in this.models) {
     let option = document.createElement("option");
     option.text = option.value = model;
     model_dropdown.append(option);
@@ -195,15 +184,6 @@ static handle_generate_event(last_status, event) {
     if (event.status == "pending") {
       generated_textarea.disabled = true;
       generated_textarea.innerHTML = "Waiting for backend response...";
-    }
-    else if (event.status == "proxy") {
-      generated_textarea.innerHTML = "Waiting for proxy...";
-    }
-    else if (event.status == "init") {
-      generated_textarea.innerHTML = "Loading scraper...";
-    }
-    else if (event.status == "waiting") {
-      generated_textarea.innerHTML = "Waiting for service...";
     }
     else if (event.status == "generating") {
       generated_textarea.innerHTML = "";
@@ -231,15 +211,15 @@ static handle_generate_event(last_status, event) {
   }
 }
 
-static async generate(service, prompt, model=null) {
+static async generate(prompt) {
   if (this.active_request instanceof XMLHttpRequest) {
     this.active_request.abort();
   }
 
   let body = {
     prompt: prompt,
+    model: this.models[this.menu.placeholder("model_dropdown").value]
   };
-  if (model) body.model = model;
 
   let generate_button = this.menu.placeholder("generate_button");
   let save_button = this.menu.placeholder("save_button");
@@ -293,7 +273,7 @@ static async generate(service, prompt, model=null) {
     });
   }.bind(this)
 
-  request.open("POST", base_url+"/api/generate/"+service.name);
+  request.open("POST", base_url+"/api/generate");
   request.setRequestHeader("content-type", "application/json");
   request.send(JSON.stringify(body));
 
@@ -327,23 +307,10 @@ static generate_button_callback() {
     alert("Error: Please wait until the prompt has been loaded.");
   }
 
-  let service_name = this.menu.placeholder("service_dropdown").value;
-  let service;
-  for (let item of this.services) {
-    if (item.name == service_name) {
-      service = item;
-      break;
-    }
-  }
-
   this.menu.placeholder("generate_button").disabled = true;
   this.menu.placeholder("save_button").disabled = true;
-  let model = null;
-  if (service.models) {
-    model = this.menu.placeholder("model_dropdown").value;
-  }
-  this.format_prompt(service.max_length).then(prompt => {
-    this.generate(service, prompt, model);
+  this.format_prompt().then(prompt => { // No max length because users input their own key
+    this.generate(prompt);
   }) 
 }
 
@@ -368,16 +335,6 @@ static async submit_button_callback(content, question) {
 }
 
 static open_menu(question, element) {
-  if (this.services == null) {
-    this.get_services();
-    alert(deindent(
-      `Error: No generation services present. This may happen if the server is blocked of if it is under high load.
-      
-      Please wait a few seconds and try again.`
-    ));
-    return;
-  }
-
   this.element = element;
   this.question = question;
   this.element.scroll_old = content_div.scrollTop;
@@ -396,7 +353,6 @@ static open_menu(question, element) {
   this.menu.placeholder("cancel_button").onclick = this.close_menu.bind(this);
   this.display_prompt(question);
   this.populate_services();
-  this.menu.placeholder("service_dropdown").onchange = this.update_model_dropdown.bind(this);
   this.menu.placeholder("generate_button").onclick = this.generate_button_callback.bind(this);
   this.menu.placeholder("save_button").onclick = this.save_button_callback.bind(this);
 
