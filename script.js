@@ -2,7 +2,6 @@
 //see README.md for more information
 
 //this script mainly just serves to load the rest of the program
-document.dev_env = "http://localhost:5000";
 
 var mirrors = ["https://edpuzzle.hs.vc"];
 

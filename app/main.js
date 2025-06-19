@@ -184,18 +184,14 @@ function format_popup() {
 async function get_media() {
   let media_id = assignment.teacherAssignments[0].contentId;
   let r = await fetch(base_url + `/api/media/${media_id}`);
+  let data = await r.json();
 
-  //edpuzzle is private
   if (r.status !== 200) {
-    throw new Error("The assignment is private, so the answers cannot be extracted.");
+    let error_msg = `${data.error}:\n${data.message}`;
+    throw new Error(error_msg);
   }
 
-  let media = await r.json();
-  if (media.success != true) {
-    throw new Error("Failed to get questions! Reason: " + media.error)
-  }
-
-  questions = media.questions;
+  questions = data.questions;
   return questions
 }
 
@@ -538,7 +534,7 @@ async function init() {
   catch (error) {
     console.error(error + "");
     console.error(error.stack);
-    status_text.innerHTML = `An error has occurred. Please check the JS console for more details.<br><br>${error+""}`;
+    status_text.innerText = `An error has occurred. Please check the JS console for more details.\n\n${error+""}`;
   }
 }
 

@@ -4,7 +4,6 @@
   "description": "A Javascript bookmarklet that can get the answers for Edpuzzle assignments, skip the video, change the video speed, and automatically answer the questions.",
   "main": "bookmarklet.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx webpack build --watch",
     "build": "npx webpack build",
     "build:prod": "npx webpack build --mode=production"
@@ -15,7 +14,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "AGPL-3.0-only",
   "bugs": {
     "url": "https://github.com/aing2210/edpuzzle-answers/issues"
   },
