@@ -3,7 +3,7 @@
 ![jsdelivr weekly badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/week)
 ![jsdelivr daily badge](https://data.jsdelivr.com/v1/package/gh/ading2210/edpuzzle-answers/badge/day)
 
-<img src="https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/static/images/screenshot4.png" alt="A screenshot of the generated webpage" width="500"/>
+<img src="https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/landing/images/screenshot5.png" alt="A screenshot of the generated webpage" width="500"/>
 
 This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, as well as automatically answer the questions and change the video speed.
 
@@ -27,6 +27,7 @@ Note: This video was recorded with an older version of the script, so the GUI sh
 ## Features:
  - Can fetch and display the multiple-choice answers for any Edpuzzle assignment
  - Can automatically answer all the multiple-choice questions in an assignment
+ - Can automatically answer free response questions using AI
  - Includes a video skipper which allows for arbitrary navigation within an assignment
  - Has a tool to change the video speed
  - Has an option to prevent auto-pausing the video when the tab is hidden
@@ -34,12 +35,10 @@ Note: This video was recorded with an older version of the script, so the GUI sh
  - Has a decent looking GUI
  - No login or extension required
  - Uses about:blank so it doesn't go into your browser history
- - Works on private Edpuzzle videos
  - Supports Edpuzzles embedded in Canvas and Schoology
  - Licensed under the GNU AGPL v3 license
 
 ## Limitations:
- - This isn't able to answer open-ended questions or audio responses. Though in the future, I might use something like ChatGPT to complete those automatically. 
  - This doesn't currently work for most Edpuzzles that are embedded in a third party site. However, the script does work for Edpuzzles embeded in Canvas and Schoology.
 
 ## Copyright Notice:
@@ -138,10 +137,11 @@ This project is licensed under the GNU Affero General Public License v3.0.
 ![gnu agpl v3 logo](https://github.com/ading2210/edpuzzle-answers/raw/main/static/images/agpl_logo.png)
 
 ### Server-side Libraries:
-| **Library**                                                                      | **License**                                                                          |
-|----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| [Flask](https://flask.palletsprojects.com/en/2.2.x/)                             | [BSD-3-Clause](https://flask.palletsprojects.com/en/2.2.x/license/)                  |
-| [Flask-Compress](https://github.com/colour-science/flask-compress)               | [MIT](https://github.com/colour-science/flask-compress/blob/master/LICENSE.txt)      |
-| [Flask-Limiter](https://github.com/alisaifee/flask-limiter)                      | [MIT](https://github.com/alisaifee/flask-limiter/blob/master/LICENSE.txt)            |
-| [Flask-CORS](https://github.com/corydolphin/flask-cors/)                         | [MIT](https://github.com/corydolphin/flask-cors/blob/master/LICENSE)                 |
-| [lxml](https://lxml.de/)                                                         | [Multiple Licenses](https://github.com/lxml/lxml/blob/master/LICENSES.txt)           |
+| **Library**                                                                      | **License**                                                                                      |
+|----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| [Flask](https://flask.palletsprojects.com/en/2.2.x/)                             | [BSD-3-Clause](https://flask.palletsprojects.com/en/2.2.x/license/)                              |
+| [Flask-Compress](https://github.com/colour-science/flask-compress)               | [MIT](https://github.com/colour-science/flask-compress/blob/master/LICENSE.txt)                  |
+| [Flask-Limiter](https://github.com/alisaifee/flask-limiter)                      | [MIT](https://github.com/alisaifee/flask-limiter/blob/master/LICENSE.txt)                        |
+| [Flask-CORS](https://github.com/corydolphin/flask-cors/)                         | [MIT](https://github.com/corydolphin/flask-cors/blob/master/LICENSE)                             |
+| [curl_cffi](https://github.com/lexiforest/curl_cffi)                             | [MIT](https://github.com/lexiforest/curl_cffi/blob/main/LICENSE)                                 |
+| [google-generativeai](https://pypi.org/project/google-generativeai/)             | [Apache-2.0](https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/LICENSE) |

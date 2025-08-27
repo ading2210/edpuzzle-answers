@@ -4,7 +4,7 @@
 //this script launches the popup and contains handlers for canvas/schoology
 
 const gpl_text = `ading2210/edpuzzle-answers: a Javascript bookmarklet that provides many useful utilities for Edpuzzle
-Copyright (C) 2023 ading2210
+Copyright (C) 2025 ading2210
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -95,19 +95,6 @@ function write_popup(popup, html) {
     popup.document.head.append(element);
     return element;
   }
-  
-  // create_element("script", `const document.getElementById = (id) => document.getElementById(id)`);
-
-  // http_get("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap", function(){
-  //   create_element("style", this.responseText);
-  //   setTimeout(function(){
-  //     if (popup.textarea_update_height) {
-  //       for (let textarea of popup.document.getElementsByTagName("textarea")) {
-  //         popup.textarea_update_height(textarea);
-  //       }
-  //     }  
-  //   }, 200)
-  // });
 
   http_get(base_url+"/styles/popup.css", function(){
     create_element("style", this.responseText);
@@ -116,11 +103,6 @@ function write_popup(popup, html) {
   http_get(base_url+"/main.js", function() {
     create_element("script", this.responseText);
   });
-
-  /*
-  http_get("https://cdn.jsdelivr.net/npm/libcurl.js@latest/libcurl_full.js", function() {
-    create_element("script", this.responseText);
-  });*/
 }
 
 function handle_canvas_url() {

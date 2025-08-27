@@ -7,7 +7,6 @@
   "server_port": 5000,
   "limiter_storage_uri": "memory://",
   "script.js": "http://localhost:5000/script.js",
-  "invidious_url": "https://yewtu.be/",
   "teacher_creds": [
     {
       "username": "EDPUZZLE_EMAIL",

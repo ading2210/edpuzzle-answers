@@ -13,12 +13,6 @@ const csrf_cache = {
   latest: null,
   updated: 0
 }
-/*
-const wisp_servers = [
-  "wss://wisp.mercurywork.shop/",
-  "wss://anura.pro/"
-];
-*/
 
 const css_link = document.getElementById("css_link");
 
