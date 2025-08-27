@@ -44,7 +44,7 @@ Note: This video was recorded with an older version of the script, so the GUI sh
 ## Copyright Notice:
 ```
 ading2210/edpuzzle-answers: a Javascript bookmarklet that provides many useful utilities for Edpuzzle
-Copyright (C) 2023 ading2210
+Copyright (C) 2025 ading2210
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -107,13 +107,14 @@ If you want to run the backend for yourself, follow these steps:
 2. Install Python (and optionally MongoDB) for your chosen Linux distro. Hosting on Windows should work but it is not supported.
 3. Create a virtual environment by running `python3 -m venv .venv`, and activate it using `.venv/bin/activate`.
 4. Install the needed dependencies by doing `pip3 install --upgrade -r requirements.txt`. 
-5. Copy `server/config/default.json` to `server/config/config.json`, and fill out the relevant options.
-6. Run the server using `python3 server/main.py`.
+5. Install NodeJS dependencies by running `npm i`.
+6. Bundle the app JS by running `npm run build` (or `npm run build:prod` to minify it).
+7. Copy `server/config/default.json` to `server/config/config.json`, and fill out the relevant options.
+8. Run the server using `python3 server/main.py`.
 
 Make sure your web server has a domain and HTTPS support. The easiest way to do this is to use Nginx as a reverse proxy and Certbot for HTTPS.
 
 ### Server Configuration:
- - `discord` - The Discord invite ID visitors will be redirected to when navigating to `/discord`. 
  - `dev_mode` - Put Flask in debug mode, which will restart the server whenever a file is modified.
  - `include_traceback` - Enables stack traces in error response. This will expose the path of wherever the server's files are located.
  - `behind_proxy` - Tell Flask it is behind a reverse proxy such as Nginx. This allows IP rate limits to be enforced. 

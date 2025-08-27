@@ -257,7 +257,7 @@ def homepage():
 @app.route("/discord")
 @app.route("/discord.html")
 def discord():
-  invite_url = f"https://discord.com/invite/{config['discord']}"
+  invite_url = f"https://discord.com/invite/5kmVs8AqDQ"
   return redirect(invite_url)
 
 

@@ -1,3 +1,6 @@
+#Copyright (C) 2025 ading2210
+#see README.md for more information
+
 import re
 import random
 import functools

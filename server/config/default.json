@@ -1,5 +1,4 @@
 {
-  "discord": "DISCORD_INVITE_ID_HERE",
   "dev_mode": false,
   "include_traceback": false,
   "behind_proxy": true,
