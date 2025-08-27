@@ -1,7 +1,7 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
 
-import { content_loaded, construct_headers } from "./main.js";
+import { content_loaded, construct_headers, get_attempt } from "./main.js";
 
 export var skipper_loaded = false;
 

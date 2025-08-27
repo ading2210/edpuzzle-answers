@@ -2,8 +2,6 @@ Flask
 Flask-Compress
 Flask-Limiter
 Flask-Cors
-pymongo
-alt-profanity-check
-requests[socks]
 curl_cffi
-yt-dlp
+google-generativeai
+lxml

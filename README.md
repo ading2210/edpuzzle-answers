@@ -119,15 +119,11 @@ Make sure your web server has a domain and HTTPS support. The easiest way to do 
  - `include_traceback` - Enables stack traces in error response. This will expose the path of wherever the server's files are located.
  - `behind_proxy` - Tell Flask it is behind a reverse proxy such as Nginx. This allows IP rate limits to be enforced. 
  - `gzip_responses` - Compress response with gzip compression. 
- - `profanity_filter` - Whether or not to filter the text generation input for profanity.
  - `server_port` - The port that the web server will listen on.
  - `limiter_storage_uri` - The URI for the storage backend of the rate limiter. If you do not wish to use a database, you can set this to `memory://`. See the [Flask-Limiter documentation](https://flask-limiter.readthedocs.io/en/stable/#configuring-a-storage-backend) for more information.
- - `proxy_checker_threads` - The thread count for the proxy checker. On lower-end servers you should decrease this value.
- - `cloudflare.enabled` - Enable the Cloudflare Workers AI service. Note that this API's free tier has daily request limits.
- - `cloudflare.account_id` - The account ID for your Cloudflare account.
- - `cloudflare.token` - Your Cloudflare Workers AI token.
  - `gemini.enabled` - Enable Google's Gemini API service. This also has a limited free tier.
- - `gemini.api_key` - Your Google Gemini API key. 
+ - `gemini.key` - Your Google Gemini API key. 
+ - `gemini.model` - The Google Gemini model to use.
  - `rate_limits` - Sets the rate limit for each generator service. The format for each value is listed on the [Flask-Limiter documentation](https://flask-limiter.readthedocs.io/en/stable/configuration.html#rate-limit-string-notation).
 
 ## Credits:
@@ -149,6 +145,3 @@ This project is licensed under the GNU Affero General Public License v3.0.
 | [Flask-Limiter](https://github.com/alisaifee/flask-limiter)                      | [MIT](https://github.com/alisaifee/flask-limiter/blob/master/LICENSE.txt)            |
 | [Flask-CORS](https://github.com/corydolphin/flask-cors/)                         | [MIT](https://github.com/corydolphin/flask-cors/blob/master/LICENSE)                 |
 | [lxml](https://lxml.de/)                                                         | [Multiple Licenses](https://github.com/lxml/lxml/blob/master/LICENSES.txt)           |
-| [vercel-llm-api](https://github.com/ading2210/vercel-llm-api)                    | [GNU GPL v3](https://github.com/ading2210/vercel-llm-api/blob/main/LICENSE)          |
-| [PyMongo](https://github.com/mongodb/mongo-python-driver)                        | [Apache-2.0](https://github.com/mongodb/mongo-python-driver/blob/master/LICENSE)     |
-| [alt-profanity-check](https://github.com/dimitrismistriotis/alt-profanity-check) | [MIT](https://github.com/dimitrismistriotis/alt-profanity-check/blob/master/LICENSE) |

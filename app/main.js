@@ -499,11 +499,11 @@ function on_error(error_old, url, line, col, error) {
 
 open_notice_button.addEventListener("click", open_copyright_notice);
 open_console_button.addEventListener("click", open_console);
-unfocus_checkbox.addEventListener("change", video_options.toggle_unfocus);
-speed_dropdown.addEventListener("change", video_options.video_speed.bind(video_options));
-skipper_button.addEventListener("click", video_skipper.skip_video.bind(video_skipper));
-answers_button.addEventListener("click", auto_answers.answer_questions.bind(auto_answers));
-custom_speed.addEventListener("input", video_options.video_speed.bind(video_options))
+unfocus_checkbox.addEventListener("change", () => {video_options.toggle_unfocus()});
+speed_dropdown.addEventListener("change", () => {video_options.video_speed()});
+skipper_button.addEventListener("click", () => {video_skipper.skip_video()});
+answers_button.addEventListener("click", () => {auto_answers.answer_questions()});
+custom_speed.addEventListener("input", () => {video_options.video_speed()})
 
 async function init() {
   var fetch_ = fetch;

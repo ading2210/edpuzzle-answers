@@ -4,28 +4,23 @@
   "include_traceback": false,
   "behind_proxy": true,
   "gzip_responses": true,
-  "profanity_filter": true,
   "server_port": 5000,
   "limiter_storage_uri": "memory://",
   "script.js": "http://localhost:5000/script.js",
+  "invidious_url": "https://yewtu.be/",
   "teacher_creds": [
     {
       "username": "EDPUZZLE_EMAIL",
       "password": "EDPUZZLE_PASSWORD"
     }
   ],
-  "openrouter": {
-    "key": "OPENROUTER_KEY",
-    "models": [
-      {
-        "name": "Deepseek V3",
-        "model": "deepseek/deepseek-chat-v3-0324:free"
-      }
-    ]
+  "gemini": {
+    "key": "GEMINI_KEY",
+    "model": "gemma-3-27b-it" 
   },
   "rate_limit": {
     "captions": "60/minute",
     "generate": "60/minute",
     "media": "60/minute"
-  }
+  }  
 }

@@ -7,7 +7,7 @@ from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.middleware.proxy_fix import ProxyFix
-import profanity_check
+from werkzeug.serving import is_running_from_reloader
 from curl_cffi import requests
 import random
 
@@ -29,6 +29,7 @@ if cache_path.exists():
 #read config
 utils.include_traceback = config["include_traceback"]
 ai.config = config
+captions.invidious_url = config["invidious_url"]
 
 # handle compression and rate limits
 print("Preparing flask instance...")
@@ -75,20 +76,16 @@ def write_cache():
   cache_path.write_text(json.dumps(cache, indent=2))
 
 def create_session():
-  session = requests.Session(impersonate="chrome131")
+  session = requests.Session(impersonate="firefox135")
   session.headers.update({
     "Content-Type": "application/json",
-    "sec-ch-ua-platform": '"macOS"',
     "Referer": "https://edpuzzle.com/",
-    "sec-ch-ua": '"Google Chrome";v="131", "Not-A.Brand";v="8", "Chromium";v="131"',
-    "sec-ch-ua-mobile": "?0",
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
     "Accept": "application/json, text/plain, */*",
-    "x-edpuzzle-preferred-language": "en",
-    "x-edpuzzle-referrer": "https://edpuzzle.com/",
-    "x-chrome-version": "131",
+    "X-Edpuzzle-Preferred-Language": "en",
+    "X-Edpuzzle-Referrer": "https://edpuzzle.com/",
+    "X-Chrome-Version": "131",
   })
-  impersonate = "chrome131"
+  impersonate = "firefox135"
   return session
 
 def account_login(creds):
@@ -111,30 +108,34 @@ def account_login(creds):
 
   # Anti-cheat stuff
   home_res = session.get("https://edpuzzle.com/")  # get csrf cookie and later anti-bot test
-  creds["role"] = "teacher"
+  payload = {
+    "username": creds["username"],
+    "password": creds["password"],
+    "role": "teacher",
+  }
 
   # CSRF
   csrf_res = session.get("https://edpuzzle.com/api/v3/csrf")
   csrf_token = csrf_res.json()["CSRFToken"]
-  session.headers["x-csrf-token"] = csrf_token
+  session.headers["X-Csrf-Token"] = csrf_token
 
   # Web version anti-bot
   # Credits to https://github.com/VillainsRule/Narwhal/blob/master/narwhal/narwhal.ts
   # Explanation: this seems to generate a hash from the main edpuzzle.com page which is disguised as the version
   md5 = hashlib.md5()
-  md5.update(json.dumps(creds, separators=(",", ":")).encode())
+  md5.update(json.dumps(payload, separators=(",", ":")).encode())
   md5 = md5.hexdigest()[:4]
 
-  decoded = home_res.content.decode().replace(" ", "")
+  decoded = home_res.text.replace(" ", "")
   part = re.search(r'version:"(.*?)",', decoded).group(1)
   multiplier = int(part.split(".")[2]) + 10
 
   anti_cheat_token = int(time.time()) * multiplier
-  session.headers["x-edpuzzle-web-version"] = f"{part}.{md5}{anti_cheat_token}"
+  session.headers["X-Edpuzzle-Web-Version"] = f"{part}.{md5}{anti_cheat_token}"
 
   login_res = session.post(
     "https://edpuzzle.com/api/v3/users/login",
-    data=json.dumps(creds, separators=(",", ":")),
+    data=json.dumps(payload, separators=(",", ":")),
     headers={
       "Content-Type": "application/json"
     }
@@ -172,10 +173,7 @@ def get_captions(id, language="en"):
   try:
     timestamp = request.args.get("timestamp")
     count = request.args.get("count")
-
-    c = captions.get_captions(id)
-    return c
-
+    return captions.get_captions(id)
   except Exception as e:
     return utils.handle_exception(e)
 
@@ -188,14 +186,6 @@ def get_models():
 def generate():
   try:
     data = request.json
-    if (
-      "prompt" in data
-      and config["profanity_filter"]
-      and profanity_check.predict([data["prompt"]])[0]
-    ):
-      raise exceptions.BadRequestError(
-        "This request may contain offensive language. As a result, it has been denied."
-      )
 
     if not "prompt" in data:
       raise exceptions.BadRequestError("Missing required parameter 'prompt'.")
@@ -238,13 +228,14 @@ def media_proxy(media_id):
     session = create_session()
 
     current_token = random.choice(list(current_tokens.values()))
+    session.cookies.update({
+      "token": current_token
+    })
     csrf_token = session.get("https://edpuzzle.com/api/v3/csrf").json()
-    cookies = {
-      "token": current_token,
-      "edpuzzleCSRF": csrf_token["CSRFToken"],
-    }
 
-    res = session.get(f"https://edpuzzle.com/api/v3/media/{media_id}", cookies=cookies)
+    res = session.get(f"https://edpuzzle.com/api/v3/media/{media_id}", cookies= {
+      "edpuzzleCSRF": csrf_token["CSRFToken"]
+    })
 
     if res.status_code != 200:
       raise exceptions.BadGatewayError(f"Got status code {res.status_code} from Edpuzzle")
@@ -272,8 +263,9 @@ def discord():
 
 # run the server
 if __name__ == "__main__":
-  t = threading.Thread(target=token_refresher, daemon=True)
-  t.start()
+  if not is_running_from_reloader():
+    t = threading.Thread(target=token_refresher, daemon=True)
+    t.start()
 
   print("Starting flask...")
   app.run(
