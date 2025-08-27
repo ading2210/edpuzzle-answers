@@ -9,6 +9,14 @@ This bookmarklet can fetch the answers for the multiple choice questions on any 
 
 Discord server: [edpuzzle.hs.vc/discord.html](https://edpuzzle.hs.vc/discord.html)
 
+## Project Sponsors:
+
+![Examripper banner](https://raw.githubusercontent.com/Exam-Ripper/Google-Forms-Quiz-Hack/refs/heads/main/banner.webp)
+
+[Stuck on **private** assignments? Examripper offers a hack for these, supporting **open-ended** questions too. It also includes hacks for multiple other platforms like Google Forms, Apex Learning, Kahoot, and way more for only **3.99**! Subscribe by clicking here.](https://examripper.com/edpuzzle)
+
+*This is a paid advertisement. If you want to sponsor this project and advertise your own service, please contact me on Discord.*
+
 ## Contents:
   - [Demo](#demo)
   - [Features](#features)
@@ -68,9 +76,7 @@ This project is licenced under the [GNU AGPL v3](https://github.com/ading2210/ed
 Forking or redistributing code from this repository is fine, as long as you abide by the terms of the GPL. However, if you don't, then I have every right to submit a DMCA takedown. Also, please don't try to take credit for work that is not yours by changing or removing the credits. Editing a couple of lines to remove my name and reuploading it doesn't make you look cool. Finally, if you decide to host a fork of this, you must also make the source code publicly available.
 
 ## Creating the bookmarklet:
-A video tutorial for Chromium/Firefox can be found [here](https://www.youtube.com/watch?v=zxZzB2KXCkw). Safari is untested but it should still work. 
-
-Mobile browsers should work but the process is a bit different. A tutorial can be found [here](https://cdn.discordapp.com/attachments/1075436295461027861/1076637252182081587/Edpuzzle.mp4) (video made by [Tuocan](https://github.com/tuocan)).
+A video tutorial can be found [here](https://www.youtube.com/watch?v=zxZzB2KXCkw).
 
 ### Method 1:
  1. Navigate to [https://edpuzzle.hs.vc](https://edpuzzle.hs.vc).
@@ -93,8 +99,8 @@ javascript: fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest
  3. Click on the bookmarklet to run the script.
  4. If it doesn't work, make sure you allow popups from edpuzzle.com, then try again.
 
-### Usage on Canvas/Schoology:
- 1. Navigate to the assignment on Canvas/Schoology. For Canvas, the link should look similar to this: ```https://k12.instructure.com/courses/{id}/assignments/{id}```
+### Usage on Canvas:
+ 1. Navigate to the assignment on Canvas. The link should look similar to this: ```https://k12.instructure.com/courses/{id}/assignments/{id}```
  2. Click on the bookmarklet. The script should open the Edpuzzle assignment in a new tab.
  3. Re-run the bookmarklet to launch the full script.
  4. If this doesn't work, make sure you allow popups on both Edpuzzle and Canvas.
@@ -127,9 +133,12 @@ Make sure your web server has a domain and HTTPS support. The easiest way to do 
  - `rate_limits` - Sets the rate limit for each generator service. The format for each value is listed on the [Flask-Limiter documentation](https://flask-limiter.readthedocs.io/en/stable/configuration.html#rate-limit-string-notation).
 
 ## Credits:
-The code for the video skipper is based off of [this](https://github.com/ASmallYawn/EdpuzzleSkipper), with permission from the original author and some major refactoring.
+The code for the video skipper is based off of [ASmallYawn/EdpuzzleSkipper](https://github.com/ASmallYawn/EdpuzzleSkipper), with permission from the original author and some major refactoring.
 
 All other code has been written solely by me, [ading2210](https://github.com/ading2210).
+
+Other contributors:
+- [@smatian](https://github.com/smatian) - Improved the popup CSS and auto answerer (#68)
 
 This project contains icons from the the [Iconoir](https://iconoir.com/) icon library. 
 
