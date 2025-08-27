@@ -139,7 +139,7 @@ All other code has been written solely by me, [ading2210](https://github.com/adi
 
 Other contributors:
 - [@smatian](https://github.com/smatian) - Improved the popup CSS and auto answerer (#68)
-- [@simplyrohan] - Major reorganization and fixes for Edpuzzle update + AI updates
+- [@simplyrohan](https://github.com/simplyrohan) - Major reorganization and fixes for Edpuzzle update + AI updates
 
 This project contains icons from the the [Iconoir](https://iconoir.com/) icon library. 
 
