@@ -4,3 +4,4 @@ Flask-Limiter
 Flask-Cors
 curl_cffi
 google-generativeai
+pymongo
