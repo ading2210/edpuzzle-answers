@@ -41,6 +41,7 @@ var console_popup = null;
 export var assignment = null;
 export var content_loaded = false;
 var assignment_mode = null;
+var attachment_id = null;
 
 
 function fetch_wrapper(url, options={}) {
@@ -138,7 +139,8 @@ export async function construct_headers() {
 }
 
 function get_assignment_mode() {
-  let attachment_id = new URLSearchParams(window.real_location.search).get("attachmentId")
+  // todo: check if request gets a 404 instead
+  attachment_id = new URLSearchParams(window.real_location.search).get("attachmentId")
   if (!attachment_id) {
     assignment_mode = "legacy"
   }
@@ -149,10 +151,13 @@ function get_assignment_mode() {
 
 export async function get_attempt() {
   let assignment_id = get_assignment_id();
-
   let attempt_url;
   if (assignment_mode == "new") {
-    attempt_url = `https://edpuzzle.com/api/v3/learning/submissions/${assignment_id}`;
+    let filtered = assignment.assignmentLearner.submissions.filter((submission) => {
+      return submission.attachmentId == attachment_id
+    });
+
+    attempt_url = `https://edpuzzle.com/api/v3/learning/submissions/${filtered[0].id}`;
   }
   else {
     attempt_url = `https://edpuzzle.com/api/v3/assignments/${assignment_id}/attempt`;
@@ -197,7 +202,7 @@ function format_popup() {
   let author_name;
 
   if (assignment_mode == "new") {
-    let attachment_id = new URLSearchParams(window.real_location.search).get("attachmentId")
+    // let attachment_id = new URLSearchParams(window.real_location.search).get("attachmentId")
 
     let filtered = assignment.assignment.attachments.filter((attachment) => {
       return attachment.id == attachment_id
@@ -238,7 +243,7 @@ async function get_media() {
   let media_id;
 
   if (assignment_mode == "new") {
-    let attachment_id = new URLSearchParams(window.real_location.search).get("attachmentId");
+    // let attachment_id = new URLSearchParams(window.real_location.search).get("attachmentId");
       
     let filtered = assignment.assignment.attachments.filter((attachment) => {
       return attachment.id == attachment_id;
