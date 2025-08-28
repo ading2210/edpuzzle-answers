@@ -1,6 +1,6 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
-import { assignment } from "./main.js";
+import { media } from "./main.js";
 
 export class video_options {
 
@@ -61,7 +61,7 @@ static update_slider(media_source, speed) {
 }
 
 static video_speed() {
-  let media_source = assignment.medias[0].source;
+  let media_source = media.source;
   let speed = parseFloat(speed_dropdown.value);
   opener.document.video_speed = speed;
   speed = this.update_slider(media_source, speed);

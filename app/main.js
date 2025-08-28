@@ -35,14 +35,14 @@ const open_ended_div = document.getElementById("open_ended_div");
 const content_div = document.getElementById("content_div");
 const console_log = [];
 
+export var media = null;
 export var questions = null;
 var console_html = null;
 var console_popup = null;
 export var assignment = null;
 export var content_loaded = false;
-var assignment_mode = null;
+export var assignment_mode = null;
 var attachment_id = null;
-
 
 function fetch_wrapper(url, options={}) {
   if (edpuzzle_data && edpuzzle_data.token && (new URL(url).hostname) == "edpuzzle.com") {
@@ -55,27 +55,7 @@ function fetch_wrapper(url, options={}) {
   return fetch_(url, options);
 }
 
-function http_get(url, callback, headers=[], method="GET", content=null) {
-  let real_callback = function(){
-    callback(this);
-  };
-
-  var request = new XMLHttpRequest();
-  request.addEventListener("load", real_callback);
-  request.open(method, url, true);
-
-  if (edpuzzle_data && edpuzzle_data.token && (new URL(url).hostname) == "edpuzzle.com") {
-    headers.push(["authorization", edpuzzle_data.token]);
-  }
-  for (const header of headers) {
-    request.setRequestHeader(header[0], header[1]);
-  }
-  
-  request.send(content);
-}
-
-
-function sanitize_html(str) {
+export function sanitize_html(str) {
   return str.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
@@ -138,17 +118,6 @@ export async function construct_headers() {
   }
 }
 
-function get_assignment_mode() {
-  // todo: check if request gets a 404 instead
-  attachment_id = new URLSearchParams(window.real_location.search).get("attachmentId")
-  if (!attachment_id) {
-    assignment_mode = "legacy"
-  }
-  else {
-    assignment_mode = "new"
-  }
-}
-
 export async function get_attempt() {
   let assignment_id = get_assignment_id();
   let attempt_url;
@@ -156,7 +125,6 @@ export async function get_attempt() {
     let filtered = assignment.assignmentLearner.submissions.filter((submission) => {
       return submission.attachmentId == attachment_id
     });
-
     attempt_url = `https://edpuzzle.com/api/v3/learning/submissions/${filtered[0].id}`;
   }
   else {
@@ -166,32 +134,32 @@ export async function get_attempt() {
   let request = await fetch(attempt_url);
   let data = await request.json();
 
-  // console.log(data)
   return data;
 }
 
 async function get_assignment() {
   let assignment_id = window.real_location.href.split("/")[4];
 
-  let assignment_url;
   if (typeof assignment_id == "undefined") {
     throw new Error("Could not infer the assignment ID. Are you on the correct URL?");
   }
 
-  if (assignment_mode == "new") {
-    let me = await fetch("https://edpuzzle.com/api/v3/users/me")
-    let user_id = (await me.json())._id
-    
-    assignment_url = `https://edpuzzle.com/api/v3/learning/assignments/${assignment_id}/users/${user_id}`;
+  let assignment_url = `https://edpuzzle.com/api/v3/assignments/${assignment_id}`;
+  let response = await fetch(assignment_url);
+  if (response.ok) {
+    assignment_mode = "legacy";
   }
   else {
-    assignment_url = `https://edpuzzle.com/api/v3/assignments/${assignment_id}`;
+    assignment_mode = "new";
+    let me_response = await fetch("https://edpuzzle.com/api/v3/users/me");
+    let user_id = (await me_response.json())._id;
+    assignment_url = `https://edpuzzle.com/api/v3/learning/assignments/${assignment_id}/users/${user_id}`;
+
+    response = await fetch(assignment_url);
+    if (!response.ok)
+      throw new Error(`Status code ${response.status} received when attempting to fetch the assignment.`);
   }
 
-  let response = await fetch(assignment_url);
-  if (!response.ok) {
-    throw new Error(`Status code ${response.status} received when attempting to fetch the assignment.`);
-  }
   return await response.json();
 }
 
@@ -202,10 +170,8 @@ function format_popup() {
   let author_name;
 
   if (assignment_mode == "new") {
-    // let attachment_id = new URLSearchParams(window.real_location.search).get("attachmentId")
-
     let filtered = assignment.assignment.attachments.filter((attachment) => {
-      return attachment.id == attachment_id
+      return attachment.id == attachment_id;
     });
 
     media = filtered[0];
@@ -241,14 +207,10 @@ function format_popup() {
 
 async function get_media() {
   let media_id;
-
   if (assignment_mode == "new") {
-    // let attachment_id = new URLSearchParams(window.real_location.search).get("attachmentId");
-      
     let filtered = assignment.assignment.attachments.filter((attachment) => {
       return attachment.id == attachment_id;
     });
-
     media_id = filtered[0].contentId;
   }
   else {
@@ -256,14 +218,14 @@ async function get_media() {
   }
 
   let r = await fetch(base_url + `/api/media/${media_id}`);
-  let data = await r.json();
+  media = await r.json();
 
   if (r.status !== 200) {
-    let error_msg = `${data.error}:\n${data.message}`;
+    let error_msg = `${data.error}:\n${media.message}`;
     throw new Error(error_msg);
   }
 
-  questions = data.questions;
+  questions = media.questions;
   return questions
 }
 
@@ -578,12 +540,12 @@ answers_button.addEventListener("click", () => {auto_answers.answer_questions()}
 custom_speed.addEventListener("input", () => {video_options.video_speed()})
 
 async function init() {
-  var fetch_ = fetch;
   fetch = fetch_wrapper;
   intercept_console();
   window.onerror = on_error;
   window.onbeforeunload = on_before_unload;
   window.real_location = JSON.parse(JSON.stringify(opener.real_location));
+  attachment_id = new URLSearchParams(window.real_location.search).get("attachmentId");
 
   console.log(gpl_text);
 
@@ -598,7 +560,6 @@ async function init() {
   observer.observe(document.getRootNode(), {childList: true, subtree: true});
 
   try {
-    get_assignment_mode();
     assignment = await get_assignment();
     format_popup();
     await get_questions();

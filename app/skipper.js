@@ -1,7 +1,7 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
 
-import { content_loaded, construct_headers, get_attempt } from "./main.js";
+import { content_loaded, construct_headers, get_attempt, assignment_mode } from "./main.js";
 
 export var skipper_loaded = false;
 
@@ -28,8 +28,12 @@ static async skip_video(attempt=null, update_button=true) {
 }
 
 static async post_watchtime(attempt) {
-  let id = attempt._id;
-  let watch_url = "https://edpuzzle.com/api/v4/media_attempts/" + id + "/watch";
+  let id = attempt._id || attempt.id;
+  
+  let watch_url = `https://edpuzzle.com/api/v4/media_attempts/${id}/watch`;
+  if (assignment_mode === "new") {
+    watch_url = `https://edpuzzle.com/api/v3/learning/time_intervals/submission/${id}/watch`;
+  }
 
   let content = {"timeIntervalNumber": 10};
   await fetch(watch_url, {

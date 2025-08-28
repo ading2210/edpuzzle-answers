@@ -14,8 +14,8 @@ def generate(data):
   model_name = config["gemini"]["model"]
   model = google_ai.GenerativeModel(model_name)
 
-  yield {"status": "generating"}
   response = model.generate_content(data["prompt"])
+  yield {"status": "generating"}
   yield {"text": response.text}
   yield {"status": "done"}
 

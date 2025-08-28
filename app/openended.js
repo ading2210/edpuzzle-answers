@@ -1,6 +1,6 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
-import {get_template, assignment, base_url, get_attempt, construct_headers} from "./main.js";
+import {get_template, base_url, get_attempt, construct_headers, media, assignment_mode, sanitize_html} from "./main.js";
 
 function hide_element(element) {
   if (typeof element == "string") {
@@ -53,13 +53,13 @@ static question = null;
 static active_request = null;
 
 static async get_captions() {
-  if (assignment.medias[0].source != "youtube") {
+  if (media.source != "youtube") {
     console.log("Captions not available for this type of video.")
     this.captions = false;
     return;
   }
 
-  let video_id = assignment.medias[0].thumbnailURL.split("/")[4];
+  let video_id = media.thumbnailURL.split("/")[4];
   let request;
   try {
     request = await fetch(base_url+"/api/captions/"+video_id);
@@ -116,7 +116,7 @@ static get_prompt_template() {
     return this.menu.placeholder("prompt_textarea").value;
   }
 
-  if (assignment.medias[0].source == "youtube" && this.captions) {
+  if (media.source == "youtube" && this.captions) {
     return deindent(
       `{captions}
       Based on the captions above, answer the following question in two sentences or less, at the writing level of a high school student:
@@ -124,7 +124,10 @@ static get_prompt_template() {
     );
   }
   else {
-    return title_clean;
+    return deindent(
+      `Answer the following question in two sentences or less, at the writing level of a high school student:
+      ${title_clean}`
+    );
   }
 }
 
@@ -283,18 +286,37 @@ static async generate(prompt) {
 static async submit_open_ended(content, question_id=null) {
   if (!question_id) question_id = this.question._id;
   let attempt = await get_attempt();
-  let answer_url = `https://edpuzzle.com/api/v3/attempts/${attempt._id}/answers`;
-
+  let attempt_id = attempt._id || attempt.id;
+  let answer_url = `https://edpuzzle.com/api/v3/attempts/${attempt_id}/answers`;
   let body = {
     "answers": [{
-        "type": "open-ended",
-        "questionId": question_id,
-        "body": [{
-          "text": content,
-          "html": ""
-        }]
+      "type": "open-ended",
+      "questionId": question_id,
+      "body": [{
+        "text": content,
+        "html": ""
       }]
+    }]
   }
+
+  if (assignment_mode === "new") {
+    answer_url = `https://edpuzzle.com/api/v3/learning/submissions/${attempt_id}/answers`;
+    body = {
+      answerQuestions: [{
+        questionData: {
+          blocks: [{
+            type: "text",
+            value: `<p>${sanitize_html(content)}</p>`,
+            valueType: "html"
+          }]
+        },
+        questionId: question_id,
+        questionType: "open-ended"
+      }],
+      answerSaveStatus: "answered"
+    }
+  }
+
   await fetch(answer_url, {
     method: "POST",
     headers: await construct_headers(),

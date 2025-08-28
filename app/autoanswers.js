@@ -1,6 +1,6 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
-import { content_loaded, construct_headers, get_attempt, questions } from "./main.js";
+import { content_loaded, construct_headers, get_attempt, questions, assignment_mode } from "./main.js";
 import { video_skipper } from "./skipper.js";
 
 export var answerer_loaded = false;
@@ -52,7 +52,7 @@ static filter_questions(questions) {
 }
 
 static async post_answers(attempt, filtered_questions, progress_callback=null) {
-  let attempt_id = attempt._id;
+  let attempt_id = attempt._id || attempt.id;
   for (let i=0; i<filtered_questions.length; i++) {
     let question_part = filtered_questions[i];
     await this.post_answer(attempt_id, question_part);
@@ -63,9 +63,16 @@ static async post_answers(attempt, filtered_questions, progress_callback=null) {
 }
 
 static async post_answer(attempt_id, questions_part) {
-  let answers_url = "https://edpuzzle.com/api/v3/attempts/"+attempt_id+"/answers";
-
+  let answers_url = `https://edpuzzle.com/api/v3/attempts/${attempt_id}/answers`;
   let content = {answers: []};
+
+  if (assignment_mode === "new") {
+    answers_url = `https://edpuzzle.com/api/v3/learning/submissions/${attempt_id}/answers`;
+    content = {
+      answerQuestions: [],
+      answerSaveStatus: "answered"
+    }
+  }
   for (let i=0; i<questions_part.length; i++) {
     let question = questions_part[i];
     let correct_choices = [];
@@ -75,18 +82,34 @@ static async post_answer(attempt_id, questions_part) {
         correct_choices.push(choice._id)
       }
     }
-    content.answers.push({
-      "questionId": question._id,
-      "choices": correct_choices,
-      "type": "multiple-choice"
-    });
+    if (assignment_mode === "new") {
+      content.answerQuestions.push({
+        questionData: {
+          choiceIds: correct_choices
+        },
+        questionId: question._id,
+        questionType: "multiple-choice"
+      })
+    }
+    else {
+      content.answers.push({
+        questionId: question._id,
+        choices: correct_choices,
+        type: "multiple-choice"
+      });
+    }
   }
   
-  await fetch(answers_url, {
+  let response = await fetch(answers_url, {
     method: "POST",
     headers: await construct_headers(),
     body: JSON.stringify(content)
   });
+
+  if (response.status === 429) {
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    await this.post_answer(attempt_id, questions_part);
+  }
 }
 
 }
