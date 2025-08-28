@@ -29,7 +29,6 @@ if cache_path.exists():
 #read config
 utils.include_traceback = config["include_traceback"]
 ai.config = config
-captions.invidious_url = config["invidious_url"]
 
 # handle compression and rate limits
 print("Preparing flask instance...")
