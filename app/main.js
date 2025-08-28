@@ -1,4 +1,4 @@
-//Copyright (C) 2023 ading2210
+//Copyright (C) 2025 ading2210
 //see README.md for more information
 import {video_skipper, skipper_loaded} from "./skipper.js";
 import {auto_answers, answerer_loaded} from "./autoanswers.js";
@@ -13,8 +13,6 @@ const csrf_cache = {
   latest: null,
   updated: 0
 }
-
-const css_link = document.getElementById("css_link");
 
 const open_notice_button = document.getElementById("open-notice");
 const open_console_button = document.getElementById("open-console");
@@ -169,12 +167,19 @@ function format_popup() {
   let thumbnail;
   let author_name;
 
+  if (!attachment_id) {
+    throw new Error(`You must be open to a video in the Edpuzzle tab.\n\nMake sure the page URL looks like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch?attachmentId={ATTACHMENT_ID}`);
+  }
+
   if (assignment_mode == "new") {
     let filtered = assignment.assignment.attachments.filter((attachment) => {
       return attachment.id == attachment_id;
     });
 
     media = filtered[0];
+    if (media == null) {
+      throw new Error(`Could not find the assignment media.\n\nMake sure the page URL looks like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch?attachmentId={ATTACHMENT_ID}`);
+    }
     teacher_assignment = assignment.assignmentLearner;
     thumbnail = media.thumbnailUrl;
     author_name = teacher_assignment.enrolledBy.fullName;
@@ -540,7 +545,8 @@ answers_button.addEventListener("click", () => {auto_answers.answer_questions()}
 custom_speed.addEventListener("input", () => {video_options.video_speed()})
 
 async function init() {
-  fetch = fetch_wrapper;
+  globalThis.fetch_ = fetch;
+  globalThis.fetch = fetch_wrapper;
   intercept_console();
   window.onerror = on_error;
   window.onbeforeunload = on_before_unload;
@@ -548,7 +554,6 @@ async function init() {
   attachment_id = new URLSearchParams(window.real_location.search).get("attachmentId");
 
   console.log(gpl_text);
-
   load_console_html();
 
   let textarea_list = document.getElementsByTagName("textarea");
