@@ -40,6 +40,7 @@ var console_html = null;
 var console_popup = null;
 export var assignment = null;
 export var content_loaded = false;
+var assignment_mode = null;
 
 
 function fetch_wrapper(url, options={}) {
@@ -97,7 +98,12 @@ function fixed_length_int(int, length) {
 
 function get_assignment_id() {
   if (assignment) {
-    return assignment.teacherAssignments[0]._id;
+    if (assignment_mode == "new") {
+      return assignment.assignmentLearner.assignmentId;
+    }
+    else {
+      return assignment.teacherAssignments[0]._id;
+    }
   }
   else {
     return window.real_location.href.split("/")[4];
@@ -131,20 +137,52 @@ export async function construct_headers() {
   }
 }
 
+function get_assignment_mode() {
+  let attachment_id = new URLSearchParams(window.real_location.search).get("attachmentId")
+  if (!attachment_id) {
+    assignment_mode = "legacy"
+  }
+  else {
+    assignment_mode = "new"
+  }
+}
+
 export async function get_attempt() {
   let assignment_id = get_assignment_id();
-  let attempt_url = `https://edpuzzle.com/api/v3/assignments/${assignment_id}/attempt`;
+
+  let attempt_url;
+  if (assignment_mode == "new") {
+    attempt_url = `https://edpuzzle.com/api/v3/learning/submissions/${assignment_id}`;
+  }
+  else {
+    attempt_url = `https://edpuzzle.com/api/v3/assignments/${assignment_id}/attempt`;
+  }
+
   let request = await fetch(attempt_url);
   let data = await request.json();
+
+  // console.log(data)
   return data;
 }
 
 async function get_assignment() {
   let assignment_id = window.real_location.href.split("/")[4];
+
+  let assignment_url;
   if (typeof assignment_id == "undefined") {
     throw new Error("Could not infer the assignment ID. Are you on the correct URL?");
   }
-  let assignment_url = `https://edpuzzle.com/api/v3/assignments/${assignment_id}`;
+
+  if (assignment_mode == "new") {
+    let me = await fetch("https://edpuzzle.com/api/v3/users/me")
+    let user_id = (await me.json())._id
+    
+    assignment_url = `https://edpuzzle.com/api/v3/learning/assignments/${assignment_id}/users/${user_id}`;
+  }
+  else {
+    assignment_url = `https://edpuzzle.com/api/v3/assignments/${assignment_id}`;
+  }
+
   let response = await fetch(assignment_url);
   if (!response.ok) {
     throw new Error(`Status code ${response.status} received when attempting to fetch the assignment.`);
@@ -153,30 +191,65 @@ async function get_assignment() {
 }
 
 function format_popup() {
-  let media = assignment.medias[0];
-  let teacher_assignment = assignment.teacherAssignments[0];
-  let thumbnail = media.thumbnailURL;
+  let media;
+  let teacher_assignment;
+  let thumbnail;
+  let author_name;
+
+  if (assignment_mode == "new") {
+    let attachment_id = new URLSearchParams(window.real_location.search).get("attachmentId")
+
+    let filtered = assignment.assignment.attachments.filter((attachment) => {
+      return attachment.id == attachment_id
+    });
+
+    media = filtered[0];
+    teacher_assignment = assignment.assignmentLearner;
+    thumbnail = media.thumbnailUrl;
+    author_name = teacher_assignment.enrolledBy.fullName;
+  }
+  else {
+    media = assignment.medias[0];
+    teacher_assignment = assignment.teacherAssignments[0].preferences;
+    thumbnail = media.thumbnailURL;
+    author_name = media.user.name;
+  }
+
   if (thumbnail.startsWith("/")) {
     thumbnail = "https://"+window.real_location.hostname+thumbnail;
   }
   
   let deadline_text;
-  if (teacher_assignment.preferences.dueDate == "") {
+  if (teacher_assignment.dueDate == "") {
     deadline_text = "No due date"
   }
   else {
-    deadline_text = "Due on "+(new Date(teacher_assignment.preferences.dueDate)).toDateString();
+    deadline_text = "Due on "+(new Date(teacher_assignment.dueDate)).toDateString();
   }
 
   document.getElementById("title").innerHTML = `Answers for: ${media.title}`;
   document.getElementById("assignment_title").innerHTML = media.title;
-  document.getElementById("assignment_author").innerHTML = media.user.name;
+  document.getElementById("assignment_author").innerHTML = author_name;
   document.getElementById("assignment_end").innerHTML = deadline_text;
   document.getElementById("thumbnail_img").src = thumbnail;
 }
 
 async function get_media() {
-  let media_id = assignment.teacherAssignments[0].contentId;
+  let media_id;
+
+  if (assignment_mode == "new") {
+    let attachment_id = new URLSearchParams(window.real_location.search).get("attachmentId");
+      
+    let filtered = assignment.assignment.attachments.filter((attachment) => {
+      return attachment.id == attachment_id;
+    });
+
+    media_id = filtered[0].contentId;
+  }
+  else {
+    media_id = assignment.teacherAssignments[0].contentId;
+  }
+
   let r = await fetch(base_url + `/api/media/${media_id}`);
   let data = await r.json();
 
@@ -520,6 +593,7 @@ async function init() {
   observer.observe(document.getRootNode(), {childList: true, subtree: true});
 
   try {
+    get_assignment_mode();
     assignment = await get_assignment();
     format_popup();
     await get_questions();
