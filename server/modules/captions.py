@@ -56,8 +56,9 @@ def get_captions_attempt(id):
   r1 = session.get("https://notegpt.io/user/v2/userinfo")
   r2 = session.get(f"https://notegpt.io/api/v2/video-transcript?platform=youtube&video_id={id}")
   
-  data = r2.json()["data"]["transcripts"]["en"]
-  captions_data = data.get("custom") or data.get("default") or data.get("auto")
+  data = r2.json()["data"]
+  transcript = list(data["transcripts"].values())[0]
+  captions_data = transcript.get("custom") or transcript.get("default") or transcript.get("auto")
   captions = []
 
   for caption_data in captions_data:

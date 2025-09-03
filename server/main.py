@@ -237,6 +237,8 @@ def media_proxy(media_id):
       "edpuzzleCSRF": csrf_token["CSRFToken"]
     })
 
+    if res.status_code == 403:
+      raise exceptions.BadGatewayError(f"Got status code 403 from Edpuzzle.\n\nThis means that the Edpuzzle assignment is private, so it is impossible to find the answers.")
     if res.status_code != 200:
       raise exceptions.BadGatewayError(f"Got status code {res.status_code} from Edpuzzle")
 
