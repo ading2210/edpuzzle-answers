@@ -1,7 +1,7 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
 
-var wrapper, canvas, ctx, table;
+let wrapper, canvas, ctx, table;
 
 function httpRequest(url, callback) {
   let request = new XMLHttpRequest();
