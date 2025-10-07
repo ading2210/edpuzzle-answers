@@ -5,10 +5,12 @@ import {auto_answers, answerer_loaded} from "./autoanswers.js";
 import {video_options} from "./videooptions.js";
 import { open_ended } from "./openended.js";
 
+window.real_location = JSON.parse(JSON.stringify(opener.real_location));
+
 const gpl_text = document.gpl_text;
 export const base_url = document.base_url;
 const edpuzzle_data = document.edpuzzle_data;
-const lti_edpuzzle = !!edpuzzle_data.token;
+const lti_edpuzzle = window.real_location.pathname.includes("/lms/lti");
 const csrf_cache = {
   latest: null,
   updated: 0
@@ -85,7 +87,8 @@ function get_assignment_id() {
     }
   }
   else {
-    return window.real_location.href.split("/")[4];
+    let corrected_url = window.real_location.href.replace("/lms/lti", "");
+    return corrected_url.split("/")[4];
   }
 }
 
@@ -106,13 +109,33 @@ async function get_csrf() {
 }
 
 export async function construct_headers() {
-  return {
+  let headers = {
     "accept": "application/json, text/plain, */*",
     "accept_language": "en-US,en;q=0.9",
     "content-type": "application/json",
     "x-csrf-token": await get_csrf(),
     "x-edpuzzle-referrer": window.real_location.href,
-    "x-edpuzzle-web-version": edpuzzle_data.version
+    "x-edpuzzle-web-version": edpuzzle_data.version,
+  }
+  if (lti_edpuzzle) {
+    let lti_credentials = get_lti_credentials();
+    headers["authorization"] = lti_credentials.user_token;
+    headers["x-edpuzzle-lti-access-token"] = lti_credentials.lti_token;
+  }
+  return headers;
+}
+
+function get_lti_credentials() {
+  let edpuzzle_bundle = opener.webpackChunkedpuzzle_client_web;
+  let wp_require = edpuzzle_bundle.push([[Symbol()], {}, r => r]);
+  edpuzzle_bundle.pop();
+
+  let store_module = wp_require("./app_react/modules/store.js");
+  let store = Object.values(store_module)[0];
+  let state = store.getState();
+  return {
+    lti_token: state.lti_learning2.ltiAccessToken,
+    user_token: state.user.authToken
   }
 }
 
@@ -129,31 +152,31 @@ export async function get_attempt() {
     attempt_url = `https://edpuzzle.com/api/v3/assignments/${assignment_id}/attempt`;
   }
 
-  let request = await fetch(attempt_url);
+  let request = await fetch(attempt_url, {headers: await construct_headers()});
   let data = await request.json();
 
   return data;
 }
 
 async function get_assignment() {
-  let assignment_id = window.real_location.href.split("/")[4];
+  let assignment_id = get_assignment_id();
 
   if (typeof assignment_id == "undefined") {
     throw new Error("Could not infer the assignment ID. Are you on the correct URL?");
   }
 
   let assignment_url = `https://edpuzzle.com/api/v3/assignments/${assignment_id}`;
-  let response = await fetch(assignment_url);
+  let response = await fetch(assignment_url, {headers: await construct_headers()});
   if (response.ok) {
     assignment_mode = "legacy";
   }
   else {
     assignment_mode = "new";
-    let me_response = await fetch("https://edpuzzle.com/api/v3/users/me");
+    let me_response = await fetch("https://edpuzzle.com/api/v3/users/me", {headers: await construct_headers()});
     let user_id = (await me_response.json())._id;
     assignment_url = `https://edpuzzle.com/api/v3/learning/assignments/${assignment_id}/users/${user_id}`;
 
-    response = await fetch(assignment_url);
+    response = await fetch(assignment_url, {headers: await construct_headers()});
     if (!response.ok)
       throw new Error(`Status code ${response.status} received when attempting to fetch the assignment.`);
   }
@@ -549,11 +572,12 @@ async function init() {
   intercept_console();
   window.onerror = on_error;
   window.onbeforeunload = on_before_unload;
-  window.real_location = JSON.parse(JSON.stringify(opener.real_location));
   attachment_id = new URLSearchParams(window.real_location.search).get("attachmentId");
 
   console.log(gpl_text);
   load_console_html();
+  if (lti_edpuzzle) 
+    console.log("Detected new type LTI assignment");
 
   let textarea_list = document.getElementsByTagName("textarea");
   for (let textarea of textarea_list) {
