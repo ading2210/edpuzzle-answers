@@ -23,6 +23,7 @@ cache_path = base_dir / "cache" / "cache.json"
 
 config = json.loads(config_path.read_text())
 cache = None
+cache_path.parent.mkdir(exist_ok=True, parents=True)
 if cache_path.exists():
   cache = json.loads(cache_path.read_text())
 
@@ -155,7 +156,7 @@ def token_refresher():
     for creds in config["teacher_creds"]:
       account_login(creds)
       time.sleep(30) #30s between login attempts
-    time.sleep(60*60) # 1 hr
+    time.sleep(60*10) # 10 min
 
 # ===== utility functions =====
 
@@ -236,6 +237,8 @@ def media_proxy(media_id):
       "edpuzzleCSRF": csrf_token["CSRFToken"]
     })
 
+    if res.status_code == 403:
+      raise exceptions.BadGatewayError(f"Got status code 403 from Edpuzzle.\n\nThis means that the Edpuzzle assignment is private, so it is impossible to find the answers.")
     if res.status_code != 200:
       raise exceptions.BadGatewayError(f"Got status code {res.status_code} from Edpuzzle")
 

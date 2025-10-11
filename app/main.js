@@ -167,11 +167,10 @@ function format_popup() {
   let thumbnail;
   let author_name;
 
-  if (!attachment_id) {
-    throw new Error(`You must be open to a video in the Edpuzzle tab.\n\nMake sure the page URL looks like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch?attachmentId={ATTACHMENT_ID}`);
-  }
-
   if (assignment_mode == "new") {
+    if (!attachment_id) {
+      throw new Error(`You must be open to a video in the Edpuzzle tab.\n\nMake sure the page URL looks like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch?attachmentId={ATTACHMENT_ID}`);
+    }
     let filtered = assignment.assignment.attachments.filter((attachment) => {
       return attachment.id == attachment_id;
     });
@@ -226,7 +225,7 @@ async function get_media() {
   media = await r.json();
 
   if (r.status !== 200) {
-    let error_msg = `${data.error}:\n${media.message}`;
+    let error_msg = `${media.error}:\n${media.message}`;
     throw new Error(error_msg);
   }
 
