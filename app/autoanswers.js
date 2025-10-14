@@ -3,7 +3,7 @@
 import { content_loaded, construct_headers, get_attempt, questions, assignment_mode } from "./main.js";
 import { video_skipper } from "./skipper.js";
 
-export var answerer_loaded = false;
+export var answerer_loaded = true;
 
 export class auto_answers {
   
@@ -112,4 +112,3 @@ static async post_answer(attempt_id, questions_part) {
   }
 }
 
-}
