@@ -61,7 +61,7 @@ current_tokens = {}
 #process cache
 if cache:
   current_tokens = cache["tokens"]
-  for email, token in list(current_tokens.items()):
+  for email, item in list(current_tokens.items()):
     for creds in config["teacher_creds"]:
       if creds["username"] == email:
         break
@@ -94,16 +94,13 @@ def account_login(creds):
 
   # check if our current token is ok
   current_token = current_tokens.get(username)
-  if current_token:
-    res = session.get(
-      "https://edpuzzle.com/api/v3/users/me",
-      cookies={
-        "token": current_token,
-      },
-    )
+  if current_token and current_token[1] < 24 * 3600:
+    res = session.get("https://edpuzzle.com/api/v3/users/me", cookies={
+      "token": current_token[0]
+    })
 
     if res.ok:
-      return current_token
+      return current_token[0]
     print(f"token probably expired for {username}")
 
   # Anti-cheat stuff
@@ -147,7 +144,8 @@ def account_login(creds):
     return
 
   print(f"login success for {username}")
-  current_tokens[username] = login_res.cookies.get("token")
+  now = int(time.time())
+  current_tokens[username] = login_res.cookies.get("token"), now
   write_cache()
 
 def token_refresher():
@@ -229,7 +227,7 @@ def media_proxy(media_id):
 
     current_token = random.choice(list(current_tokens.values()))
     session.cookies.update({
-      "token": current_token
+      "token": current_token[0]
     })
     csrf_token = session.get("https://edpuzzle.com/api/v3/csrf").json()
 
