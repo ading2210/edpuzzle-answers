@@ -94,7 +94,7 @@ def account_login(creds):
 
   # check if our current token is ok
   current_token = current_tokens.get(username)
-  if current_token and current_token[1] < 24 * 3600:
+  if current_token and time.time() - current_token[1] < 6 * 3600:
     res = session.get("https://edpuzzle.com/api/v3/users/me", cookies={
       "token": current_token[0]
     })
