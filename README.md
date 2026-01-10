@@ -24,6 +24,7 @@ Discord server: [edpuzzle.hs.vc/discord.html](https://edpuzzle.hs.vc/discord.htm
   - [Copyright Notice](#copyright-notice)
   - [Creating the Bookmarklet](#creating-the-bookmarklet)
   - [Using the Bookmarklet](#using-the-bookmarklet)
+  - [Troubleshooting](TROUBLESHOOTING.md) - **Bookmark not working? Click here!**
   - [Running the Server](#running-the-server)
   - [Credits](#credits)
 
@@ -92,12 +93,14 @@ javascript: fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest
  3. Set the name of the bookmark to whatever you want.
  4. Paste in the code into the box for the url and save the bookmark.
 
-## Using the Bookmarklet: 
+## Using the Bookmarklet:
 ### On Regular Edpuzzles:
  1. Navigate to any Edpuzzle assignment.
  2. Make sure the url follows this format: `https://edpuzzle.com/assignments/{id}/watch`
  3. Click on the bookmarklet to run the script.
  4. If it doesn't work, make sure you allow popups from edpuzzle.com, then try again.
+
+**Bookmark Not Working?** See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for detailed help.
 
 ### Usage on Canvas:
  1. Navigate to the assignment on Canvas. The link should look similar to this: ```https://k12.instructure.com/courses/{id}/assignments/{id}```

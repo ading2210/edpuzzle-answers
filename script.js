@@ -23,16 +23,23 @@ async function init() {
     return try_mirror(document.dev_env);
   }
 
+  let lastError = null;
   for (let mirror of mirrors) {
     try {
       await try_mirror(mirror);
       return;
-    } catch {}
+    } catch (e) {
+      lastError = e;
+      console.error("Failed to load from mirror:", mirror, e);
+    }
   }
 
-  alert(
-    "Error: Could not connect to any of the mirrors. Check that they're not blocked."
-  );
+  let errorMsg = "Error: Could not connect to any of the mirrors. Check that they're not blocked.";
+  if (lastError) {
+    errorMsg += "\n\nLast error: " + lastError.message;
+  }
+  errorMsg += "\n\nTroubleshooting:\n1. Check if popups are allowed for edpuzzle.com\n2. Press F12 and check the Console tab for errors\n3. See TROUBLESHOOTING.md on GitHub";
+  alert(errorMsg);
 }
 
 init();

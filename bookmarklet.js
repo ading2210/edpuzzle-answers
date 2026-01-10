@@ -1,1 +1,1 @@
-javascript: fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js").then(r => r.text()).then(r => eval(r))
+javascript: fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js").then(r => {if(!r.ok)throw new Error("CDN returned "+r.status);return r.text()}).then(r => eval(r)).catch(e => {console.error("Bookmark error:",e);alert("Bookmark failed to load.\n\nError: "+e.message+"\n\nTroubleshooting:\n1. Check if popups are allowed\n2. Check browser console (F12)\n3. Try manual method in TROUBLESHOOTING.md")})

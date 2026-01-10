@@ -40,6 +40,7 @@ function format_text(text, replacements) {
 
 function init() {
   console.info(gpl_text);
+  console.log("Edpuzzle script initializing...");
 
   //support running from within ultraviolet
   window.real_location = window.location;
@@ -47,29 +48,38 @@ function init() {
     window.real_location = __uv.location;
   }
 
+  console.log("Current URL:", window.real_location.href);
+  console.log("Base URL:", base_url);
+
   if (window.real_location.hostname == "edpuzzle.hs.vc") {
     alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
   }
   else if ((/https?:\/\/edpuzzle.com\/(lms\/lti\/)?assignments\/[a-f0-9]{1,30}\/(watch|view)/).test(window.real_location.href)) {
+    console.log("Detected Edpuzzle assignment page, loading popup...");
     http_get(base_url+"/popup.html", open_popup);
   }
   else if (window.canvasReadyState) {
+    console.log("Detected Canvas integration");
     handle_canvas_url();
   }
   else if (window.schoologyMoreLess) {
+    console.log("Detected Schoology integration");
     handle_schoology_url();
   }
   else {
-    alert("Please run this script on an Edpuzzle assignment. For reference, the URL should look like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch");
+    console.error("URL does not match any supported pattern:", window.real_location.href);
+    alert("Please run this script on an Edpuzzle assignment. For reference, the URL should look like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch\n\nCurrent URL: " + window.real_location.href);
   }
 }
 
 function open_popup() {
   const popup = window.open("about:blank", "", "width=760, height=450");
   if (popup == null) {
-    alert("Error: Could not open the popup. Please enable popups for edpuzzle.com and try again.");
+    alert("Error: Could not open the popup. Please enable popups for edpuzzle.com and try again.\n\nHow to enable popups:\n- Chrome/Edge: Click the popup blocked icon in the address bar\n- Firefox: Click the popup blocked notification\n- Check TROUBLESHOOTING.md for more help");
+    console.error("Popup blocked. User needs to allow popups for edpuzzle.com");
     return;
   }
+  console.log("Popup opened successfully");
   write_popup(popup, this.responseText);
   
   function popup_unload() { 
