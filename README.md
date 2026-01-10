@@ -7,6 +7,8 @@
 
 This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, as well as automatically answer the questions and change the video speed.
 
+**⚠️ IMPORTANT:** As of January 2026, Edpuzzle has implemented Content Security Policy (CSP) that blocks the traditional bookmarklet. We recommend using the [userscript version](userscript.js) with Tampermonkey/Violentmonkey instead. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for details.
+
 Discord server: [edpuzzle.hs.vc/discord.html](https://edpuzzle.hs.vc/discord.html)
 
 ## Project Sponsors:
@@ -18,6 +20,7 @@ Discord server: [edpuzzle.hs.vc/discord.html](https://edpuzzle.hs.vc/discord.htm
 *This is a paid advertisement. If you want to sponsor this project and advertise your own service, please contact me on Discord.*
 
 ## Contents:
+  - [CSP Issue & Userscript Solution](#csp-issue--userscript-solution-recommended)
   - [Demo](#demo)
   - [Features](#features)
   - [Limitations](#limitations)
@@ -28,10 +31,35 @@ Discord server: [edpuzzle.hs.vc/discord.html](https://edpuzzle.hs.vc/discord.htm
   - [Running the Server](#running-the-server)
   - [Credits](#credits)
 
-## Demo: 
+## Demo:
 https://user-images.githubusercontent.com/71154407/199671842-c3016f8c-8c7f-4526-b274-5bdd48f3a131.mp4
 
 Note: This video was recorded with an older version of the script, so the GUI shown is missing some features.
+
+## CSP Issue & Userscript Solution (RECOMMENDED):
+
+**⚠️ The traditional bookmarklet is currently blocked by Edpuzzle's Content Security Policy (CSP).**
+
+### Recommended Solution: Use Userscript Manager
+
+The most reliable way to use this tool is with a userscript manager:
+
+1. **Install a userscript manager:**
+   - **Chrome/Edge/Brave**: [Install Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
+   - **Firefox**: [Install Tampermonkey](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/) or [Violentmonkey](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/)
+
+2. **Install the userscript:**
+   - Click here: [userscript.js](https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/userscript.js)
+   - Tampermonkey/Violentmonkey will prompt you to install
+   - Click "Install"
+
+3. **Use it:**
+   - Navigate to any Edpuzzle assignment
+   - The script loads automatically - you'll see the interface appear or can trigger it via the bookmark
+
+**Why is this needed?** Edpuzzle now blocks external script loading through their Content Security Policy. Userscript managers have elevated permissions that bypass these restrictions.
+
+For other workarounds, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 
 ## Features:
  - Can fetch and display the multiple-choice answers for any Edpuzzle assignment

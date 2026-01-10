@@ -1,8 +1,74 @@
 # Troubleshooting Guide
 
-## Bookmark Does Nothing When Clicked
+## **⚠️ CRITICAL ISSUE: Content Security Policy (CSP) Blocking**
 
-If clicking the bookmark has no effect, follow these steps:
+**As of January 2026, Edpuzzle has updated their Content Security Policy to block the bookmarklet.**
+
+The bookmark is being blocked by Edpuzzle's CSP, which prevents connections to:
+- `cdn.jsdelivr.net` (the CDN hosting the script)
+- `edpuzzle.hs.vc` (the mirror server)
+
+**Error in browser console:**
+```
+Refused to connect because it violates the document's Content Security Policy
+```
+
+### **Working Solutions:**
+
+#### **Solution 1: Use Userscript Manager (RECOMMENDED - Most Reliable)**
+Browser extensions can bypass CSP restrictions.
+
+**Install Tampermonkey or Violentmonkey:**
+- **Chrome/Edge/Brave**: [Install Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
+- **Firefox**: [Install Tampermonkey](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/) or [Violentmonkey](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/)
+
+**Then install the userscript:**
+1. Click here: [userscript.js](https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main/userscript.js)
+2. Tampermonkey/Violentmonkey will prompt you to install
+3. Click "Install"
+4. Navigate to any Edpuzzle assignment - the script will load automatically
+5. Click the bookmark or run it manually to open the interface
+
+#### **Solution 2: Use Browser Developer Tools (Manual)**
+The console has higher privileges and can bypass some CSP restrictions:
+1. Press F12 to open Developer Tools
+2. Go to Console tab
+3. Paste and run this code:
+```javascript
+// Create and inject script element (bypasses fetch CSP)
+var s = document.createElement('script');
+s.src = 'https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js';
+s.onerror = function() {
+  console.error('Failed to load from CDN');
+  // Try alternative CDN
+  var s2 = document.createElement('script');
+  s2.src = 'https://unpkg.com/edpuzzle-answers@latest/script.js';
+  s2.onerror = function() {
+    alert('All CDNs failed. Check network restrictions.');
+  };
+  document.head.appendChild(s2);
+};
+document.head.appendChild(s);
+```
+
+#### **Solution 3: Disable CSP (Chrome/Edge Only)**
+**Warning: This reduces browser security. Use only for this specific purpose.**
+
+1. Install the "Disable Content-Security-Policy" extension
+2. Enable it only when using Edpuzzle
+3. Disable it after you're done
+
+#### **Solution 4: Self-Host the Script**
+If you can run a local web server:
+1. Clone the repository
+2. Run the server locally (see README)
+3. Modify the bookmarklet to point to localhost
+
+---
+
+## Bookmark Does Nothing When Clicked (Legacy Issues)
+
+If you're not seeing CSP errors, follow these steps:
 
 ### Step 1: Check Popup Blocker
 The bookmark requires popup permissions to work.
