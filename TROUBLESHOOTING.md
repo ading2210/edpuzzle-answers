@@ -4,19 +4,28 @@
 
 **As of January 2026, Edpuzzle has updated their Content Security Policy to block the bookmarklet.**
 
-The bookmark is being blocked by Edpuzzle's CSP, which prevents connections to:
-- `cdn.jsdelivr.net` (the CDN hosting the script)
-- `edpuzzle.hs.vc` (the mirror server)
+The bookmark is being blocked by Edpuzzle's **two-layer CSP protection**:
+1. **`connect-src` CSP** - Blocks fetch/XHR requests to:
+   - `cdn.jsdelivr.net` (the CDN hosting the script)
+   - `edpuzzle.hs.vc` (the mirror server)
 
-**Error in browser console:**
+2. **`script-src-elem` CSP** - Blocks `<script>` tags loading from external sources
+
+**Errors you'll see in browser console:**
 ```
-Refused to connect because it violates the document's Content Security Policy
+Refused to connect because it violates the document's Content Security Policy (connect-src)
 ```
+or
+```
+Loading the script violates the following Content Security Policy directive: "script-src-elem"
+```
+
+This means **both the bookmarklet AND simple script injection are blocked**.
 
 ### **Working Solutions:**
 
 #### **Solution 1: Use Userscript Manager (RECOMMENDED - Most Reliable)**
-Browser extensions can bypass CSP restrictions.
+Browser extensions can bypass CSP restrictions because they use `GM_xmlhttpRequest` which has elevated privileges.
 
 **Install Tampermonkey or Violentmonkey:**
 - **Chrome/Edge/Brave**: [Install Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
@@ -27,29 +36,38 @@ Browser extensions can bypass CSP restrictions.
 2. Tampermonkey/Violentmonkey will prompt you to install
 3. Click "Install"
 4. Navigate to any Edpuzzle assignment - the script will load automatically
-5. Click the bookmark or run it manually to open the interface
 
-#### **Solution 2: Use Browser Developer Tools (Manual)**
-The console has higher privileges and can bypass some CSP restrictions:
+**Why this works:** Userscript managers grant `GM_xmlhttpRequest` permission which completely bypasses both `connect-src` and `script-src-elem` CSP restrictions.
+
+#### **Solution 2: Use Browser Developer Tools (Manual - Copy/Paste Method)**
+Since Edpuzzle blocks both fetch AND script injection, you need to manually copy and execute the code:
+
+**Method A: Quick loader (easiest manual method):**
 1. Press F12 to open Developer Tools
 2. Go to Console tab
-3. Paste and run this code:
+3. Paste this one-liner and press Enter:
 ```javascript
-// Create and inject script element (bypasses fetch CSP)
-var s = document.createElement('script');
-s.src = 'https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js';
-s.onerror = function() {
-  console.error('Failed to load from CDN');
-  // Try alternative CDN
-  var s2 = document.createElement('script');
-  s2.src = 'https://unpkg.com/edpuzzle-answers@latest/script.js';
-  s2.onerror = function() {
-    alert('All CDNs failed. Check network restrictions.');
-  };
-  document.head.appendChild(s2);
-};
-document.head.appendChild(s);
+fetch('https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js').then(r=>r.text()).then(t=>eval(t)).catch(()=>{prompt('CSP blocked fetch. Copy this URL, open it in a new tab, copy all code, and paste it into this console:','https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js')});
 ```
+4. If CSP blocks it (likely), it will show you a prompt. Follow those instructions.
+
+**Method B: Full manual method:**
+1. Press F12 to open Developer Tools
+2. Go to Console tab
+3. Open this URL in a new tab: https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js
+4. Copy ALL the code from that page (Ctrl+A, Ctrl+C)
+5. Go back to the Edpuzzle tab
+6. Paste the code into the console and press Enter
+
+**Method C: Using curl (if you have terminal access):**
+```bash
+# Download and display the script
+curl https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js
+
+# Copy the output, then paste into browser console
+```
+
+**Note:** These methods require manually pasting code each time. The userscript (Solution 1) is much more convenient and only needs to be installed once.
 
 #### **Solution 3: Disable CSP (Chrome/Edge Only)**
 **Warning: This reduces browser security. Use only for this specific purpose.**
