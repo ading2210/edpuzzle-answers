@@ -92,6 +92,14 @@ javascript: fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest
  3. Set the name of the bookmark to whatever you want.
  4. Paste in the code into the box for the url and save the bookmark.
 
+### Method 3:
+ 1. Open [this](https://raw.githubusercontent.com/NorthernChicken/edpuzzle-answers/refs/heads/main/standalone/dist/console-paste.js).
+ 2. Copy the entire page (ctrl+a, ctrl+c) to your clipboard.
+ 3. Open the console on the Edpuzzle assignment (right click, inspect, go to Console).
+ 4. Paste the script in. You may need to give permission to allow pasting.
+
+_Why? In February 2026, Edpuzzle blocked injecting scripts from 3rd party websites. To bypass this, you can copy+paste the entire script directly to the console. See standalone/README.md for more details._
+
 ## Using the Bookmarklet: 
 ### On Regular Edpuzzles:
  1. Navigate to any Edpuzzle assignment.
@@ -140,6 +148,7 @@ All other code has been written solely by me, [ading2210](https://github.com/adi
 Other contributors:
 - [@smatian](https://github.com/smatian) - Improved the popup CSS and auto answerer (#68)
 - [@simplyrohan](https://github.com/simplyrohan) - Major reorganization and fixes for Edpuzzle update + AI updates
+- [@NorthernChicken](https://github.com/northernchicken) - Created standalone bookmarklet to bypass new Edpuzzle CSP
 
 This project contains icons from the the [Iconoir](https://iconoir.com/) icon library. 
 
