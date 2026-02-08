@@ -19,7 +19,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.`;
 
-    const BASE_URL = "edpuzzle.hs.vc";
+    const BASE_URL = "https://edpuzzle.hs.vc";
 //    const BASE_URL = "http://127.0.0.1:5000";
 
     const POPUP_HTML = __POPUP_HTML__;
