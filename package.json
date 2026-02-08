@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "npx webpack build --watch",
     "build": "npx webpack build",
-    "build:prod": "npx webpack build --mode=production"
+    "build:prod": "npx webpack build --mode=production",
+    "build:standalone": "node standalone/build.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,7 @@
   "homepage": "https://github.com/ading2210/edpuzzle-answers#readme",
   "devDependencies": {
     "copy-webpack-plugin": "^13.0.0",
+    "terser": "^5.46.0",
     "webpack": "^5.99.6",
     "webpack-cli": "^6.0.1"
   }
