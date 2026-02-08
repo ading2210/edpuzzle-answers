@@ -3,6 +3,6 @@ server/config/config.json
 server/cache
 /.vscode
 /.venv
-dist/
+/dist/
 node_modules/
 .DS_Store
