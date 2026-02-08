@@ -76,16 +76,14 @@ def write_cache():
   cache_path.write_text(json.dumps(cache, indent=2))
 
 def create_session():
-  session = requests.Session(impersonate="firefox135")
+  session = requests.Session(impersonate="chrome")
   session.headers.update({
     "Content-Type": "application/json",
     "Referer": "https://edpuzzle.com/",
     "Accept": "application/json, text/plain, */*",
     "X-Edpuzzle-Preferred-Language": "en",
-    "X-Edpuzzle-Referrer": "https://edpuzzle.com/",
-    "X-Chrome-Version": "131",
+    "X-Edpuzzle-Referrer": "https://edpuzzle.com/"
   })
-  impersonate = "firefox135"
   return session
 
 def account_login(creds):

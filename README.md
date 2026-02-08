@@ -110,7 +110,7 @@ It is possible to simply host a static copy of this repository, however open-end
 
 If you want to run the backend for yourself, follow these steps:
 1. Clone this repository and cd into it.
-2. Install Python (and optionally MongoDB) for your chosen Linux distro. Hosting on Windows should work but it is not supported.
+2. Install Python for your chosen Linux distro. Hosting on Windows should work but it is not supported.
 3. Create a virtual environment by running `python3 -m venv .venv`, and activate it using `.venv/bin/activate`.
 4. Install the needed dependencies by doing `pip3 install --upgrade -r requirements.txt`. 
 5. Install NodeJS dependencies by running `npm i`.

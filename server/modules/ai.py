@@ -1,22 +1,29 @@
 #Copyright (C) 2025 ading2210
 #see README.md for more information
 
-import google.generativeai as google_ai
+from google import genai
 import json
 
 max_length = float("inf")
 config = {}
 
 current_provider = "gemini"
+client = None
 
 def generate(data):
-  google_ai.configure(api_key=config["gemini"]["key"])
-  model_name = config["gemini"]["model"]
-  model = google_ai.GenerativeModel(model_name)
+  global client
+  if not client:
+    client = genai.Client(api_key=config["gemini"]["key"])
 
-  response = model.generate_content(data["prompt"])
+  response = client.models.generate_content_stream(
+    model=config["gemini"]["model"],
+    contents=data["prompt"]
+  )
+
   yield {"status": "generating"}
-  yield {"text": response.text}
+  for chunk in response:
+    if chunk.text:
+      yield {"text": chunk.text}
   yield {"status": "done"}
 
 def get_available_models():
