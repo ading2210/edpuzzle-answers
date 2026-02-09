@@ -2,20 +2,17 @@
 //see README.md for more information
 import { media } from "./main.js";
 
-export class video_options {
-
-static {
-  if (typeof opener.document.visability_change != "undefined") {
-    unfocus_checkbox.checked = opener.document.visability_change;
-  }
-  if (opener.document.video_speed) {
-    speed_dropdown.value = opener.document.video_speed;
-  }
-  unfocus_checkbox.disabled = false;  
-  speed_dropdown.disabled = false;
+if (typeof opener.document.visability_change != "undefined") {
+  unfocus_checkbox.checked = opener.document.visability_change;
 }
+if (opener.document.video_speed) {
+  speed_dropdown.value = opener.document.video_speed;
+}
+unfocus_checkbox.disabled = false;  
+speed_dropdown.disabled = false;
 
-static toggle_unfocus() {
+
+export function toggle_unfocus() {
   let js_text = `
   window.addEventListener("visibilitychange", function(event) {
     console.log(document.visability_change)
@@ -34,7 +31,7 @@ static toggle_unfocus() {
   opener.document.visability_change = unfocus_checkbox.checked;
 }
 
-static update_slider(media_source, speed) {
+export function update_slider(media_source, speed) {
   if (speed == -1) {
     custom_speed_container.classList.remove("hidden");
     custom_speed_container.classList.add("flex");
@@ -60,7 +57,7 @@ static update_slider(media_source, speed) {
   return speed;
 }
 
-static video_speed() {
+export function video_speed() {
   let media_source = media.source;
   let speed = parseFloat(speed_dropdown.value);
   opener.document.video_speed = speed;
@@ -125,5 +122,3 @@ static video_speed() {
     alert("Error: Unrecognized video source.");
   }
 }  
-
-}

@@ -1,18 +1,11 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
 import { fetch_with_auth, content_loaded, construct_headers, get_attempt, questions, assignment_mode } from "./main.js";
-import { video_skipper } from "./skipper.js";
+import * as video_skipper from "./skipper.js";
 
-export var answerer_loaded = false;
+answers_button.disabled = !content_loaded; 
 
-export class auto_answers {
-  
-static {
-  answerer_loaded = true;
-  answers_button.disabled = !content_loaded; 
-}
-
-static async answer_questions() {
+export async function answer_questions() {
   answers_button.value = "Submitting answers...";
 
   skipper_button.disabled = true;
@@ -21,16 +14,14 @@ static async answer_questions() {
   let attempt = await get_attempt();
   await video_skipper.skip_video(attempt, false);
 
-  let filtered_questions = this.filter_questions(questions);
-  await this.post_answers(attempt, filtered_questions, progress => {
-    answers_button.value = `Submitting answers (${progress+1}/${filtered_questions.length})...`;
-  });
+  let filtered_questions = filter_questions(questions);
+  await post_answers(attempt, filtered_questions);
 
   answers_button.value = "Answers submitted successfully.";
   opener.location.reload();
 }
 
-static filter_questions(questions) {
+function filter_questions(questions) {
   let filtered_questions = [];
   
   for (let i=0; i<questions.length; i++) {
@@ -51,18 +42,16 @@ static filter_questions(questions) {
   return filtered_questions;
 }
 
-static async post_answers(attempt, filtered_questions, progress_callback=null) {
+async function post_answers(attempt, filtered_questions) {
   let attempt_id = attempt._id || attempt.id;
   for (let i=0; i<filtered_questions.length; i++) {
     let question_part = filtered_questions[i];
-    await this.post_answer(attempt_id, question_part);
-    if (progress_callback) {
-      progress_callback(i);
-    }
+    await post_answer(attempt_id, question_part);
+    answers_button.value = `Submitting answers (${i+1}/${filtered_questions.length})...`;
   }
 }
 
-static async post_answer(attempt_id, questions_part) {
+async function post_answer(attempt_id, questions_part) {
   let answers_url = `https://edpuzzle.com/api/v3/attempts/${attempt_id}/answers`;
   let content = {answers: []};
 
@@ -108,8 +97,6 @@ static async post_answer(attempt_id, questions_part) {
 
   if (response.status === 429) {
     await new Promise(resolve => setTimeout(resolve, 5000));
-    await this.post_answer(attempt_id, questions_part);
+    await post_answer(attempt_id, questions_part);
   }
-}
-
 }

@@ -1,9 +1,9 @@
 //Copyright (C) 2025 ading2210
 //see README.md for more information
-import {video_skipper, skipper_loaded} from "./skipper.js";
-import {auto_answers, answerer_loaded} from "./autoanswers.js";
-import {video_options} from "./videooptions.js";
-import { open_ended } from "./openended.js";
+import * as video_skipper from "./skipper.js";
+import * as auto_answers from "./autoanswers.js";
+import * as video_options from "./videooptions.js";
+import * as open_ended from "./openended.js";
 
 window.real_location = JSON.parse(JSON.stringify(opener.real_location));
 
@@ -340,7 +340,7 @@ function parse_questions() {
       table.placeholder("question_content").append(choices_list);
     }
     else if (question.type == "open-ended") {
-      let question_div = get_template("open_ended_template", true);
+      let question_div = get_template("open_ended_question_template", true);
       let generate_button = question_div.placeholder("generator_button");
       let submit_button = question_div.placeholder("submit_button");
       let question_textarea = question_div.placeholder("question_textarea");
@@ -353,7 +353,8 @@ function parse_questions() {
       }
       else {
         generate_button.onclick = function(){
-          open_ended.open_menu(question, question_div)
+          let menu = new open_ended.OpenEndedMenu(question, question_div);
+          menu.open_menu();
         };
         submit_button.onclick = async function(){
           let success = await open_ended.submit_button_callback(question_textarea.value.trim(), question)
@@ -371,13 +372,13 @@ function parse_questions() {
 
   content_loaded = true;
 
-  skipper_button.disabled = !skipper_loaded;
+  skipper_button.disabled = false;
   if (questions.length == 0) {
     status_text.innerHTML = "No valid multiple choice questions were found.";
   }
   else {
     status_text.classList.add("hidden");
-    answers_button.disabled = !answerer_loaded;
+    answers_button.disabled = false;
   }
 }
 
@@ -404,6 +405,15 @@ function textarea_initialize(textarea) {
       textarea_update_height(textarea);
     }
   }).observe(textarea);
+
+  let old_descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(textarea), "value");
+  Object.defineProperty(textarea, "value", {
+    get: old_descriptor.get,
+    set: (value) => {
+      textarea_update_height(textarea);
+      old_descriptor.set.call(textarea, value);
+    }
+  })
 }
 
 function textarea_update_height(textarea) {
@@ -413,7 +423,7 @@ function textarea_update_height(textarea) {
   textarea.style.marginBottom = 0;
 }
 
-function mutation_observer_callback(mutations_list, observer) {
+function mutation_observer_callback(mutations_list) {
   for (let mutation of mutations_list) {
     if (mutation.type == "childList") {
       for (let added_node of mutation.addedNodes) {
