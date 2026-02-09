@@ -12,33 +12,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU Affero General Public License along with this program.If not, see <https://www.gnu.org/licenses/>.`;
 
-//legacy code - use the fetch api instead
-function http_get(url, callback, headers=[], method="GET", content=null) {
-  var request = new XMLHttpRequest();
-  request.addEventListener("load", callback);
-  request.open(method, url, true);
-
-  if (window.__EDPUZZLE_DATA__ && window.__EDPUZZLE_DATA__.token && (new URL(url).hostname) == "edpuzzle.com") {
-    headers.push(["authorization", window.__EDPUZZLE_DATA__.token]);
-  }
-  for (const header of headers) {
-    request.setRequestHeader(header[0], header[1]);
-  }
-  
-  request.send(content);
-}
-
-function format_text(text, replacements) {
-  let formatted = text;
-  for (let key of Object.keys(replacements)) {
-    while (formatted.includes("{{"+key+"}}")) {
-      formatted = formatted.replace("{{"+key+"}}", replacements[key]);
-    }
-  }
-  return formatted;
-}
-
-function init() {
+async function init() {
   console.info(gpl_text);
 
   //support running from within ultraviolet
@@ -51,7 +25,8 @@ function init() {
     alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
   }
   else if ((/https?:\/\/edpuzzle.com\/(lms\/lti\/)?assignments\/[a-f0-9]{1,30}\/(watch|view)/).test(window.real_location.href)) {
-    http_get(base_url+"/popup.html", open_popup);
+    let response = await fetch(base_url + "/popup.html");
+    open_popup(await response.text());
   }
   else if (window.canvasReadyState) {
     handle_canvas_url();
@@ -64,23 +39,22 @@ function init() {
   }
 }
 
-function open_popup() {
-  const popup = window.open("about:blank", "", "width=760, height=450");
+function open_popup(html) {
+  const popup = window.open("about:blank", "", "width=780, height=460");
   if (popup == null) {
     alert("Error: Could not open the popup. Please enable popups for edpuzzle.com and try again.");
     return;
   }
-  write_popup(popup, this.responseText);
+  write_popup(popup, html);
   
-  function popup_unload() { 
-    http_get(base_url+"/popup.html", function(){
-      if (popup.closed) return;
-      write_popup(popup, this.responseText);
-      popup.addEventListener("beforeunload", popup_unload);
-    });
+  async function popup_unload() { 
+    let response = await fetch(base_url + "/popup.html", {cache: "no-cache"});
+    if (popup.closed) return;
+    write_popup(popup, await response.text());
+    popup.addEventListener("beforeunload", popup_unload, {once: true});
   }
 
-  popup.addEventListener("beforeunload", popup_unload);
+  popup.addEventListener("beforeunload", popup_unload, {once: true});
 }
 
 function write_popup(popup, html) {
@@ -89,63 +63,56 @@ function write_popup(popup, html) {
   popup.document.gpl_text = gpl_text;
   popup.document.write(html);
 
-  let create_element = function(tag, innerHTML) {
-    let element = popup.document.createElement(tag);
-    element.innerHTML = innerHTML;
-    popup.document.head.append(element);
-    return element;
-  }
-
-  http_get(base_url+"/styles/popup.css", function(){
-    create_element("style", this.responseText);
-  });
-
-  http_get(base_url+"/main.js", function() {
-    create_element("script", this.responseText);
-  });
+  create_element(popup, base_url + "/styles/popup.css", "style");
+  create_element(popup, base_url + "/main.js", "script");
 }
 
-function handle_canvas_url() {
+async function create_element(popup, url, tag) {
+  let response = await fetch(url, {cache: "no-cache"});
+  let element = popup.document.createElement(tag);
+  element.innerHTML = await response.text();
+  popup.document.head.append(element);
+}
+
+async function handle_canvas_url() {
   let location_split = window.real_location.href.split("/");
   let url = `/api/v1/courses/${location_split[4]}/assignments/${location_split[6]}`;
-  http_get(url, function(){
-    let data = JSON.parse(this.responseText);
-    let url2 = data.url;
 
-    http_get(url2, function() {
-      let data = JSON.parse(this.responseText);
-      let url3 = data.url;
-
-      alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Canvas and try again.`);
-      open(url3);
-    });
-  });
+  let response1 = await fetch(url);
+  let url2 = (await response1.json()).url;
+  
+  let response2 = await fetch(url2);
+  let url3 = (await response2.json()).url;
+  
+  alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Canvas and try again.`);
+  open(url3);
 }
 
-function handle_schoology_url() {
+async function handle_schoology_url() {
   let assignment_id = window.real_location.href.split("/")[4];
   let url = `/external_tool/${assignment_id}/launch/iframe`;
-  http_get(url, function() {
-    alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Schoology and try again.`);
 
-    //strip js tags from response and add to dom
-    let html = this.responseText.replace(/<script[\s\S]+?<\/script>/, ""); 
-    let div = document.createElement("div");
-    div.innerHTML = html;
-    let form = div.querySelector("form");
-    
-    let input = document.createElement("input")
-    input.setAttribute("type", "hidden");
-    input.setAttribute("name", "ext_submit");
-    input.setAttribute("value", "Submit");
-    form.append(input);
-    document.body.append(div);
+  let response = await fetch(url);
+  let text = await response.text();
+  alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Schoology and try again.`);
 
-    //submit form in new tab
-    form.setAttribute("target", "_blank");
-    form.submit();
-    div.remove();
-  });
+  //strip js tags from response and add to dom
+  let html = text.replace(/<script[\s\S]+?<\/script>/, ""); 
+  let div = document.createElement("div");
+  div.innerHTML = html;
+  let form = div.querySelector("form");
+  
+  let input = document.createElement("input")
+  input.setAttribute("type", "hidden");
+  input.setAttribute("name", "ext_submit");
+  input.setAttribute("value", "Submit");
+  form.append(input);
+  document.body.append(div);
+
+  //submit form in new tab
+  form.setAttribute("target", "_blank");
+  form.submit();
+  div.remove();
 }
 
 init();
