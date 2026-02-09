@@ -1,7 +1,7 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
 
-import { content_loaded, construct_headers, get_attempt, assignment_mode } from "./main.js";
+import { fetch_with_auth, content_loaded, construct_headers, get_attempt, assignment_mode } from "./main.js";
 
 export var skipper_loaded = false;
 
@@ -36,7 +36,7 @@ static async post_watchtime(attempt) {
   }
 
   let content = {"timeIntervalNumber": 10};
-  await fetch(watch_url, {
+  await fetch_with_auth(watch_url, {
     method: "POST",
     headers: await construct_headers(),
     body: JSON.stringify(content)

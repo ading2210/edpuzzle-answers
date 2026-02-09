@@ -44,7 +44,7 @@ export var content_loaded = false;
 export var assignment_mode = null;
 var attachment_id = null;
 
-function fetch_wrapper(url, options={}) {
+export function fetch_with_auth(url, options={}) {
   if (edpuzzle_data && edpuzzle_data.token && (new URL(url).hostname) == "edpuzzle.com") {
     if (!options.headers) {options.headers = {}}
     options.headers["authorization"] = edpuzzle_data.token;
@@ -52,7 +52,7 @@ function fetch_wrapper(url, options={}) {
   if (window.opener) {
     return opener.fetch(url, options);
   }
-  return fetch_(url, options);
+  return fetch(url, options);
 }
 
 export function sanitize_html(str) {
@@ -96,7 +96,7 @@ async function get_csrf() {
   let now = Date.now()/1000;
   if (!csrf_cache.latest ||  now - csrf_cache.updated > 60) {
     let csrf_url = "https://edpuzzle.com/api/v3/csrf";
-    let request = await fetch(csrf_url);
+    let request = await fetch_with_auth(csrf_url);
     let data = await request.json();
     let csrf = data.CSRFToken;
     csrf_cache.updated = now;
@@ -152,7 +152,7 @@ export async function get_attempt() {
     attempt_url = `https://edpuzzle.com/api/v3/assignments/${assignment_id}/attempt`;
   }
 
-  let request = await fetch(attempt_url, {headers: await construct_headers()});
+  let request = await fetch_with_auth(attempt_url, {headers: await construct_headers()});
   let data = await request.json();
 
   return data;
@@ -166,17 +166,18 @@ async function get_assignment() {
   }
 
   let assignment_url = `https://edpuzzle.com/api/v3/assignments/${assignment_id}`;
-  let response = await fetch(assignment_url, {headers: await construct_headers()});
+  let response = await fetch_with_auth(assignment_url, {headers: await construct_headers()});
   if (response.ok) {
     assignment_mode = "legacy";
   }
   else {
     assignment_mode = "new";
-    let me_response = await fetch("https://edpuzzle.com/api/v3/users/me", {headers: await construct_headers()});
+    let me_url = "https://edpuzzle.com/api/v3/users/me";
+    let me_response = await fetch_with_auth(me_url, {headers: await construct_headers()});
     let user_id = (await me_response.json())._id;
     assignment_url = `https://edpuzzle.com/api/v3/learning/assignments/${assignment_id}/users/${user_id}`;
 
-    response = await fetch(assignment_url, {headers: await construct_headers()});
+    response = await fetch_with_auth(assignment_url, {headers: await construct_headers()});
     if (!response.ok)
       throw new Error(`Status code ${response.status} received when attempting to fetch the assignment.`);
   }
@@ -244,7 +245,7 @@ async function get_media() {
     media_id = assignment.teacherAssignments[0].contentId;
   }
 
-  let r = await fetch(base_url + `/api/media/${media_id}`);
+  let r = await fetch_with_auth(base_url + `/api/media/${media_id}`);
   media = await r.json();
 
   if (r.status !== 200) {
@@ -453,7 +454,7 @@ function intercept_console() {
 async function load_console_html() {
   let url = base_url+"/console.html";
   console.log(`Loading ${url}`);
-  let request = await fetch(url);
+  let request = await fetch_with_auth(url);
 
   if (!request.ok) {
     console.error("Failed to load JS console.");
@@ -567,8 +568,6 @@ answers_button.addEventListener("click", () => {auto_answers.answer_questions()}
 custom_speed.addEventListener("input", () => {video_options.video_speed()})
 
 async function init() {
-  globalThis.fetch_ = fetch;
-  globalThis.fetch = fetch_wrapper;
   intercept_console();
   window.onerror = on_error;
   window.onbeforeunload = on_before_unload;

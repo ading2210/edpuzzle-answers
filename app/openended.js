@@ -1,6 +1,6 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
-import {get_template, base_url, get_attempt, construct_headers, media, assignment_mode, sanitize_html} from "./main.js";
+import {fetch_with_auth, get_template, base_url, get_attempt, construct_headers, media, assignment_mode, sanitize_html} from "./main.js";
 
 function hide_element(element) {
   if (typeof element == "string") {
@@ -62,7 +62,7 @@ static async get_captions() {
   let video_id = media.thumbnailURL.split("/")[4];
   let request;
   try {
-    request = await fetch(base_url+"/api/captions/"+video_id);
+    request = await fetch_with_auth(base_url+"/api/captions/"+video_id);
   }
   catch(error) {
     console.warn(error);
@@ -161,7 +161,7 @@ static async display_prompt() {
 }
 
 static async populate_services() {
-  let res = await fetch(base_url + "/api/models")
+  let res = await fetch_with_auth(base_url + "/api/models")
   this.models = (await res.json())["models"]
 
   let model_dropdown = this.menu.placeholder("model_dropdown");
@@ -317,7 +317,7 @@ static async submit_open_ended(content, question_id=null) {
     }
   }
 
-  await fetch(answer_url, {
+  await fetch_with_auth(answer_url, {
     method: "POST",
     headers: await construct_headers(),
     body: JSON.stringify(body)

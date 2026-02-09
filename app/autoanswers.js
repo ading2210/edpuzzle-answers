@@ -1,6 +1,6 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
-import { content_loaded, construct_headers, get_attempt, questions, assignment_mode } from "./main.js";
+import { fetch_with_auth, content_loaded, construct_headers, get_attempt, questions, assignment_mode } from "./main.js";
 import { video_skipper } from "./skipper.js";
 
 export var answerer_loaded = false;
@@ -100,7 +100,7 @@ static async post_answer(attempt_id, questions_part) {
     }
   }
   
-  let response = await fetch(answers_url, {
+  let response = await fetch_with_auth(answers_url, {
     method: "POST",
     headers: await construct_headers(),
     body: JSON.stringify(content)
