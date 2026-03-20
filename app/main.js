@@ -603,6 +603,29 @@ async function init() {
     parse_questions();
   }
   catch (error) {
+    // Check for CSP-related errors and show a targeted fix message
+    const error_str = error + "";
+    const is_csp_error = (
+      error_str.toLowerCase().includes("content security policy") ||
+      error_str.toLowerCase().includes("csp") ||
+      error_str.toLowerCase().includes("refused to load") ||
+      error_str.toLowerCase().includes("violates the following content security policy")
+    );
+    if (is_csp_error) {
+      status_text.innerHTML = `
+        <b>Content Security Policy (CSP) is blocking this script.</b><br><br>
+        To fix this, install the 
+        <a href="https://chromewebstore.google.com/detail/disable-content-security/ieelmcmcagommplceebfedjlakkhpden?hl=en" 
+           target="_blank" 
+           style="color:#93c5fd;text-decoration:underline;">
+          Disable Content Security Policy
+        </a> 
+        Chrome extension, enable it, then reload this page and run the bookmarklet again.<br><br>
+        <span style="font-size:0.85em;opacity:0.7;">Remember to disable the extension again when you're done.</span>
+      `;
+      console.error("CSP error detected:", error);
+      return;
+    }
     console.error(error + "");
     console.error(error.stack);
     status_text.innerText = `An error has occurred. Please check the JS console for more details.\n\n${error+""}`;
