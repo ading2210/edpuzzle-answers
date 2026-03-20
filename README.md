@@ -21,6 +21,7 @@ Discord server: [edpuzzle.hs.vc/discord.html](https://edpuzzle.hs.vc/discord.htm
   - [Demo](#demo)
   - [Features](#features)
   - [Limitations](#limitations)
+  - [Troubleshooting](#troubleshooting)
   - [Copyright Notice](#copyright-notice)
   - [Creating the Bookmarklet](#creating-the-bookmarklet)
   - [Using the Bookmarklet](#using-the-bookmarklet)
@@ -48,6 +49,24 @@ Note: This video was recorded with an older version of the script, so the GUI sh
 
 ## Limitations:
  - This doesn't currently work for most Edpuzzles that are embedded in a third party site. However, the script does work for Edpuzzles embeded in Canvas and Schoology.
+
+## Troubleshooting:
+
+### Script Blocked by Content Security Policy (CSP)
+If the script stops working and you see an error in the browser console mentioning **Content Security Policy** or **CSP**, this means Edpuzzle has added a CSP header that prevents the bookmarklet from loading external resources.
+
+**Fix:** Install the [Disable Content Security Policy](https://chromewebstore.google.com/detail/disable-content-security/ieelmcmcagommplceebfedjlakkhpden?hl=en) extension for Chrome (or any Chromium-based browser like Edge, Brave, or Opera).
+
+**Important:** Only enable this extension while using the Edpuzzle bookmarklet, and disable it again afterward. Disabling CSP globally can expose you to security risks on other websites. The extension has an on/off toggle in the Chrome toolbar for easy control.
+
+Steps:
+1. Install the extension from the link above.
+2. Click the extension icon in your toolbar to enable it.
+3. Reload the Edpuzzle assignment page.
+4. Run the bookmarklet as normal.
+5. Disable the extension again when you are done.
+
+**Note:** This extension is only available for Chromium-based browsers. Firefox users can try [Disable Content Security Policy](https://addons.mozilla.org/en-US/firefox/addon/disable-content-security-policy/) from the Firefox Add-ons store.
 
 ## Copyright Notice:
 ```
@@ -140,6 +159,7 @@ All other code has been written solely by me, [ading2210](https://github.com/adi
 Other contributors:
 - [@smatian](https://github.com/smatian) - Improved the popup CSS and auto answerer (#68)
 - [@simplyrohan](https://github.com/simplyrohan) - Major reorganization and fixes for Edpuzzle update + AI updates
+- [@Aaks-hatH](https://github.com/Aaks-hatH) - Identified and resolved a major Content Security Policy (CSP) blocking issue ([fix details](#troubleshooting))
 
 This project contains icons from the the [Iconoir](https://iconoir.com/) icon library. 
 
