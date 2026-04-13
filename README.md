@@ -93,6 +93,10 @@ javascript: fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest
  4. Paste in the code into the box for the url and save the bookmark.
 
 ## Using the Bookmarklet: 
+
+> [!IMPORTANT]  
+> Due to recent changes by Edpuzzle, you need to disable the CSP on edpuzzle.com for the script to work. Install one of these browser extensions to bypass it: https://chromewebstore.google.com/detail/disable-content-security/ieelmcmcagommplceebfedjlakkhpden (Chrome/Edge/Opera/Brave) or https://addons.mozilla.org/en-US/firefox/addon/disable-csp-for-a-minute/ (Firefox)
+
 ### On Regular Edpuzzles:
  1. Navigate to any Edpuzzle assignment.
  2. Make sure the url follows this format: `https://edpuzzle.com/assignments/{id}/watch`

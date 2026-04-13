@@ -1,9 +1,9 @@
-//Copyright (C) 2023 ading2210
+//Copyright (C) 2026 ading2210
 //see README.md for more information
 
 //this script mainly just serves to load the rest of the program
 
-let mirrors = ["https://edpuzzle.hs.vc"];
+let mirrors = ["https://edpuzzle.hs.vc", "https://edpuzzle.librecheats.net"];
 
 async function try_mirror(mirror) {
   let r = await fetch(mirror + "/open.js", {cache: "no-cache"});
@@ -13,7 +13,8 @@ async function try_mirror(mirror) {
 }
 
 async function init() {
-  if (window.location.hostname == "edpuzzle.hs.vc") {
+  let mirror_hostnames = mirrors.map(url => new URL(url).hostname);
+  if (mirror_hostnames.includes(window.location.hostname)) {
     alert(
       "To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment."
     );
