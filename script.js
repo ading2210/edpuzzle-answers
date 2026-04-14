@@ -1,13 +1,13 @@
 //Copyright (C) 2026 ading2210
+//Copyright (C) 2026 ading2210
 //see README.md for more information
 
 //this script mainly just serves to load the rest of the program
 
-//To add more mirrors make a new line in the array and add a link. 
 let mirrors = [
-  "https://edpuzzle.hs.vc",  //down rn
+  "https://edpuzzle.hs.vc", //down rn
   "https://edpuzzle.librecheats.net", //2nd mirror
-  "https://ed.thesupersupersigma.com" //3rd mirror
+  "https://ed.thesupersupersigma.com" // Backup mirror
 ];
 
 async function try_mirror(mirror) {
@@ -18,10 +18,15 @@ async function try_mirror(mirror) {
 }
 
 async function init() {
+  // Use ading2210's hostname mapping to detect instruction pages automatically
   let mirror_hostnames = mirrors.map(url => new URL(url).hostname);
   if (mirror_hostnames.includes(window.location.hostname)) {
     alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
     return;
+  }
+
+  if (document.dev_env) {
+    return try_mirror(document.dev_env);
   }
 
   // 1. Create a selection prompt for the user
@@ -31,7 +36,7 @@ async function init() {
 
   let choice = prompt(message, "1");
 
-  // 2. Handle Custom URL
+  // 2. Handle Custom URL option
   if (choice == (mirrors.length + 1).toString()) {
     let custom = prompt("Enter the full URL of the custom mirror (e.g. http://localhost:8080):");
     if (custom) {
@@ -44,7 +49,7 @@ async function init() {
     }
   } 
   
-  // 3. Handle Array Selection
+  // 3. Handle specific mirror selection
   let index = parseInt(choice) - 1;
   if (mirrors[index]) {
     try {
@@ -55,7 +60,7 @@ async function init() {
     }
   }
 
-  // 4. Default Fallback
+  // 4. Default Fallback (Automatic cycle if selection fails)
   for (let mirror of mirrors) {
     try {
       await try_mirror(mirror);

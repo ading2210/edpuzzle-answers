@@ -1,10 +1,10 @@
-//Copyright (C) 2023 ading2210
+//Copyright (C) 2026 ading2210
 //see README.md for more information
 
 //this script launches the popup and contains handlers for canvas/schoology
 
 const gpl_text = `ading2210/edpuzzle-answers: a Javascript bookmarklet that provides many useful utilities for Edpuzzle
-Copyright (C) 2025 ading2210
+Copyright (C) 2026 ading2210
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -21,7 +21,8 @@ async function init() {
     window.real_location = __uv.location;
   }
 
-  if (window.real_location.hostname == "ed.thesupersupersigma.com") {
+  // Support both the original domain and your mirror for the instruction alert
+  if (window.real_location.hostname == "edpuzzle.hs.vc" || window.real_location.hostname == "ed.thesupersupersigma.com") {
     alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
   }
   else if ((/https?:\/\/edpuzzle.com\/(lms\/lti\/)?assignments\/[a-f0-9]{1,30}\/(watch|view)/).test(window.real_location.href)) {
