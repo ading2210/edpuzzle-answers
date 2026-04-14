@@ -1,16 +1,16 @@
 // ==UserScript==
 // @name        edpuzzle-answers script launcher
-// @namespace   edpuzzle.hs.vc
+// @namespace   ed.thesupersupersigma.com
 // @match       https://edpuzzle.com/*
 // @grant       none
 // @version     1.0.0
-// @author      ading2210
+// @author      thesupersupersigma
 // @description This userscript provides a convenient way to launch the edpuzzle-answers script.
-// @downloadURL https://raw.githubusercontent.com/ading2210/edpuzzle-answers/refs/heads/main/edpuzzle.user.js
+// @downloadURL https://raw.githubusercontent.com/thesupersupersigma/edpuzzle-answers/refs/heads/main/edpuzzle.user.js
 // ==/UserScript==
 
 function launch_script() {
-  fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js")
+  fetch("https://ed.thesupersupersigma.com/script.js")
     .then(r => r.text())
     .then(r => eval(r));
 }

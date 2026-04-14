@@ -21,7 +21,7 @@ async function init() {
     window.real_location = __uv.location;
   }
 
-  if (window.real_location.hostname == "edpuzzle.hs.vc") {
+  if (window.real_location.hostname == "ed.thesupersupersigma.com") {
     alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
   }
   else if ((/https?:\/\/edpuzzle.com\/(lms\/lti\/)?assignments\/[a-f0-9]{1,30}\/(watch|view)/).test(window.real_location.href)) {
