@@ -21,8 +21,11 @@ async function init() {
     window.real_location = __uv.location;
   }
 
-  // Support both the original domain and your mirror for the instruction alert
-  if (window.real_location.hostname == "edpuzzle.hs.vc" || window.real_location.hostname == "ed.thesupersupersigma.com") {
+  if (
+    window.real_location.hostname == "edpuzzle.hs.vc" || 
+    window.real_location.hostname == "ed.thesupersupersigma.com" || 
+    window.real_location.hostname == "edpuzzle.librecheats.net"
+  ) {
     alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
   }
   else if ((/https?:\/\/edpuzzle.com\/(lms\/lti\/)?assignments\/[a-f0-9]{1,30}\/(watch|view)/).test(window.real_location.href)) {

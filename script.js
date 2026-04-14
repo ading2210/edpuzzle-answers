@@ -18,7 +18,7 @@ async function try_mirror(mirror) {
 }
 
 async function init() {
-  // Use ading2210's hostname mapping to detect instruction pages automatically
+  
   let mirror_hostnames = mirrors.map(url => new URL(url).hostname);
   if (mirror_hostnames.includes(window.location.hostname)) {
     alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
@@ -29,7 +29,7 @@ async function init() {
     return try_mirror(document.dev_env);
   }
 
-  // 1. Create a selection prompt for the user
+  // 1. Prompt user for mirror selection
   let message = "Select a mirror to use:\n";
   mirrors.forEach((m, i) => message += `${i + 1}: ${m}\n`);
   message += `${mirrors.length + 1}: Enter Custom URL`;
