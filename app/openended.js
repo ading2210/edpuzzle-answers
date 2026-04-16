@@ -1,8 +1,8 @@
 //Copyright (C) 2023 ading2210
 //see README.md for more information
-import {fetch_with_auth, get_template, base_url, get_attempt, construct_headers, media, assignment_mode, sanitize_html} from "./main.js";
+import {fetch_with_auth, get_template, base_url, get_attempt, construct_headers, media, assignment_mode, sanitize_html, questions} from "./main.js";
 
-function hide_element(element) {
+async function hide_element(element) {
   if (typeof element == "string") {
     element = document.getElementById(element);
   }
@@ -384,4 +384,121 @@ export class OpenEndedMenu {
     this.active_request = request;
   }
 
+}
+
+export async function generate_all_open_ended() {
+  let unanswered = questions.filter(q => q.type === "open-ended" && !q.response && q.question_textarea);
+  if (unanswered.length === 0) {
+    alert("No unanswered open-ended questions found.");
+    return;
+  }
+
+  if (!confirm(`Are you sure you want to generate answers for all ${unanswered.length} open-ended questions?`)) {
+    return;
+  }
+
+  // Get models if not loaded
+  if (models === null) {
+    let res = await fetch_with_auth(base_url + "/api/models");
+    models = (await res.json())["models"];
+  }
+  let model_name = Object.keys(models)[0]; // Just use the first one
+  let model_id = models[model_name];
+
+  // Get captions
+  await get_captions();
+
+  // Construct prompt
+  let prompt = "";
+  if (captions) {
+    let all_captions = captions.map(c => c.text).join(" ").replaceAll("\n", " ");
+    prompt += all_captions + "\n\n";
+  }
+  
+  prompt += "Based on the captions above, answer the following questions in two sentences or less, at the writing level of a high school student.\n";
+  prompt += "Format your response as a list of answers, each separated by a line with only '---'. Ensure there is an answer for every single question.\n\n";
+  prompt += "Questions:\n";
+  for (let i = 0; i < unanswered.length; i++) {
+    prompt += `${i+1}. ${strip_html(unanswered[i].title)}\n`;
+  }
+
+  // Set textareas to "generating" state
+  for (let q of unanswered) {
+    q.question_textarea.value = "Generating answer...";
+    q.question_textarea.disabled = true;
+  }
+
+  // Call /api/generate
+  let body = {
+    prompt: prompt,
+    model: model_id
+  };
+
+  let res_text = "";
+  try {
+    let response = await fetch(base_url + "/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    
+    let reader = response.body.getReader();
+    let decoder = new TextDecoder();
+    let last_status = "pending";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      
+      let chunk = decoder.decode(value);
+      for (let line of chunk.split("\n")) {
+        if (!line) continue;
+        try {
+          let data = JSON.parse(line);
+          if (data.status === "generating") {
+            last_status = "generating";
+            res_text = "";
+          } else if (data.status === "done") {
+            last_status = "done";
+          } else if (data.text) {
+            res_text += data.text;
+          } else if (data.status === "error") {
+             alert("Error generating answers: " + data.message);
+             return;
+          }
+        } catch (e) {
+          console.warn("Failed to parse chunk", line);
+        }
+      }
+    }
+    
+    // Split and assign
+    let answers = res_text.split("---").map(s => s.trim());
+    for (let i = 0; i < unanswered.length; i++) {
+      if (answers[i]) {
+        unanswered[i].question_textarea.value = answers[i];
+        unanswered[i].question_textarea.disabled = false;
+      } else {
+        unanswered[i].question_textarea.value = "Failed to generate answer.";
+        unanswered[i].question_textarea.disabled = false;
+      }
+    }
+
+    if (confirm("Answers have been generated. Would you like to submit all of them now?")) {
+      for (let q of unanswered) {
+        if (q.question_textarea.value && q.question_textarea.value !== "Failed to generate answer." && q.question_textarea.value !== "Generating answer...") {
+          await submit_open_ended(q.question_textarea.value, q._id);
+          // Update UI: hide buttons_div if possible
+          let buttons_div = q.question_textarea.parentNode.querySelector('[key="buttons_div"]');
+          if (buttons_div) buttons_div.remove();
+          q.question_textarea.disabled = true;
+        }
+      }
+      alert("All answers submitted.");
+    }
+
+  } catch (error) {
+    console.error(error);
+    alert("An error occurred during batch generation.");
+  }
 }

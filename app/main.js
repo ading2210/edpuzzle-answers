@@ -21,6 +21,7 @@ const open_console_button = document.getElementById("open-console");
 
 const skipper_button = document.getElementById("skipper_button");
 const answers_button = document.getElementById("answers_button");
+const open_ended_button = document.getElementById("open_ended_button");
 const unfocus_checkbox = document.getElementById("unfocus_checkbox"); 
 const speed_button = document.getElementById("speed_button");
 const speed_dropdown = document.getElementById("speed_dropdown");
@@ -352,6 +353,7 @@ function parse_questions() {
         buttons_div.classList.add("hidden");
       }
       else {
+        question.question_textarea = question_textarea;
         generate_button.onclick = function(){
           let menu = new open_ended.OpenEndedMenu(question, question_div);
           menu.open_menu();
@@ -379,6 +381,7 @@ function parse_questions() {
   else {
     status_text.classList.add("hidden");
     answers_button.disabled = false;
+    open_ended_button.disabled = false;
   }
 }
 
@@ -575,6 +578,7 @@ unfocus_checkbox.addEventListener("change", () => {video_options.toggle_unfocus(
 speed_dropdown.addEventListener("change", () => {video_options.video_speed()});
 skipper_button.addEventListener("click", () => {video_skipper.skip_video()});
 answers_button.addEventListener("click", () => {auto_answers.answer_questions()});
+open_ended_button.addEventListener("click", () => {open_ended.generate_all_open_ended()});
 custom_speed.addEventListener("input", () => {video_options.video_speed()})
 
 async function init() {
