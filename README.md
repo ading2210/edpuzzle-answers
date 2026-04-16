@@ -7,7 +7,7 @@
 
 This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, as well as automatically answer the questions and change the video speed.
 
-Discord server: [edpuzzle.hs.vc/discord.html](https://edpuzzle.hs.vc/discord.html)
+Discord server: [edpuzzle.hgci.org/discord.html](https://edpuzzle.hgci.org/discord.html)
 
 ## Project Sponsors:
 
@@ -52,7 +52,7 @@ Note: This video was recorded with an older version of the script, so the GUI sh
 ## Copyright Notice:
 ```
 ading2210/edpuzzle-answers: a Javascript bookmarklet that provides many useful utilities for Edpuzzle
-Copyright (C) 2025 ading2210
+Copyright (C) 2026 ading2210
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -79,7 +79,7 @@ Forking or redistributing code from this repository is fine, as long as you abid
 A video tutorial can be found [here](https://www.youtube.com/watch?v=zxZzB2KXCkw).
 
 ### Method 1:
- 1. Navigate to [https://edpuzzle.hs.vc](https://edpuzzle.hs.vc).
+ 1. Navigate to [https://edpuzzle.hgci.org](https://edpuzzle.hgci.org).
  2. If you're on any Chromium-based browser (Chrome, Edge, Opera, Brave, etc), drag the button at the bottom of the page into your bookmarks bar.
  3. If you're on Firefox, right click on the button and then click "bookmark link."
 
@@ -139,7 +139,7 @@ Make sure your web server has a domain and HTTPS support. The easiest way to do 
 ## Credits:
 The code for the video skipper is based off of [ASmallYawn/EdpuzzleSkipper](https://github.com/ASmallYawn/EdpuzzleSkipper), with permission from the original author and some major refactoring.
 
-All other code has been written solely by me, [ading2210](https://github.com/ading2210).
+All other code has been written solely by me, [ading2210](https://github.com/ading2210), unless otherwise stated. AI generated code was not used in the making of this project. 
 
 Other contributors:
 - [@smatian](https://github.com/smatian) - Improved the popup CSS and auto answerer (#68)

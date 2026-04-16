@@ -3,7 +3,7 @@
 
 //this script mainly just serves to load the rest of the program
 
-let mirrors = ["https://edpuzzle.hs.vc", "https://edpuzzle.librecheats.net"];
+let mirrors = ["https://edpuzzle.hgci.org", "https://edpuzzle.librecheats.net"];
 
 async function try_mirror(mirror) {
   let r = await fetch(mirror + "/open.js", {cache: "no-cache"});
