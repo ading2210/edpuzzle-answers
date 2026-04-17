@@ -1,24 +1,23 @@
 //Copyright (C) 2026 ading2210
-//Copyright (C) 2026 ading2210
 //see README.md for more information
 
 //this script mainly just serves to load the rest of the program
 
 let mirrors = [
-  "https://edpuzzle.hs.vc", //down rn
+  "https://edpuzzle.hgci.org", //changed
   "https://edpuzzle.librecheats.net", //2nd mirror
-  "https://ed.thesupersupersigma.com" // Backup mirror
+  "https://ed.thesupersupersigma.com"
 ];
 
 async function try_mirror(mirror) {
-  let r = await fetch(mirror + "/open.js", {cache: "no-cache"});
+  let r = await fetch(mirror + "/open.js", { cache: "no-cache" });
   let script = await r.text();
   window.base_url = mirror;
   eval(script);
 }
 
 async function init() {
-  
+
   let mirror_hostnames = mirrors.map(url => new URL(url).hostname);
   if (mirror_hostnames.includes(window.location.hostname)) {
     alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
@@ -35,6 +34,7 @@ async function init() {
   message += `${mirrors.length + 1}: Enter Custom URL`;
 
   let choice = prompt(message, "1");
+  if (choice === null) return; // user pressed Cancel
 
   // 2. Handle Custom URL option
   if (choice == (mirrors.length + 1).toString()) {
@@ -47,8 +47,8 @@ async function init() {
         alert("Custom mirror failed.");
       }
     }
-  } 
-  
+  }
+
   // 3. Handle specific mirror selection
   let index = parseInt(choice) - 1;
   if (mirrors[index]) {
@@ -65,7 +65,7 @@ async function init() {
     try {
       await try_mirror(mirror);
       return;
-    } catch {}
+    } catch { }
   }
 
   alert("Error: Could not connect to any of the mirrors. Check that they're not blocked or down.");

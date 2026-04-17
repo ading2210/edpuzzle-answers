@@ -22,8 +22,8 @@ async function init() {
   }
 
   if (
-    window.real_location.hostname == "edpuzzle.hs.vc" || 
-    window.real_location.hostname == "ed.thesupersupersigma.com" || 
+    window.real_location.hostname == "edpuzzle.hgci.org" ||
+    window.real_location.hostname == "ed.thesupersupersigma.com" ||
     window.real_location.hostname == "edpuzzle.librecheats.net"
   ) {
     alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
@@ -50,15 +50,15 @@ function open_popup(html) {
     return;
   }
   write_popup(popup, html);
-  
-  async function popup_unload() { 
-    let response = await fetch(base_url + "/popup.html", {cache: "no-cache"});
+
+  async function popup_unload() {
+    let response = await fetch(base_url + "/popup.html", { cache: "no-cache" });
     if (popup.closed) return;
     write_popup(popup, await response.text());
-    popup.addEventListener("beforeunload", popup_unload, {once: true});
+    popup.addEventListener("beforeunload", popup_unload, { once: true });
   }
 
-  popup.addEventListener("beforeunload", popup_unload, {once: true});
+  popup.addEventListener("beforeunload", popup_unload, { once: true });
 }
 
 function write_popup(popup, html) {
@@ -72,7 +72,7 @@ function write_popup(popup, html) {
 }
 
 async function create_element(popup, url, tag) {
-  let response = await fetch(url, {cache: "no-cache"});
+  let response = await fetch(url, { cache: "no-cache" });
   let element = popup.document.createElement(tag);
   element.innerHTML = await response.text();
   popup.document.head.append(element);
@@ -84,10 +84,10 @@ async function handle_canvas_url() {
 
   let response1 = await fetch(url);
   let url2 = (await response1.json()).url;
-  
+
   let response2 = await fetch(url2);
   let url3 = (await response2.json()).url;
-  
+
   alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Canvas and try again.`);
   open(url3);
 }
@@ -101,11 +101,11 @@ async function handle_schoology_url() {
   alert(`Please re-run this script in the newly opened tab. If nothing happens after pressing "ok", then allow popups on Schoology and try again.`);
 
   //strip js tags from response and add to dom
-  let html = text.replace(/<script[\s\S]+?<\/script>/, ""); 
+  let html = text.replace(/<script[\s\S]+?<\/script>/, "");
   let div = document.createElement("div");
   div.innerHTML = html;
   let form = div.querySelector("form");
-  
+
   let input = document.createElement("input")
   input.setAttribute("type", "hidden");
   input.setAttribute("name", "ext_submit");

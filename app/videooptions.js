@@ -61,7 +61,7 @@ export function video_speed() {
   let media_source = media.source;
   let speed = parseFloat(speed_dropdown.value);
   opener.document.video_speed = speed;
-  speed = this.update_slider(media_source, speed);
+  speed = update_slider(media_source, speed);
 
   //force changing the video speed
   if (media_source == "edpuzzle") {

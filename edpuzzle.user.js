@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         edpuzzle-answers script launcher
-// @namespace    edpuzzle.hs.vc
+// @namespace    edpuzzle.hgci.org
 // @match        https://edpuzzle.com/*
 // @grant        none
 // @version      1.1.0

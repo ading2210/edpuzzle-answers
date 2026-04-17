@@ -1,9 +1,4 @@
 <!DOCTYPE html>
-<!--  
-Copyright (C) 2023 ading2210
-See README.md for more information
--->
-
 <html>
   <head>
     <title id="title">Loading resources...</title>
@@ -15,13 +10,15 @@ See README.md for more information
         <img id="thumbnail_img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAC0CAMAAADSOgUjAAAAAXNSR0IB2cksfwAAAARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAABtQTFRFzMzMAAAAZmZmMzMzTExMGRkZsrKyf39/mZmZsPv30QAAA9NJREFUeNrt29m2oyoURmHpFrz/Ex8wKkhjJSb7DHXM72pXbBL/ICwwNU0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/F21s/ocx/tkX+AesMvkfSunHBWiUI0ACJEACfCvAEIQAvwnwiQiQAAmQAAlwzFvjlDO2noNJ2uBUd5N+HRKaALUOxV56eYO4szNa6vd1Lr0cXsfJTQPUMaKF8/3X601i8+vhoA4UpWIqIZ+oPImfX3brSZQKtwxQjFKxacgkkhIz5cXHDT5I5O3u4iXt6CU1UZPyOg5QLzuHdH5f3PfxS0mNTkL80942wN1F+SJB2d22KeciP7ddbGxe+jBAnd8gnURyfrr8RuxNA6w+dxhOxCTnYHMMS5wHAeryDWTbWL1RatO3DDDsu6Vp0sPrMMo2UeYbehjg/nx2/SSmGrjlpgHaZotTg7VDve6q62P8YYC+2rX7JaTPeMcApb1jde7r6pjcGrFuQh8H6Oo3DEvLl+ZbuGGAvrmO7RJ7+452MEd94H7XpeX55msKtwxQdzaMhpH1mjuhH43C4f0Ab1hIm84czOw6QfHamDRfSMPkKPR/FNL7u90Pb+FbBmgPQ0118jxTeCX4uwCnZhCxfzxf/5sAe0NuTiNNwZz1sr+FOysHJwK0bRmjHxOg23olF9o+8DcBitr3FLEal4e1QHH7pH4b4Fw8SjEfvPAYfLIPrDsl/9M+MLXv12JF8GmRwV05v3GAvZ57bZWdSd7Ur0BO3cKxHM/rZe7iT0IP6kA1WjRoCg277Bs+qwMHAer5kFgkae395Z+DDgPslP9rPdY0tLUObCuQw5nIIECj7vQTpPFiQjuKrHd1HaDfAmxGEVFnyhj9iAB1fYXbMkl1p8o2E2mbrT0RoFeDJlgsFPb/vFaAda2Sd60qW6Ps1iSrCaBWJwJMy1dpEPZxGN79FuRmAaZPZvurcsXy+7zkHrYA98fEsuZMGbM8U1rkH2VeNUBp5L5tq8FC+YBEtg3psYaZcoBzEbwcE9K59ZkAX2OwtdYYVzz1u2iAHVPREpyN5YR1zdwtbogXqOYWVwS4bHodYmQ6GWDRk6SSUN80wOIBcFXPhvU4K9M+wPxgeL73vg6weGB3yQD/Sbzv1rPpJvODSVZI235XAlerC/jYpRcE78CPnmbh3QBpgV/ewoYQvhtENCl8V2oJKbzf4VlpykBPLB8NuSb/kjVYRX4f9nivmYwz5jUTLh4w4U3BbjPMojHis4YYwhP/ZxgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwDP8BGHcT4zxiQGEAAAAASUVORK5CYII=" class="rounded-lg mt-0.5">
       </div>
       <div id="title_div" class="space-y-1">
-        <p class="text-lg font-bold"><span id="assignment_title">Loading assignment data...</span></h2>
+        <p class="text-lg font-bold"><span id="assignment_title">Loading assignment data...</span></p>
         <p class="text-xs">Assigned by <span id="assignment_author" class="">[unknown]</span></p>
         <p class="text-xs"><span id="assignment_end">Due [unknown]</span></p>
         <p class="text-xs">Correct choices are <u>underlined</u>.</p>
+        
         <input id="skipper_button" class="ui_button" type="button" value="Skip Video" disabled/>
-        <input id="answers_button" class="ui_button" type="button" value="Answer Questions" disabled/>
-        <input id="open_ended_button" class="ui_button" type="button" value="Answer Open-Ended" disabled/>
+        <input id="answers_button" class="ui_button" type="button" value="Get All Answers" disabled/>
+        <input id="open_ended_button" class="ui_button" type="button" value="Generate All Open-Ended" disabled/>
+        
         <div id="speed_container" class="flex gap-1 items-center">
           <label class="text-xs" for="speed_dropdown">Video speed:</label>
           <select id="speed_dropdown" class="ui_button" name="speed_dropdown" disabled>
@@ -52,7 +49,6 @@ See README.md for more information
         Loading assignment data...
       </p>
       
-      <!-- templates for questions -->
       <table id="question_template" class="hidden mx-3">
         <tr class="rounded-lg border-separate">
           <td class="w-16 text-[13px] p-2.5 pr-0 align-top rounded-l-lg bg-slate-800">
@@ -83,9 +79,9 @@ See README.md for more information
         </div>
         <div class="flex flex-col px-2 gap-1">
           <p>Prompt:</p>
-          <textarea key="prompt_textarea" class="textarea" rows=4 placeholder="Loading prompt..." disabled></textarea>
+          <textarea key="prompt_textarea" class="textarea" rows=4 placeholder="Prompt" disabled></textarea>
           <p class="mt-1">Generated:</p>
-          <textarea key="generated_textarea" class="textarea" rows=4 placeholder="Generated text will appear here."></textarea>
+          <textarea key="generated_textarea" class="textarea" rows=4 placeholder="Generated Answer"></textarea>
           
           <div class="flex items-center gap-2">
             <p key="model_label">Model:</p>
@@ -102,17 +98,13 @@ See README.md for more information
           </div>
         </div>
       </div>
-      <!-- end templates -->
-
       <div id="questions_div" class="flex flex-col gap-1">
       </div>
       <div id="open_ended_div" class="hidden w-full">
       </div>
       
-      <!-- spacer -->
       <div class="flex flex-1"></div>
       
-      <!-- footer -->
       <div id="footer" class="bg-slate-800 rounded-lg m-3 mt-0 p-3 text-[11px] flex flex-wrap gap-y-2">
         <div class="flex gap-2 items-center w-52">
           <svg class="footer_icon" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 22.027v-2.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7a5.44 5.44 0 00-1.5-3.75 5.07 5.07 0 00-.09-3.77s-1.18-.35-3.91 1.48a13.38 13.38 0 00-7 0c-2.73-1.83-3.91-1.48-3.91-1.48A5.07 5.07 0 005 5.797a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7a3.37 3.37 0 00-.94 2.58v2.87M9 20.027c-3 .973-5.5 0-7-3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>

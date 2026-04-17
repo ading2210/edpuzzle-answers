@@ -1,6 +1,6 @@
-//Copyright (C) 2023 ading2210
+//Copyright (C) 2026 ading2210
 //see README.md for more information
-import {fetch_with_auth, get_template, base_url, get_attempt, construct_headers, media, assignment_mode, sanitize_html, questions} from "./main.js";
+import {fetch_with_auth, get_template, base_url, get_attempt, construct_headers, media, assignment_mode, sanitize_html, questions, content_div, questions_div, open_ended_div} from "./main.js";
 
 async function hide_element(element) {
   if (typeof element == "string") {
@@ -67,7 +67,7 @@ async function get_captions() {
     return;
   }
   if (!request.ok) {
-    console.warn("Failed to fetch captions. Response from server: ", await r.text());
+    console.warn("Failed to fetch captions. Response from server: ", await request.text());
     captions = false;
     return;
   }
@@ -241,7 +241,7 @@ export class OpenEndedMenu {
 
   async format_prompt(max_length=null) {
     await get_captions();
-    let prompt_template = this.get_prompt_template(this.question);
+    let prompt_template = this.get_prompt_template();
     if (max_length != null) {
       max_length = max_length - prompt_template.length;
     }
@@ -402,7 +402,7 @@ export async function generate_all_open_ended() {
     let res = await fetch_with_auth(base_url + "/api/models");
     models = (await res.json())["models"];
   }
-  let model_name = Object.keys(models)[0]; // Just use the first one
+  let model_name = Object.keys(models)[0]; 
   let model_id = models[model_name];
 
   // Get captions
@@ -412,10 +412,17 @@ export async function generate_all_open_ended() {
   let prompt = "";
   if (captions) {
     let all_captions = captions.map(c => c.text).join(" ").replaceAll("\n", " ");
+    
+    // SAFETY FIX: Limit captions length to prevent 500 Payload Errors
+    if (all_captions.length > 15000) {
+       all_captions = all_captions.substring(all_captions.length - 15000);
+    }
+    
     prompt += all_captions + "\n\n";
   }
   
-  prompt += "Based on the captions above, answer the following questions in two sentences or less, at the writing level of a high school student.\n";
+  // FIXED: Instruct AI to NOT repeat the question
+  prompt += "Based on the captions above, answer the following questions in two sentences or less, at the writing level of a high school student. Do not include the question text in your response.\n";
   prompt += "Format your response as a list of answers, each separated by a line with only '---'. Ensure there is an answer for every single question.\n\n";
   prompt += "Questions:\n";
   for (let i = 0; i < unanswered.length; i++) {
@@ -436,7 +443,7 @@ export async function generate_all_open_ended() {
 
   let res_text = "";
   try {
-    let response = await fetch(base_url + "/api/generate", {
+    let response = await fetch_with_auth(base_url + "/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
@@ -457,11 +464,21 @@ export async function generate_all_open_ended() {
           let data = JSON.parse(line);
           if (data.status === "generating") {
             last_status = "generating";
-            res_text = "";
           } else if (data.status === "done") {
             last_status = "done";
           } else if (data.text) {
             res_text += data.text;
+            
+            // --- NEW: REAL-TIME UI UPDATING ---
+            let live_answers = res_text.split("---");
+            for (let i = 0; i < unanswered.length; i++) {
+              if (live_answers[i] && live_answers[i].trim() !== "") {
+                // Strip numbers/prefixes on the fly so it looks clean while typing
+                unanswered[i].question_textarea.value = live_answers[i].replace(/^\d+\.\s*/, '').replace(/^Answer \d+:/i, '').trim();
+              }
+            }
+            // ----------------------------------
+
           } else if (data.status === "error") {
              alert("Error generating answers: " + data.message);
              return;
@@ -472,11 +489,10 @@ export async function generate_all_open_ended() {
       }
     }
     
-    // Split and assign
-    let answers = res_text.split("---").map(s => s.trim());
+    // Final pass to ensure UI is unlocked
+    let final_answers = res_text.split("---").map(s => s.trim());
     for (let i = 0; i < unanswered.length; i++) {
-      if (answers[i]) {
-        unanswered[i].question_textarea.value = answers[i];
+      if (final_answers[i]) {
         unanswered[i].question_textarea.disabled = false;
       } else {
         unanswered[i].question_textarea.value = "Failed to generate answer.";
@@ -487,8 +503,12 @@ export async function generate_all_open_ended() {
     if (confirm("Answers have been generated. Would you like to submit all of them now?")) {
       for (let q of unanswered) {
         if (q.question_textarea.value && q.question_textarea.value !== "Failed to generate answer." && q.question_textarea.value !== "Generating answer...") {
+          
           await submit_open_ended(q.question_textarea.value, q._id);
-          // Update UI: hide buttons_div if possible
+          
+          // SAFETY FIX: 600ms Delay to prevent 403 Forbidden Rate-Limit errors
+          await new Promise(r => setTimeout(r, 1000));
+
           let buttons_div = q.question_textarea.parentNode.querySelector('[key="buttons_div"]');
           if (buttons_div) buttons_div.remove();
           q.question_textarea.disabled = true;

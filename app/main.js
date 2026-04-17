@@ -1,4 +1,4 @@
-//Copyright (C) 2025 ading2210
+//Copyright (C) 2026 ading2210
 //see README.md for more information
 import * as video_skipper from "./skipper.js";
 import * as auto_answers from "./autoanswers.js";
@@ -31,9 +31,9 @@ const custom_speed_label = document.getElementById("custom_speed_label");
 const custom_speed_value = document.getElementById("custom_speed_value");
 const status_text = document.getElementById("status_text");
 
-const questions_div = document.getElementById("questions_div");
-const open_ended_div = document.getElementById("open_ended_div");
-const content_div = document.getElementById("content_div");
+export const questions_div = document.getElementById("questions_div");
+export const open_ended_div = document.getElementById("open_ended_div");
+export const content_div = document.getElementById("content_div");
 const console_log = [];
 
 export var media = null;
@@ -374,14 +374,22 @@ function parse_questions() {
 
   content_loaded = true;
 
+  let has_mc = questions.some(q => q.type === "multiple-choice");
+  let has_open_ended = questions.some(q => q.type === "open-ended" && !q.response);
+
   skipper_button.disabled = false;
-  if (questions.length == 0) {
-    status_text.innerHTML = "No valid multiple choice questions were found.";
+
+  if (!has_mc && !has_open_ended) {
+    status_text.innerHTML = "No questions were found for this assignment.";
   }
   else {
     status_text.classList.add("hidden");
-    answers_button.disabled = false;
-    open_ended_button.disabled = false;
+    if (has_mc) {
+      answers_button.disabled = false;
+    }
+    if (has_open_ended) {
+      open_ended_button.disabled = false;
+    }
   }
 }
 
