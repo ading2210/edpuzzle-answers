@@ -4,9 +4,9 @@
 //this script mainly just serves to load the rest of the program
 
 let mirrors = [
-  "https://edpuzzle.hgci.org", //changed
+  "https://edpuzzle.hgci.org", //main mirror
   "https://edpuzzle.librecheats.net", //2nd mirror
-  "https://ed.thesupersupersigma.com"
+  "https://ed.thesupersupersigma.com" //3rd mirror
 ];
 
 async function try_mirror(mirror) {

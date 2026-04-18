@@ -223,6 +223,9 @@ def media_proxy(media_id):
   try:
     session = create_session()
 
+    if not current_tokens:
+      raise exceptions.BadGatewayError("No teacher accounts are currently authenticated. The server may still be logging in — please try again in a moment.")
+
     current_token = random.choice(list(current_tokens.values()))
     session.cookies.update({
       "token": current_token[0]
@@ -259,12 +262,13 @@ def discord():
   return redirect(invite_url)
 
 
+# Start token refresher thread — must run outside __name__ check so gunicorn workers start it too
+if not is_running_from_reloader():
+  t = threading.Thread(target=token_refresher, daemon=True)
+  t.start()
+
 # run the server
 if __name__ == "__main__":
-  if not is_running_from_reloader():
-    t = threading.Thread(target=token_refresher, daemon=True)
-    t.start()
-
   print("Starting flask...")
   app.run(
     host="0.0.0.0",

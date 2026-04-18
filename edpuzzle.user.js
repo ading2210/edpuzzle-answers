@@ -3,7 +3,7 @@
 // @namespace    edpuzzle.hgci.org
 // @match        https://edpuzzle.com/*
 // @grant        none
-// @version      1.1.0
+// @version      1.0.0
 // @author       ading2210
 // @description  This userscript provides a convenient way to launch the edpuzzle-answers script with mirror support.
 // @downloadURL  https://raw.githubusercontent.com/ading2210/edpuzzle-answers/refs/heads/main/edpuzzle.user.js

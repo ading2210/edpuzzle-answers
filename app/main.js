@@ -377,6 +377,12 @@ function parse_questions() {
   let has_mc = questions.some(q => q.type === "multiple-choice");
   let has_open_ended = questions.some(q => q.type === "open-ended" && !q.response);
 
+  // Populate question count display
+  let mc_total = questions.filter(q => q.type === "multiple-choice").length;
+  let oe_total = questions.filter(q => q.type === "open-ended").length;
+  document.getElementById("mc_count").textContent = mc_total;
+  document.getElementById("oe_count").textContent = oe_total;
+
   skipper_button.disabled = false;
 
   if (!has_mc && !has_open_ended) {

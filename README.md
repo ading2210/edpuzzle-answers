@@ -35,7 +35,7 @@ Note: This video was recorded with an older version of the script, so the GUI sh
 ## Features:
  - Can fetch and display the multiple-choice answers for any Edpuzzle assignment
  - Can automatically answer all the multiple-choice questions in an assignment
- - Can automatically answer free response questions using AI
+ - Can automatically answer open ended questions using AI, one at a time or all at once in bulk
  - Includes a video skipper which allows for arbitrary navigation within an assignment
  - Has a tool to change the video speed
  - Has an option to prevent auto-pausing the video when the tab is hidden
@@ -79,7 +79,7 @@ Forking or redistributing code from this repository is fine, as long as you abid
 A video tutorial can be found [here](https://www.youtube.com/watch?v=zxZzB2KXCkw).
 
 ### Method 1:
- 1. Navigate to [https://edpuzzle.hs.vc](https://edpuzzle.hs.vc).
+ 1. Navigate to [https://edpuzzle.hgci.org](https://edpuzzle.hgci.org).
  2. If you're on any Chromium-based browser (Chrome, Edge, Opera, Brave, etc), drag the button at the bottom of the page into your bookmarks bar.
  3. If you're on Firefox, right click on the button and then click "bookmark link."
 

@@ -10,7 +10,7 @@ from curl_cffi import requests
 from modules import exceptions
 
 def process_timestamp(timestamp_str):
-  regex = "(\d{2}):(\d{2}):(\d{2})"
+  regex = r"(\d{2}):(\d{2}):(\d{2})"
   timestamp_split = re.findall(regex, timestamp_str)[0]
   timestamp = int(timestamp_split[0])*3600
   timestamp += int(timestamp_split[1])*60
