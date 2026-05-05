@@ -154,6 +154,23 @@ def token_refresher():
       time.sleep(30) #30s between login attempts
     time.sleep(60*10) # 10 min
 
+def get_active_token():
+  token_entries = list(current_tokens.values())
+  if token_entries:
+    return random.choice(token_entries)[0]
+
+  # If no tokens, try to login
+  for creds in config["teacher_creds"]:
+    account_login(creds)
+
+  token_entries = list(current_tokens.values())
+  if not token_entries:
+    raise exceptions.BadGatewayError(
+      "Server error 403"
+    )
+
+  return random.choice(token_entries)[0]
+
 # ===== utility functions =====
 
 # handle 429
@@ -223,9 +240,8 @@ def media_proxy(media_id):
   try:
     session = create_session()
 
-    current_token = random.choice(list(current_tokens.values()))
     session.cookies.update({
-      "token": current_token[0]
+      "token": get_active_token()
     })
     csrf_token = session.get("https://edpuzzle.com/api/v3/csrf").json()
 
