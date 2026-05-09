@@ -64,11 +64,17 @@ if config["behind_proxy"]:
 
 current_tokens = {}
 captcha_token_queue = None
+token_expiry_time = 6 * 3600 # 6 hours
 
 #process cache
 if cache:
   current_tokens = cache["tokens"]
   for email, item in list(current_tokens.items()):
+    if time.time() - item[1] > token_expiry_time:
+      print(f"token probably expired for {email}")
+      del current_tokens[email]
+      continue
+
     for creds in config["teacher_creds"]:
       if creds["username"] == email:
         break
@@ -100,7 +106,7 @@ def account_login(creds):
 
   # check if our current token is ok, or refresh login after 6 hours
   current_token = current_tokens.get(username)
-  if current_token and time.time() - current_token[1] < 6 * 3600:
+  if current_token and time.time() - current_token[1] < token_expiry_time:
     res = session.get("https://edpuzzle.com/api/v3/users/me", cookies={
       "token": current_token[0]
     })
