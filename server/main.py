@@ -11,7 +11,7 @@ from werkzeug.serving import is_running_from_reloader
 from curl_cffi import requests
 import random
 
-from modules import exceptions, utils, captions, ai
+from modules import exceptions, captions, ai
 import threading
 import time
 import json
@@ -34,7 +34,7 @@ if cache_path.exists():
   cache = json.loads(cache_path.read_text())
 
 #read config
-utils.include_traceback = config["include_traceback"]
+exceptions.include_traceback = config["include_traceback"]
 ai.config = config
 
 # handle compression and rate limits
@@ -97,8 +97,6 @@ def account_login(creds):
   global captcha_token_queue
   session = create_session()
   username = creds["username"]
-
-  session.headers["User-Agent"] = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
 
   # check if our current token is ok, or refresh login after 6 hours
   current_token = current_tokens.get(username)
@@ -172,7 +170,7 @@ def token_refresher():
       for i in range(0, 5):
         if account_login(creds):
           break
-      time.sleep(0) #30s between login attempts
+      time.sleep(30) #30s between login attempts
     time.sleep(60*10) # 10 min
 
 # ===== utility functions =====
@@ -180,26 +178,26 @@ def token_refresher():
 # handle 429
 @app.errorhandler(429)
 def handle_rate_limit(e):
-  return utils.handle_exception(e, status_code=429)
+  return exceptions.handle_exception(e, status_code=429)
 
 # ===== api routes =====
 @app.route("/api/captions/<id>")
 @app.route("/api/captions/<id>/<language>")
 @limiter.limit(config["rate_limit"]["captions"])
-@utils.handle_exception
+@exceptions.handle_exception
 def get_captions(id, language="en"):
   timestamp = request.args.get("timestamp")
   count = request.args.get("count")
   return captions.get_captions(id)
 
 @app.route("/api/models", methods=["GET"])
-@utils.handle_exception
+@exceptions.handle_exception
 def get_models():
   return jsonify(ai.get_available_models())
 
 @app.route("/api/generate", methods=["POST"])
 @limiter.limit(config["rate_limit"]["generate"])
-@utils.handle_exception
+@exceptions.handle_exception
 def generate():
   data = request.json
 
@@ -223,7 +221,7 @@ def generate():
           continue
         yield json.dumps(chunk) + "\n"
     except Exception as e:
-      exception = utils.handle_exception(e)[0]
+      exception = exceptions.create_exception_response(e)[0]
       exception["status_code"] = exception["status"]
       exception["status"] = "error"
       yield json.dumps(exception)
@@ -236,7 +234,7 @@ def generate():
 
 @app.route("/api/media/<media_id>")
 @limiter.limit(config["rate_limit"]["media"])
-@utils.handle_exception
+@exceptions.handle_exception
 def media_proxy(media_id):
   session = create_session()
   captcha_needed = captcha_token_queue is not None
@@ -255,13 +253,13 @@ def media_proxy(media_id):
   })
 
   if res.status_code == 403:
-    raise exceptions.BadGatewayError(f"Got status code 403 from Edpuzzle.\n\nThis means that the Edpuzzle assignment is private, so it is impossible to find the answers.")
+    raise exceptions.InternalServerError(f"Got status code 403 from Edpuzzle.\n\nThis means that the Edpuzzle assignment is private, so it is impossible to find the answers.")
   if res.status_code != 200:
-    raise exceptions.BadGatewayError(f"Got status code {res.status_code} from Edpuzzle")
+    raise exceptions.InternalServerError(f"Got status code {res.status_code} from Edpuzzle")
 
   data = res.json()
   if data.get("error"):
-    raise exceptions.BadGatewayError(f"Edpuzzle error: " + data["error"])
+    raise exceptions.InternalServerError(f"Edpuzzle error: " + data["error"])
 
   return jsonify({"captcha_needed": False, **data})
 
