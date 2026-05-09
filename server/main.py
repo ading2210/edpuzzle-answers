@@ -275,7 +275,7 @@ def handle_captcha_token():
 
 @app.route("/")
 def homepage():
-  return render_template("index.html", dev_mode=config["dev_mode"], origin=config["origin"])
+  return render_template("index.html", dev_mode=config["dev_mode"], script_js=config["script.js"])
 
 @app.route("/discord")
 @app.route("/discord.html")
