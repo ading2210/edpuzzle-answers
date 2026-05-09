@@ -4,12 +4,13 @@ import * as video_skipper from "./skipper.js";
 import * as auto_answers from "./autoanswers.js";
 import * as video_options from "./videooptions.js";
 import * as open_ended from "./openended.js";
+import * as captcha from "./captcha.js";
 
 window.real_location = JSON.parse(JSON.stringify(opener.real_location));
 
 const gpl_text = document.gpl_text;
 export const base_url = document.base_url;
-const edpuzzle_data = document.edpuzzle_data;
+export const edpuzzle_data = document.edpuzzle_data;
 const lti_edpuzzle = window.real_location.pathname.includes("/lms/lti");
 const csrf_cache = {
   latest: null,
@@ -22,7 +23,6 @@ const open_console_button = document.getElementById("open-console");
 const skipper_button = document.getElementById("skipper_button");
 const answers_button = document.getElementById("answers_button");
 const unfocus_checkbox = document.getElementById("unfocus_checkbox");
-const speed_button = document.getElementById("speed_button");
 const speed_dropdown = document.getElementById("speed_dropdown");
 const custom_speed_container = document.getElementById("custom_speed_container");
 const custom_speed = document.getElementById("custom_speed");
@@ -242,6 +242,13 @@ async function get_media() {
 
   let r = await fetch_with_auth(base_url + `/api/media/${media_id}`);
   media = await r.json();
+
+  if (media.captcha_needed) {
+    let captcha_token = await captcha.complete_captcha();
+    await captcha.submit_captcha(captcha_token);
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    return await get_media();
+  }
 
   if (r.status !== 200) {
     let error_msg = `${media.error}:\n${media.message}`;

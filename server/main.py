@@ -12,8 +12,14 @@ from curl_cffi import requests
 import random
 
 from modules import exceptions, utils, captions, ai
-import threading, time, json, os, hashlib, re
+import threading
+import time
+import json
+import os
+import hashlib
+import re
 import pathlib
+import queue
 
 # ===== setup flask =====
 print("Reading config...")
@@ -57,6 +63,7 @@ if config["behind_proxy"]:
 # ===== tokens =====
 
 current_tokens = {}
+captcha_token_queue = None
 
 #process cache
 if cache:
@@ -87,10 +94,13 @@ def create_session():
   return session
 
 def account_login(creds):
+  global captcha_token_queue
   session = create_session()
   username = creds["username"]
 
-  # check if our current token is ok
+  session.headers["User-Agent"] = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+
+  # check if our current token is ok, or refresh login after 6 hours
   current_token = current_tokens.get(username)
   if current_token and time.time() - current_token[1] < 6 * 3600:
     res = session.get("https://edpuzzle.com/api/v3/users/me", cookies={
@@ -100,6 +110,12 @@ def account_login(creds):
     if res.ok:
       return current_token[0]
     print(f"token probably expired for {username}")
+  
+  # don't proceed until we get our hands on a captcha token
+  print(f"starting login process for {username}, waiting on captcha token")
+  captcha_token_queue = queue.Queue()
+  captcha_token = captcha_token_queue.get()
+  captcha_token_queue = None
 
   # Anti-cheat stuff
   home_res = session.get("https://edpuzzle.com/")  # get csrf cookie and later anti-bot test
@@ -132,26 +148,31 @@ def account_login(creds):
     "https://edpuzzle.com/api/v3/users/login",
     data=json.dumps(payload, separators=(",", ":")),
     headers={
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "X-Edpuzzle-Captcha-Token": captcha_token
     }
   )
   if not login_res.ok:
-    print(f"warning: auth failed for {username}")
+    print(f"warning: auth failed for {username}\nerror info: {login_res.text}")
     if username in current_tokens:
       del current_tokens[username]
     return
 
   print(f"login success for {username}")
   now = int(time.time())
-  current_tokens[username] = login_res.cookies.get("token"), now
+  new_token = login_res.cookies.get("token")
+  current_tokens[username] = new_token, now
   write_cache()
+  return new_token
 
 def token_refresher():
   write_cache()
   while True:
     for creds in config["teacher_creds"]:
-      account_login(creds)
-      time.sleep(30) #30s between login attempts
+      for i in range(0, 5):
+        if account_login(creds):
+          break
+      time.sleep(0) #30s between login attempts
     time.sleep(60*10) # 10 min
 
 # ===== utility functions =====
@@ -218,6 +239,10 @@ def generate():
 @utils.handle_exception
 def media_proxy(media_id):
   session = create_session()
+  captcha_needed = captcha_token_queue is not None
+
+  if captcha_needed:
+    return jsonify({"captcha_needed": True})
 
   current_token = random.choice(list(current_tokens.values()))
   session.cookies.update({
@@ -238,7 +263,17 @@ def media_proxy(media_id):
   if data.get("error"):
     raise exceptions.BadGatewayError(f"Edpuzzle error: " + data["error"])
 
-  return jsonify(data)
+  return jsonify({"captcha_needed": False, **data})
+
+@app.route("/api/captcha_token", methods=["POST"])
+def handle_captcha_token():
+  token_needed = captcha_token_queue is not None
+  if not token_needed:
+    return jsonify({"success": False})
+
+  data = request.json
+  captcha_token_queue.put(data["captcha_token"])
+  return jsonify({"success": True})
 
 @app.route("/")
 def homepage():
@@ -249,7 +284,6 @@ def homepage():
 def discord():
   invite_url = f"https://discord.com/invite/5kmVs8AqDQ"
   return redirect(invite_url)
-
 
 # run the server
 if __name__ == "__main__":
