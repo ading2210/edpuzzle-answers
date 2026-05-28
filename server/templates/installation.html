@@ -46,6 +46,41 @@
             padding: 7px;
         }
 
+                nav {
+            position: fixed;
+            display: flex;
+            background-color: #5e81ac;
+            border-radius: 0px 0px 7px 7px;
+            width: fit-content;
+            top: 0px;
+            left: 50%;
+            transform: translateX(-50%);
+            justify-content: center;
+            align-items: center;
+            z-index: 67;
+        }
+
+        nav ul li {
+            display: inline-flex;
+            list-style-type: none;
+        }
+
+        nav ul {
+        padding: 10px;
+        margin: 0;
+        }
+
+        .nav-list a {
+            color: #fefefe;
+            text-decoration: none;
+        }
+
+        .nav-list li+li::before {
+            content: " | ";
+            color: white;
+            margin: 0 10px;
+        }
+
         #back:hover {
             background-color: #d9d9d9;
         }
@@ -74,31 +109,7 @@
             padding-bottom: 7px;
         }
 
-        .method1 li {
-            text-align: left;
-            line-height: 1.1;
-            margin-top: 7px;
-        }
-
-        .method2 li {
-            text-align: left;
-            line-height: 1.1;
-            margin-top: 7px;
-        }
-
-        #csp ul li {
-            text-align: left;
-            line-height: 1.1;
-            margin-top: 7px;
-        }
-
-        .on-edpuzzle li {
-            text-align: left;
-            line-height: 1.1;
-            margin-top: 7px;
-        }
-
-        .on-canvas li {
+        #align-left li {
             text-align: left;
             line-height: 1.1;
             margin-top: 7px;
@@ -143,41 +154,6 @@
         .copy-btn:hover {
             background: #d9d9d9;
         }
-
-        nav {
-            position: fixed;
-            display: flex;
-            background-color: #5e81ac;
-            border-radius: 0px 0px 7px 7px;
-            width: fit-content;
-            top: 0px;
-            left: 50%;
-            transform: translateX(-50%);
-            justify-content: center;
-            align-items: center;
-            z-index: 67;
-        }
-
-        nav ul li {
-            display: inline-flex;
-            list-style-type: none;
-        }
-
-        nav ul {
-        padding: 10px;
-        margin: 0;
-        }
-
-        .nav-list a {
-            color: #fefefe;
-            text-decoration: none;
-        }
-
-        .nav-list li+li::before {
-            content: " | ";
-            color: white;
-            margin: 0 10px;
-        }
         
         .usage-url {
             background-color: #2e3440;
@@ -199,14 +175,14 @@
             <li><a href="/troubleshooting.html">Troubleshooting</a></li>
         </ul>
     </nav>
-    <p id="back"><a href="/">←Back</a></p>
+    <p id="back"><a href="/">←Back</a></p> <!--back button-->
     <div class="whitebox">
-        <h1>Installation Guide</h1>
+        <h1>Installation Guide</h1> <!--installation guide-->
         <div id="bookmarklet">
             <h2>Creating The Bookmark</h2>
             <p>There are 2 ways to make the bookmark:</p>
             <h3>Method 1</h3>
-            <ol class="method1">
+            <ol class="align-left">
                 <li>Drag this button into your bookmarks bar <br><br>
                     If you're on Firefox, right click on the button and then click "bookmark link."
                 </li>
@@ -218,11 +194,11 @@
             </a>
         </div>
         <h3>Method 2</h3>
-        <ol class="method2">
+        <ol class="align-left">
             <li>Make a new bookmark (can be any page youre gonna change it anyways)</li>
             <li>Edit that Bookmark and change the URL to the following
                 <div class="code-container">
-                    <button class="copy-btn" id="copy-button">Copy</button>
+                    <button class="copy-btn" id="copy-button">Copy</button> 
                     <pre><code id="code-text">javascript: fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js").then(r => r.text()).then(r => eval(r));</code></pre>
                 </div>
             </li>
@@ -245,8 +221,8 @@
 
     </div>
     <div class="whitebox">
-        <div id="csp">
-            <h1>Content Security Policy (CSP) Extension</h1>
+        <div class="align-left" id="csp">
+            <h1>Content Security Policy (CSP) Extension</h1> <!--csp-->
             <h2>Installing the CSP Extension</h2>
             <p>Due to recent changes by Edpuzzle, you need to disable the CSP on edpuzzle.com for the script to work. To
                 bypass it, install one of these browser extensions:</p>
@@ -263,9 +239,9 @@
         </div>
     </div>
     <div class="whitebox">
-        <h1 id="usage">Using the script</h1>
+        <h1 id="usage">Using the script</h1> <!--usage-->
         <h2>Usage on regular Edpuzzles</h2>
-        <div class="on-edpuzzle">
+        <div class="align-left">
             <ol>
                 <li>Go to any Edpuzzle assignment</li>
                 <li>Make sure the url follows looks like this: <span class="usage-url">https://edpuzzle.com/assignments/{id}/watch</span></li>
@@ -274,7 +250,7 @@
                 <li>Click on the bookmarklet to run the script</li>
             </ol>
         </div>
-        <div class="on-canvas">
+        <div class="align-left">
             <h2>Usage on Edpuzzles in Canvas</h2>
             <ol>
                 <li>Go to the assignment on Canvas and make sure the link looks like this: <span class="usage-url">https://k12.instructure.com/courses/{id}/assignments/{id}</span></li>
