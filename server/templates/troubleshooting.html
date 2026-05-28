@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Troubleshooting</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="cache-control" content="public">
+
+    <meta name="description"
+        content="This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, as well as automatically answer the questions and change the video speed. This project is also fully open source and licensed under the GNU AGPL v3.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Edpuzzle Answers Script">
+    <meta property="og:url" content="https://edpuzzle.hgci.org/">
+    <meta property="og:image" content="/landing/images/screenshot5.png">
+    <meta property="og:article:author" content="ading2210">
+    <meta property="og:description"
+        content="This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, as well as automatically answer the questions and change the video speed. This project is also fully open source and licensed under the GNU AGPL v3.">
+    <meta property="twitter:image" content="/landing/images/screenshot5.png">
+    <meta property="twitter:card" content="summary_large_image">
+
+    {% if dev_mode %}
+    <meta name="robots" content="noindex,nofollow">
+    {% endif %}
+
+    <link href="./landing/images/icon.png" rel="icon" type="image/png" />
+
+    <style>
+        * {
+            font-family: Arial;
+            text-align: center;
+        }
+
+        body {
+            background-color: #2e3440;
+        }
+
+        #back {
+            position: absolute;
+            left: 50px;
+            top: 25px;
+            color: black;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #fefffe;
+            border-radius: 7px;
+            padding: 7px;
+        }
+
+        #back:hover {
+            background-color: #d9d9d9;
+        }
+
+        #back a {
+            text-decoration: none;
+            color: black;
+        }
+
+        .whitebox {
+            background-color: #fefffe;
+            border-radius: 15px;
+            max-width: min(560px, 80%);
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 20px;
+            height: 100%;
+        }
+
+        .whitebox h2 {
+            border-top: 0.5px solid #2e3440;
+            border-bottom: 0.5px solid #2e3440;
+            padding-top: 7px;
+            padding-bottom: 7px;
+            text-align: center;
+        }
+
+        .li-align-left {
+            text-align: left;
+            line-height: 1.1;
+            margin-top: 7px;
+        }
+
+        nav {
+            position: fixed;
+            display: flex;
+            background-color: #5e81ac;
+            border-radius: 0px 0px 7px 7px;
+            width: fit-content;
+            top: 0px;
+            left: 50%;
+            transform: translateX(-50%);
+            justify-content: center;
+            align-items: center;
+        }
+
+        nav ul li {
+            display: inline-flex;
+            list-style-type: none;
+        }
+
+        nav ul {
+            padding: 10px;
+            margin: 0;
+        }
+
+        .nav-list a {
+            color: #fefefe;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <ul class="nav-list">
+            <li><a href="/installation.html">Back to installation</a></li>
+        </ul>
+    </nav>
+    <p id="back"><a href="/">←Back</a></p>
+    <div class="whitebox">
+        <h1>Troubleshooting</h1>
+        <h2 class="li-align-left">I enabled the csp extension (made it pink) and clicked the bookmark and nothing
+            happened</h2>
+        <ul>
+            <li>Did you reload the page after clicking the extension, if not, reload your page</li>
+        </ul>
+        <!--<h2></h2>
+        <p></p>--> <!--add more as more issues come in the discord i cant find any more-->
+    </div>
+</body>
+
+</html>
