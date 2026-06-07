@@ -1,267 +1,316 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-
-<head>
+  <head>
     <title>Installation</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <meta http-equiv="cache-control" content="public">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="cache-control" content="public" />
 
-    <meta name="description"
-        content="This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, as well as automatically answer the questions and change the video speed. This project is also fully open source and licensed under the GNU AGPL v3.">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Edpuzzle Answers Script">
-    <meta property="og:url" content="https://edpuzzle.hgci.org/">
-    <meta property="og:image" content="/landing/images/screenshot5.png">
-    <meta property="og:article:author" content="ading2210">
-    <meta property="og:description"
-        content="This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, as well as automatically answer the questions and change the video speed. This project is also fully open source and licensed under the GNU AGPL v3.">
-    <meta property="twitter:image" content="/landing/images/screenshot5.png">
-    <meta property="twitter:card" content="summary_large_image">
+    <meta
+      name="description"
+      content="This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, as well as automatically answer the questions and change the video speed. This project is also fully open source and licensed under the GNU AGPL v3."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Edpuzzle Answers Script" />
+    <meta property="og:url" content="https://edpuzzle.hgci.org/" />
+    <meta property="og:image" content="/landing/images/screenshot5.png" />
+    <meta property="og:article:author" content="ading2210" />
+    <meta
+      property="og:description"
+      content="This bookmarklet can fetch the answers for the multiple choice questions on any Edpuzzle assignment. It can also skip the entire video, as well as automatically answer the questions and change the video speed. This project is also fully open source and licensed under the GNU AGPL v3."
+    />
+    <meta property="twitter:image" content="/landing/images/screenshot5.png" />
+    <meta property="twitter:card" content="summary_large_image" />
 
     {% if dev_mode %}
-    <meta name="robots" content="noindex,nofollow">
+    <meta name="robots" content="noindex,nofollow" />
     {% endif %}
 
     <link href="./landing/images/icon.png" rel="icon" type="image/png" />
     <style>
-        * {
-            font-family: Arial;
-            text-align: center;
-        }
-        
-        body {
-            background-color: #2e3440;
-        }
+      * {
+        font-family: Arial;
+        text-align: center;
+      }
 
-        #back {
-            position: absolute;
-            left: 50px;
-            top: 25px;
-            color: black;
-            font-size: 14px;
-            cursor: pointer;
-            background-color: #fefffe;
-            border-radius: 7px;
-            padding: 7px;
-        }
+      body {
+        background-color: #2e3440;
+      }
 
-                nav {
-            position: fixed;
-            display: flex;
-            background-color: #5e81ac;
-            border-radius: 0px 0px 7px 7px;
-            width: fit-content;
-            top: 0px;
-            left: 50%;
-            transform: translateX(-50%);
-            justify-content: center;
-            align-items: center;
-            z-index: 67;
-        }
+      #back {
+        position: absolute;
+        left: 50px;
+        top: 25px;
+        color: black;
+        font-size: 14px;
+        cursor: pointer;
+        background-color: #fefffe;
+        border-radius: 7px;
+        padding: 7px;
+      }
 
-        nav ul li {
-            display: inline-flex;
-            list-style-type: none;
-        }
+      nav {
+        position: fixed;
+        display: flex;
+        background-color: #5e81ac;
+        border-radius: 0px 0px 7px 7px;
+        width: fit-content;
+        top: 0px;
+        left: 50%;
+        transform: translateX(-50%);
+        justify-content: center;
+        align-items: center;
+        z-index: 67;
+      }
 
-        nav ul {
+      nav ul li {
+        display: inline-flex;
+        list-style-type: none;
+      }
+
+      nav ul {
         padding: 10px;
         margin: 0;
-        }
+      }
 
-        .nav-list a {
-            color: #fefefe;
-            text-decoration: none;
-        }
+      .nav-list a {
+        color: #fefefe;
+        text-decoration: none;
+      }
 
-        .nav-list li+li::before {
-            content: " | ";
-            color: white;
-            margin: 0 10px;
-        }
+      .nav-list li + li::before {
+        content: " | ";
+        color: white;
+        margin: 0 10px;
+      }
 
-        #back:hover {
-            background-color: #d9d9d9;
-        }
+      #back:hover {
+        background-color: #d9d9d9;
+      }
 
-        #back a {
-            text-decoration: none;
-            color: black;
-        }
+      #back a {
+        text-decoration: none;
+        color: black;
+      }
 
-        .whitebox {
-            background-color: #fefffe;
-            border-radius: 15px;
-            max-width: min(560px, 80%);
-            margin-left: auto;
-            margin-right: auto;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            padding: 20px;
-            height: 100%;
-        }
+      .whitebox {
+        background-color: #fefffe;
+        border-radius: 15px;
+        max-width: min(560px, 80%);
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        padding: 20px;
+        height: 100%;
+      }
 
-        .whitebox h2 {
-            border-top: 0.5px solid #2e3440;
-            border-bottom: 0.5px solid #2e3440;
-            padding-top: 7px;
-            padding-bottom: 7px;
-        }
+      .whitebox h2 {
+        border-top: 0.5px solid #2e3440;
+        border-bottom: 0.5px solid #2e3440;
+        padding-top: 7px;
+        padding-bottom: 7px;
+      }
 
-        .align-left li {
-            text-align: left;
-            line-height: 1.1;
-            margin-top: 7px;
-        }
+      .align-left li {
+        text-align: left;
+        line-height: 1.1;
+        margin-top: 7px;
+      }
 
-        .code-container {
-            position: relative;
-            max-width: 600px;
-            margin: 20px 0;
-            background: #2e3440;
-            border-radius: 6px;
-            overflow: hidden;
-        }
+      .code-container {
+        position: relative;
+        max-width: 600px;
+        margin: 20px 0;
+        background: #2e3440;
+        border-radius: 6px;
+        overflow: hidden;
+      }
 
-        .code-container pre {
-            margin: 0;
-            padding: 20px;
-            overflow-x: auto;
-        }
+      .code-container pre {
+        margin: 0;
+        padding: 20px;
+        overflow-x: auto;
+      }
 
-        .code-container code {
-            font-family: monospace;
-            color: #d4d4d4;
-            font-size: 14px;
-            line-height: 1.5;
-        }
+      .code-container code {
+        font-family: monospace;
+        color: #d4d4d4;
+        font-size: 14px;
+        line-height: 1.5;
+      }
 
-        .copy-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #fefffe;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: black;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: background 0.2s;
-        }
+      .copy-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #fefffe;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: black;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: background 0.2s;
+      }
 
-        .copy-btn:hover {
-            background: #d9d9d9;
-        }
-        
-        .usage-url {
-            background-color: #2e3440;
-            padding: 7px;
-            width: fit-content;
-            border-radius: 7px;
-            color: #fefffe;
-            line-height: 2.1;
-        }
+      .copy-btn:hover {
+        background: #d9d9d9;
+      }
+
+      .usage-url {
+        background-color: #2e3440;
+        padding: 7px;
+        width: fit-content;
+        border-radius: 7px;
+        color: #fefffe;
+        line-height: 2.1;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <nav>
-        <ul class="nav-list">
-            <li><a href="#bookmarklet">Bookmark</a></li>
-            <li><a href="#csp">CSP</a></li>
-            <li><a href="#usage">Usage</a></li>
-            <li><a href="/troubleshooting.html">Troubleshooting</a></li>
-        </ul>
+      <ul class="nav-list">
+        <li><a href="#bookmarklet">Bookmark</a></li>
+        <li><a href="#csp">CSP</a></li>
+        <li><a href="#usage">Usage</a></li>
+        <li><a href="/troubleshooting.html">Troubleshooting</a></li>
+      </ul>
     </nav>
-    <p id="back"><a href="/">←Back</a></p> <!--back button-->
+    <p id="back"><a href="/">←Back</a></p>
+    <!--back button-->
     <div class="whitebox">
-        <h1>Installation Guide</h1> <!--installation guide-->
-        <div id="bookmarklet">
-            <h2>Creating The Bookmark</h2>
-            <p>There are 2 ways to make the bookmark:</p>
-            <h3>Method 1</h3>
-            <ol class="align-left">
-                <li>Drag this button into your bookmarks bar <br><br>
-                    If you're on Firefox, right click on the button and then click "bookmark link."
-                </li>
-            </ol>
-            <a href='javascript: fetch("{{ script_js }}").then(r => r.text()).then(r => eval(r))'>
-                <button title="Drag this into your bookmarks bar">
-                    Get Answers
-                </button>
-            </a>
-        </div>
-        <h3>Method 2</h3>
+      <h1>Installation Guide</h1>
+      <!--installation guide-->
+      <div id="bookmarklet">
+        <h2>Creating The Bookmark</h2>
+        <p>There are 2 ways to make the bookmark:</p>
+        <h3>Method 1</h3>
         <ol class="align-left">
-            <li>Make a new bookmark (can be any page you're gonna change it anyways)</li>
-            <li>Edit that Bookmark and change the URL to the following
-                <div class="code-container">
-                    <button class="copy-btn" id="copy-button">Copy</button> 
-                    <pre><code id="code-text">javascript: fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js").then(r => r.text()).then(r => eval(r));</code></pre>
-                </div>
-            </li>
-            <li>Save the bookmark</li>
+          <li>
+            Drag this button into your bookmarks bar <br /><br />
+            If you're on Firefox, right click on the button and then click
+            "bookmark link."
+          </li>
         </ol>
+        <a
+          href='javascript: fetch("{{ script_js }}").then(r => r.text()).then(r => eval(r))'
+        >
+          <button title="Drag this into your bookmarks bar">Get Answers</button>
+        </a>
+      </div>
+      <h3>Method 2</h3>
+      <ol class="align-left">
+        <li>
+          Make a new bookmark (can be any page you're gonna change it anyways)
+        </li>
+        <li>
+          Edit that Bookmark and change the URL to the following
+          <div class="code-container">
+            <button class="copy-btn" id="copy-button">Copy</button>
+            <pre><code id="code-text">javascript: fetch("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js").then(r => r.text()).then(r => eval(r));</code></pre>
+          </div>
+        </li>
+        <li>Save the bookmark</li>
+      </ol>
 
-        <script>
-            const button = document.getElementById('copy-button');
-            const code = document.getElementById('code-text');
+      <script>
+        const button = document.getElementById("copy-button");
+        const code = document.getElementById("code-text");
 
-            button.addEventListener('click', () => {
-                navigator.clipboard.writeText(code.textContent).then(() => {
-                    button.innerText = "Copied!";
-                    setTimeout(() => {
-                        button.innerText = "Copy";
-                    }, 2000);
-                });
-            });
-        </script>
-
+        button.addEventListener("click", () => {
+          navigator.clipboard.writeText(code.textContent).then(() => {
+            button.innerText = "Copied!";
+            setTimeout(() => {
+              button.innerText = "Copy";
+            }, 2000);
+          });
+        });
+      </script>
     </div>
     <div class="whitebox">
-        <div class="align-left" id="csp">
-            <h1>Content Security Policy (CSP) Extension</h1> <!--csp-->
-            <h2>Installing the CSP Extension</h2>
-            <p>Due to recent changes by Edpuzzle, you need to disable the CSP on edpuzzle.com for the script to work. To
-                bypass it, install one of these browser extensions:</p>
-            <ul>
-                <li>For <span style="cursor: pointer;" title="Chromium based browsers">Chrome/Edge/Opera/Brave</span>: <a target="_blank"
-                        href="https://chromewebstore.google.com/detail/disable-content-security/ieelmcmcagommplceebfedjlakkhpden">Disable
-                        Content-Security-Policy</a>
-                </li>
-                <li>For <span style="cursor: pointer;" title="Mozilla Firefox">Firefox</span>: <a target="_blank"
-                        href="https://addons.mozilla.org/en-US/firefox/addon/disable-csp-for-a-minute/">Disable CSP for
-                        a minute</a>
-                </li>
-            </ul>
-        </div>
+      <div class="align-left" id="csp">
+        <h1>Content Security Policy (CSP) Extension</h1>
+        <!--csp-->
+        <h2>Installing the CSP Extension</h2>
+        <p>
+          Due to recent changes by Edpuzzle, you need to disable the CSP on
+          edpuzzle.com for the script to work. To bypass it, install one of
+          these browser extensions:
+        </p>
+        <ul>
+          <li>
+            For
+            <span style="cursor: pointer" title="Chromium based browsers"
+              >Chrome/Edge/Opera/Brave</span
+            >:
+            <a
+              target="_blank"
+              href="https://chromewebstore.google.com/detail/disable-content-security/ieelmcmcagommplceebfedjlakkhpden"
+              >Disable Content-Security-Policy</a
+            >
+          </li>
+          <li>
+            For
+            <span style="cursor: pointer" title="Mozilla Firefox">Firefox</span
+            >:
+            <a
+              target="_blank"
+              href="https://addons.mozilla.org/en-US/firefox/addon/disable-csp-for-a-minute/"
+              >Disable CSP for a minute</a
+            >
+          </li>
+        </ul>
+      </div>
     </div>
     <div class="whitebox">
-        <h1 id="usage">Using the script</h1> <!--usage-->
-        <h2>Usage on regular Edpuzzles</h2>
-        <div class="align-left">
-            <ol>
-                <li>Go to any Edpuzzle assignment</li>
-                <li>Make sure the url follows looks like this: <span class="usage-url">https://edpuzzle.com/assignments/{id}/watch</span></li>
-                <li>Click on the CSP extension and make sure it's on (it should change colors from grey to pink)</li>
-                <li>Reload the page</li>
-                <li>Click on the bookmarklet to run the script</li>
-            </ol>
-        </div>
-        <div class="align-left">
-            <h2>Usage on Edpuzzles in Canvas</h2>
-            <ol>
-                <li>Go to the assignment on Canvas and make sure the link looks like this: <span class="usage-url">https://k12.instructure.com/courses/{id}/assignments/{id}</span></li>
-                <li>Click on the bookmarklet. The script should open the Edpuzzle assignment in a new tab</li>
-                <li>Click on the CSP extension and make sure it's on (it should change colors from grey to pink)</li>
-                <li>Reload the page</li>
-                <li>Re-run the bookmarklet to launch the full script</li>
-                <li>If that doesn't work, make sure you allow popups on both Edpuzzle and Canvas</li>
-            </ol>
-        </div>
+      <h1 id="usage">Using the script</h1>
+      <!--usage-->
+      <h2>Usage on regular Edpuzzles</h2>
+      <div class="align-left">
+        <ol>
+          <li>Go to any Edpuzzle assignment</li>
+          <li>
+            Make sure the url follows looks like this:
+            <span class="usage-url"
+              >https://edpuzzle.com/assignments/{id}/watch</span
+            >
+          </li>
+          <li>
+            Click on the CSP extension and make sure it's on (it should change
+            colors from grey to pink)
+          </li>
+          <li>Reload the page</li>
+          <li>Click on the bookmarklet to run the script</li>
+        </ol>
+      </div>
+      <div class="align-left">
+        <h2>Usage on Edpuzzles in Canvas</h2>
+        <ol>
+          <li>
+            Go to the assignment on Canvas and make sure the link looks like
+            this:
+            <span class="usage-url"
+              >https://k12.instructure.com/courses/{id}/assignments/{id}</span
+            >
+          </li>
+          <li>
+            Click on the bookmarklet. The script should open the Edpuzzle
+            assignment in a new tab
+          </li>
+          <li>
+            Click on the CSP extension and make sure it's on (it should change
+            colors from grey to pink)
+          </li>
+          <li>Reload the page</li>
+          <li>Re-run the bookmarklet to launch the full script</li>
+          <li>
+            If that doesn't work, make sure you allow popups on both Edpuzzle
+            and Canvas
+          </li>
+        </ol>
+      </div>
     </div>
-</body>
-
+  </body>
 </html>
