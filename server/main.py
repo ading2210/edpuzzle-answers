@@ -283,6 +283,14 @@ def handle_captcha_token():
 def homepage():
   return render_template("index.html", dev_mode=config["dev_mode"], script_js=config["script.js"])
 
+@app.route("/installation.html")
+def installation():
+  return render_template("installation.html", dev_mode=config["dev_mode"], script_js=config["script.js"])
+
+@app.route("/troubleshooting.html")
+def troubleshooting():
+  return render_template("troubleshooting.html", dev_mode=config["dev_mode"], script_js=config["script.js"])
+
 @app.route("/discord")
 @app.route("/discord.html")
 def discord():
